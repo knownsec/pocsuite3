@@ -4,7 +4,7 @@ from pocsuite3.api import crawl
 
 class TestCase(unittest.TestCase):
     def setUp(self):
-        self.url = 'http://agent.sipo.gov.cn:8000/sipo/'
+        self.url = 'http://xxxxx'
 
     def tearDown(self):
         pass
