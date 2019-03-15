@@ -1,0 +1,22 @@
+[run]
+include = pocsuite3/*
+omit =
+    *migrations*
+    *tests*
+    venv/*
+
+[report]
+include = pocsuite3/*
+omit =
+    *migrations*
+    *tests*
+    venv/*
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    def __str__
+    if self.debug:
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:

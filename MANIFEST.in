@@ -1,0 +1,6 @@
+include MANIFEST.in
+include LICENSE
+include README.md
+include CHANGELOG.md
+include CONTRIBUTORS.md
+recursive-include pocsuite3 *
