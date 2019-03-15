@@ -2,6 +2,14 @@
 
 [![Python 3.x](https://img.shields.io/badge/python-3.x-yellow.svg)](https://www.python.org/) [![License](https://img.shields.io/badge/license-GPLv2-red.svg)](https://raw.githubusercontent.com/knownsec/Pocsuite/master/docs/COPYING) [![Twitter](https://img.shields.io/badge/twitter-@seebug-blue.svg)](https://twitter.com/seebug_team) [![build](https://api.travis-ci.org/knownsec/pocsuite3.svg)](https://travis-ci.org/knownsec/pocsuite3)
 
+## Legal Disclaimer
+Usage of pocsuite for attacking targets without prior mutual consent is illegal.  
+pocsuite is for security testing purposes only
+
+## 法律免责声明
+未经事先双方同意，使用pocsuite攻击目标是非法的。  
+pocsuite仅用于安全测试目的
+
 ## Overview
 
 pocsuite3 is an open-sourced remote vulnerability testing and proof-of-concept development framework developed by the [**Knownsec 404 Team**](http://www.knownsec.com/). 
