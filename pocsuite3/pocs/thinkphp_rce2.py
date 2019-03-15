@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# @Time    : 2019/1/14 10:45 AM
-# @Author  : chenghs@knownsec.com
-# @File    : thinkphp_rce2.py
+"""
+If you have issues about development, please read:
+https://github.com/knownsec/pocsuite3/blob/master/docs/CODING.md
+for more about information, plz visit http://pocsuite.org
+"""
 from collections import OrderedDict
 
 from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests, REVERSE_PAYLOAD, OptDict
@@ -12,7 +12,7 @@ from pocsuite3.lib.utils import random_str
 class DemoPOC(POCBase):
     vulID = '97767'  # ssvid
     version = '1.0'
-    author = ['chenghs@knownsec.com']
+    author = ['chenghs']
     vulDate = '2019-1-11'
     createDate = '2019-1-11'
     updateDate = '2019-1-11'

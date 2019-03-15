@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Time    : 2018/12/26 下午2:53
-# @Author  : chenghs@knownsec.com
+# @Author  : chenghs
 # @File    : interpreter_option.py
 from pocsuite3.lib.core.common import is_ipv6_address_format, is_ip_address_format
 from pocsuite3.lib.core.exception import PocsuiteValidationException

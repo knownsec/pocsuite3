@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Time    : 2019/2/26 2:33 PM
-# @Author  : chenghs@knownsec.com
+# @Author  : chenghsm
 # @File    : login_demo.py
 # @Descript: 自定义命令参数登录例子
 
@@ -14,7 +14,7 @@ from pocsuite3.api import OptString
 class DemoPOC(POCBase):
     vulID = '00000'  # ssvid
     version = '1.0'
-    author = ['chenghs@knownsec.com']
+    author = ['chenghs']
     vulDate = '2019-2-26'
     createDate = '2019-2-26'
     updateDate = '2019-2-25'
