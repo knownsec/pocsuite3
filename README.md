@@ -13,7 +13,7 @@ pocsuite仅用于安全测试目的
 ## Overview
 
 pocsuite3 is an open-sourced remote vulnerability testing and proof-of-concept development framework developed by the [**Knownsec 404 Team**](http://www.knownsec.com/). 
-It comes with a powerful proof-of-concept engine, many powerfull features for the ultimate penetration testers and security researchers.
+It comes with a powerful proof-of-concept engine, many powerful features for the ultimate penetration testers and security researchers.
 
 ## Features
 * PoC scripts can running with `attack`,`verify`, `shell` mode in different way
