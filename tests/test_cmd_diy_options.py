@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Time    : 2019/2/26 4:34 PM
-# @Author  : chenghs@knownsec.com
+# @Author  : chenghs
 # @File    : test_cmd_diy_options.py
 import os
 import unittest

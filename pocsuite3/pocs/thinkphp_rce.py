@@ -1,6 +1,8 @@
-# @Time    : 2018/12/11 上午11:14
-# @Author  : chenghs@knownsec.com
-# @File    : thinkphp_5_1_31_rce.py
+"""
+If you have issues about development, please read:
+https://github.com/knownsec/pocsuite3/blob/master/docs/CODING.md
+for more about information, plz visit http://pocsuite.org
+"""
 from collections import OrderedDict
 from urllib.parse import quote
 
@@ -11,7 +13,7 @@ from pocsuite3.lib.utils import random_str
 class DemoPOC(POCBase):
     vulID = '97715'  # ssvid
     version = '1.0'
-    author = ['chenghs@knownsec.com']
+    author = ['chenghs']
     vulDate = '2018-12-09'
     createDate = '2018-12-10'
     updateDate = '2018-12-10'

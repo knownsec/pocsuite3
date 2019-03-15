@@ -124,7 +124,7 @@ from pocsuite3.api import OptString
 class DemoPOC(POCBase):
     vulID = '00000'  # ssvid
     version = '1.0'
-    author = ['chenghs@knownsec.com']
+    author = ['knownsec.com']
     vulDate = '2019-2-26'
     createDate = '2019-2-26'
     updateDate = '2019-2-25'
