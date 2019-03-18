@@ -203,16 +203,17 @@ def _set_task_queue():
     if not kb.registered_pocs:
         err_msg = "no PoC script was loaded!"
         logger.error(err_msg)
-        raise SystemExit
+        # raise SystemExit
 
     if not kb.targets:
         err_msg = "no target(s) was added!"
         logger.error(err_msg)
-        raise SystemExit
+        # raise SystemExit
 
-    for poc_module in kb.registered_pocs:
-        for target in kb.targets:
-            kb.task_queue.put((target, poc_module))
+    if kb.registered_pocs and kb.targets:
+        for poc_module in kb.registered_pocs:
+            for target in kb.targets:
+                kb.task_queue.put((target, poc_module))
 
 
 def _check_account_login():
@@ -325,7 +326,7 @@ def _set_pocs_modules():
         conf.plugins.append('poc_from_seebug')
         load_poc_sucess = True
 
-    if not load_poc_sucess:
+    if (conf.poc or conf.vul_keyword) and not load_poc_sucess:
         error_msg = ""
         logger.error(error_msg)
         raise PocsuiteSyntaxException(error_msg)
