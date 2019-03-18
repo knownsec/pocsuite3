@@ -184,7 +184,7 @@ class PocsuiteInterpreter(BaseInterpreter):
         self.last_search = []
         self.main_modules_dirs = []
         for module in self.modules:
-            temp_module = humanize_path(module)
+            temp_module = module
             if IS_WIN:
                 temp_module = temp_module.replace("/", "\\")
                 temp_module = temp_module.replace(paths.POCSUITE_ROOT_PATH, "").lstrip("\\")
