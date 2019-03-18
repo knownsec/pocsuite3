@@ -23,7 +23,8 @@ def update():
 
     success = False
 
-    if not os.path.exists(os.path.join(paths.POCSUITE_ROOT_PATH, ".git")):
+    if not os.path.exists(os.path.join(paths.POCSUITE_ROOT_PATH, ".git")) and not os.path.exists(
+            os.path.join(paths.POCSUITE_ROOT_PATH, "../", ".git")):
         warn_msg = "not a git repository. It is recommended to clone the 'knownsec/pocsuite3' repository "
         warn_msg += "from GitHub (e.g. 'git clone --depth 1 {} pocsuite3')".format(GIT_REPOSITORY)
         logger.warn(warn_msg)
@@ -47,7 +48,8 @@ def update():
                                        shell=True,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE,
-                                       cwd=paths.SQLMAP_ROOT_PATH.encode(sys.getfilesystemencoding() or UNICODE_ENCODING))
+                                       cwd=paths.SQLMAP_ROOT_PATH.encode(
+                                           sys.getfilesystemencoding() or UNICODE_ENCODING))
             poll_process(process, True)
             stdout, stderr = process.communicate()
             success = not process.returncode
