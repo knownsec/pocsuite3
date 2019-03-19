@@ -23,13 +23,11 @@ ZIPBALL_PAGE = "https://github.com/knownsec/pocsuite3/zipball/master"
 LEGAL_DISCLAIMER = "Usage of pocsuite for attacking targets without prior mutual consent is illegal."
 
 BANNER = """\033[01;33m
-                              ,--. ,--.
- ,---. ,---. ,---.,---.,--.,--`--,-'  '-.,---.  \033[01;37m{\033[01;%dm%s\033[01;37m}\033[01;33m
-| .-. | .-. | .--(  .-'|  ||  ,--'-.  .-| .-. :
-| '-' ' '-' \ `--.-'  `'  ''  |  | |  | \   --.
-|  |-' `---' `---`----' `----'`--' `--'  `----'
-`--'                                            \033[0m\033[4;37m%s\033[0m
-
+,------.                        ,--. ,--.       ,----.   \033[01;37m{\033[01;%dm%s\033[01;37m}\033[01;33m
+|  .--. ',---. ,---.,---.,--.,--`--,-'  '-.,---.'.-.  | 
+|  '--' | .-. | .--(  .-'|  ||  ,--'-.  .-| .-. : .' <  
+|  | --'' '-' \ `--.-'  `'  ''  |  | |  | \   --/'-'  | 
+`--'     `---' `---`----' `----'`--' `--'  `----`----'   \033[0m\033[4;37m%s\033[0m                                            
 """ % ((31 + hash(REVISION) % 6) if REVISION else 30, VERSION_STRING.split('/')[-1], SITE)
 
 # Encoding used for Unicode data
