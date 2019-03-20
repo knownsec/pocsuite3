@@ -67,7 +67,8 @@ def show_task_result():
 def task_run():
     while not kb.task_queue.empty() and kb.thread_continue:
         target, poc_module = kb.task_queue.get()
-        poc_module = copy.deepcopy(kb.registered_pocs[poc_module])
+        if not conf.console_mode:
+            poc_module = copy.deepcopy(kb.registered_pocs[poc_module])
         poc_name = poc_module.name
         info_msg = "running poc:'{0}' target '{1}'".format(poc_name, target)
         logger.info(info_msg)
