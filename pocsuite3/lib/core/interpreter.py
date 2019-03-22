@@ -4,9 +4,11 @@
 # @Author  : chenghs@knowsec.com
 # @File    : interpreter.py
 import os
+import re
+
 from pocsuite3.lib.controller.controller import start
 from pocsuite3.lib.core.common import banner, index_modules, data_to_stdout, humanize_path, module_required, \
-    get_poc_name, stop_after, get_local_ip, is_ipv6_address_format
+    get_poc_name, stop_after, get_local_ip, is_ipv6_address_format, rtrim, ltrim
 from pocsuite3.lib.core.data import logger, paths, kb, conf
 from pocsuite3.lib.core.enums import POC_CATEGORY, AUTOCOMPLETE_TYPE
 from pocsuite3.lib.core.exception import PocsuiteBaseException, PocsuiteShellQuitException
@@ -271,14 +273,16 @@ class PocsuiteInterpreter(BaseInterpreter):
 
         search_result = []
         for module in self.main_modules_dirs:
-            if keyword in module:
-                search_result.append(module)
+            m = re.search(keyword, module, re.I | re.S)
+            if m:
+                search_result.append((module, m.group(0)))
 
         index = 0
-        for s in search_result:
-            tb.add_row([index, "{}\033[31m{}\033[0m{}".format(*s.partition(keyword))])
+        for s, k in search_result:
+            tb.add_row([index, "{}\033[31m{}\033[0m{}".format(*s.partition(k))])
             index = index + 1
-        self.last_search = search_result
+
+        self.last_search = [i for i, j in search_result]
         data_to_stdout(tb.get_string())
         data_to_stdout("\n")
 
@@ -289,11 +293,19 @@ class PocsuiteInterpreter(BaseInterpreter):
                 logger.warning("Index out of range")
                 return
             module_path = self.last_search[index]
-        module_path = module_path + ".py"
+        if not module_path.endswith(".py"):
+            module_path = module_path + ".py"
+        if not os.path.exists(module_path):
+            module_path = os.path.join(paths.POCSUITE_ROOT_PATH, module_path)
+            if not os.path.exists(module_path):
+                errMsg = "No such file: '{0}'".format(module_path)
+                logger.error(errMsg)
+                return
         try:
             load_file_to_module(module_path)
             self.current_module = kb.current_poc
-            self.current_module.pocsuite3_module_path = module_path.rstrip(".py")
+            self.current_module.pocsuite3_module_path = ltrim(rtrim(module_path, ".py"),
+                                                              os.path.join(paths.POCSUITE_ROOT_PATH, ""))
         except Exception as err:
             logger.error(str(err))
 
