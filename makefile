@@ -15,7 +15,7 @@ install:
 
 build:
 	@make prebuildclean
-	python3 setup.py sdist --formats=gztar,zip bdist_wheel
+	python3 setup.py sdist --formats=bdist_wheel
 	#python3 setup.py bdist_wininst
 
 pypimeta:
