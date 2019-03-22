@@ -167,6 +167,10 @@ def _set_network_proxy():
                 rdns=True if scheme == PROXY_TYPE.SOCKS5H else False,
             )
             socket.socket = socks.socksocket
+            conf.proxies = {
+                "http": conf.proxy,
+                "https": conf.proxy,
+            }
         else:
             if conf.proxy_cred:
                 proxy_string = "{0}@".format(conf.proxy_cred)
