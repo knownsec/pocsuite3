@@ -6,7 +6,7 @@
 import os
 from pocsuite3.lib.controller.controller import start
 from pocsuite3.lib.core.common import banner, index_modules, data_to_stdout, humanize_path, module_required, \
-    get_poc_name, stop_after, get_local_ip, is_ipv6_address_format
+    get_poc_name, stop_after, get_local_ip, is_ipv6_address_format, rtrim
 from pocsuite3.lib.core.data import logger, paths, kb, conf
 from pocsuite3.lib.core.enums import POC_CATEGORY, AUTOCOMPLETE_TYPE
 from pocsuite3.lib.core.exception import PocsuiteBaseException, PocsuiteShellQuitException
@@ -289,11 +289,18 @@ class PocsuiteInterpreter(BaseInterpreter):
                 logger.warning("Index out of range")
                 return
             module_path = self.last_search[index]
-        module_path = module_path + ".py"
+        if not module_path.endswith(".py"):
+            module_path = module_path + ".py"
+        if not os.path.exists(module_path):
+            module_path = os.path.join(paths.POCSUITE_ROOT_PATH, module_path)
+            if not os.path.exists(module_path):
+                errMsg = "No such file: '{0}'".format(module_path)
+                logger.error(errMsg)
+                return
         try:
             load_file_to_module(module_path)
             self.current_module = kb.current_poc
-            self.current_module.pocsuite3_module_path = module_path.rstrip(".py")
+            self.current_module.pocsuite3_module_path = rtrim(module_path, ".py")
         except Exception as err:
             logger.error(str(err))
 
