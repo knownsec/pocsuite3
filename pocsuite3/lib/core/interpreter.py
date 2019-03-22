@@ -4,6 +4,8 @@
 # @Author  : chenghs@knowsec.com
 # @File    : interpreter.py
 import os
+import re
+
 from pocsuite3.lib.controller.controller import start
 from pocsuite3.lib.core.common import banner, index_modules, data_to_stdout, humanize_path, module_required, \
     get_poc_name, stop_after, get_local_ip, is_ipv6_address_format, rtrim, ltrim
@@ -271,14 +273,16 @@ class PocsuiteInterpreter(BaseInterpreter):
 
         search_result = []
         for module in self.main_modules_dirs:
-            if keyword in module:
-                search_result.append(module)
+            m = re.search(keyword, module, re.I | re.S)
+            if m:
+                search_result.append((module, m.group(0)))
 
         index = 0
-        for s in search_result:
-            tb.add_row([index, "{}\033[31m{}\033[0m{}".format(*s.partition(keyword))])
+        for s, k in search_result:
+            tb.add_row([index, "{}\033[31m{}\033[0m{}".format(*s.partition(k))])
             index = index + 1
-        self.last_search = search_result
+
+        self.last_search = [i for i, j in search_result]
         data_to_stdout(tb.get_string())
         data_to_stdout("\n")
 
