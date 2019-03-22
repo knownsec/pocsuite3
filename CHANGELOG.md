@@ -8,3 +8,8 @@
 * bugfix console mode load poc error
 * update pocsuite3 banner
 
+# version 1.2.2
+---------------
+* bugfix site-packages poc-console issue
+* poc-console support to load absolute path
+* poc-console will ignore case when use `search`
