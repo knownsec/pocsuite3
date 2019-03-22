@@ -61,6 +61,7 @@ class PROXY_TYPE:
     HTTPS = "HTTPS"
     SOCKS4 = "SOCKS4"
     SOCKS5 = "SOCKS5"
+    SOCKS5H = "SOCKS5H"
 
 
 class ERROR_TYPE_ID:

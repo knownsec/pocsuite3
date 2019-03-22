@@ -157,13 +157,14 @@ def _set_network_proxy():
                 username = _.group(1)
                 password = _.group(2)
 
-        if scheme in (PROXY_TYPE.SOCKS4, PROXY_TYPE.SOCKS5):
+        if scheme in (PROXY_TYPE.SOCKS4, PROXY_TYPE.SOCKS5, PROXY_TYPE.SOCKS5H):
             socks.set_default_proxy(
-                socks.PROXY_TYPE_SOCKS5 if scheme == PROXY_TYPE.SOCKS5 else socks.PROXY_TYPE_SOCKS4,
+                socks.PROXY_TYPE_SOCKS4 if scheme == PROXY_TYPE.SOCKS4 else socks.PROXY_TYPE_SOCKS5,
                 hostname,
                 port,
                 username=username,
-                password=password
+                password=password,
+                rdns=True if scheme == PROXY_TYPE.SOCKS5H else False,
             )
             socket.socket = socks.socksocket
         else:
@@ -587,10 +588,10 @@ def init():
         _set_http_user_agent()
         _set_http_extra_headers()
 
+    _set_connect_back()
     _set_network_proxy()
     _set_network_timeout()
     _set_threads()
-    _set_connect_back()
     _set_listener()
     remove_extra_log_message()
     update()
