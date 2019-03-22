@@ -1,3 +1,10 @@
-version 1.0
+# version 1.0
 ---------------
 * Init publish
+
+# version 1.2.1
+---------------
+* bugfix auto update error
+* bugfix console mode load poc error
+* update pocsuite3 banner
+
