@@ -771,8 +771,25 @@ def rtrim(text, char):
     :return:
     """
     length = len(char)
+    if length > len(text):
+        return text
     if char == text[-length:]:
         text = text[:-length]
+    return text
+
+
+def ltrim(text, char):
+    """
+    Delete the specified character on the left
+    :param text: str
+    :param char: character
+    :return:
+    """
+    length = len(char)
+    if length > len(text):
+        return text
+    if char == text[:length]:
+        text = text[length:]
     return text
 
 

@@ -6,7 +6,7 @@
 import os
 from pocsuite3.lib.controller.controller import start
 from pocsuite3.lib.core.common import banner, index_modules, data_to_stdout, humanize_path, module_required, \
-    get_poc_name, stop_after, get_local_ip, is_ipv6_address_format, rtrim
+    get_poc_name, stop_after, get_local_ip, is_ipv6_address_format, rtrim, ltrim
 from pocsuite3.lib.core.data import logger, paths, kb, conf
 from pocsuite3.lib.core.enums import POC_CATEGORY, AUTOCOMPLETE_TYPE
 from pocsuite3.lib.core.exception import PocsuiteBaseException, PocsuiteShellQuitException
@@ -300,7 +300,8 @@ class PocsuiteInterpreter(BaseInterpreter):
         try:
             load_file_to_module(module_path)
             self.current_module = kb.current_poc
-            self.current_module.pocsuite3_module_path = rtrim(module_path, ".py")
+            self.current_module.pocsuite3_module_path = ltrim(rtrim(module_path, ".py"),
+                                                              os.path.join(paths.POCSUITE_ROOT_PATH, ""))
         except Exception as err:
             logger.error(str(err))
 
