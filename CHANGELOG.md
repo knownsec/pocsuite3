@@ -21,3 +21,7 @@
 # version 1.2.6
 ---------------
 * bugfix seebug poc
+
+# version 1.2.7
+---------------
+* bugfix hook_requests 
