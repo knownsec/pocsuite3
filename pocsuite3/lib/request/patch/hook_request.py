@@ -12,7 +12,7 @@ def session_request(self, method, url,
                     allow_redirects=True, proxies=None, hooks=None, stream=None, verify=False, cert=None, json=None):
     # Create the Request.
     merged_cookies = merge_cookies(merge_cookies(RequestsCookieJar(), self.cookies),
-                                   cookies or conf.cookie if 'cookie' in conf else None)
+                                   cookies or (conf.cookie if 'cookie' in conf else None))
 
     req = Request(
         method=method.upper(),
@@ -28,7 +28,7 @@ def session_request(self, method, url,
     )
     prep = self.prepare_request(req)
 
-    proxies = proxies or conf.proxies if 'proxies' in conf else {}
+    proxies = proxies or (conf.proxies if 'proxies' in conf else {})
 
     settings = self.merge_environment_settings(
         prep.url, proxies, stream, verify, cert
