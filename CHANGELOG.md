@@ -17,3 +17,7 @@
 # version 1.2.5
 ---------------
 * bugfix socks proxy
+
+# version 1.2.6
+---------------
+* bugfix seebug poc
