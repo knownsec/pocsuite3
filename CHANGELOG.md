@@ -25,3 +25,8 @@
 # version 1.2.7
 ---------------
 * bugfix hook_requests 
+
+# version 1.2.8
+---------------
+* support ceye token
+* bugfix plugin from seebug

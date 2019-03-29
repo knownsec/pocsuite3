@@ -1,5 +1,5 @@
 __title__ = 'pocsuite'
-__version__ = '1.2.7'
+__version__ = '1.2.8'
 __author__ = 'Knownsec Security Team'
 __author_email__ = 's1@seebug.org'
 __license__ = 'GPL 2.0'
