@@ -17,15 +17,16 @@ class CEye(object):
         self.username = username
         self.password = password
 
-        if self.token:
-            self.check_account()
-        elif self.conf_path:
+        if self.conf_path and not self.token:
             self.parser = ConfigParser()
             self.parser.read(self.conf_path)
             try:
                 self.token = self.parser.get("Telnet404", 'Jwt token')
             except Exception:
                 pass
+        if not self.check_account():
+            msg = "Ceye verify faild!"
+            raise Exception(msg)
 
     def token_is_available(self):
         if self.token:
@@ -97,8 +98,6 @@ class CEye(object):
         :param type: 请求类型(dns|request),默认是request
         :return: Boolean
         """
-        if not self.check_account():
-            return False
         ret_val = False
         counts = 3
         url = "http://api.ceye.io/v1/records?token={token}&type={type}&filter={flag}".format(token=self.token,
@@ -124,8 +123,6 @@ class CEye(object):
         :param type: 请求类型(dns|request),默认是request
         :return:返回获取的数据
         """
-        if not self.check_account():
-            return ""
         counts = 3
         url = "http://api.ceye.io/v1/records?token={token}&type={type}&filter={flag}".format(token=self.token,
                                                                                              type=type, flag=flag)
@@ -149,11 +146,12 @@ class CEye(object):
             counts -= 1
         return False
 
-    def build_request(self, value):
+    def build_request(self, value, type="request"):
         """
         生成发送的字符串
 
         :param value: 输入的要发送的信息
+        :param type: 请求类型(dns|request),默认是request
         :return: dict { url:返回接收的域名,flag:返回随机的flag }
         Example:
           {
@@ -162,11 +160,13 @@ class CEye(object):
           }
 
         """
-        if not self.check_account():
-            return {"url": "", "flag": ""}
         ranstr = random_str(4)
         domain = self.getsubdomain()
-        url = "http://{}.{}/{}{}{}".format(ranstr, domain, ranstr, value, ranstr)
+        url = ""
+        if type == "request":
+            url = "http://{}.{}/{}{}{}".format(ranstr, domain, ranstr, value, ranstr)
+        elif type == "dns":
+            url = domain
         return {"url": url, "flag": ranstr}
 
     def getsubdomain(self):
@@ -174,8 +174,6 @@ class CEye(object):
         通过ceye token获取子域名
         :return:返回获取的域名
         """
-        if not self.check_account():
-            return None
         r = requests.get("http://api.ceye.io/v1/identify", headers=self.headers).json()
         suffix = ".ceye.io"
         try:
@@ -186,7 +184,7 @@ class CEye(object):
 
 
 if __name__ == "__main__":
-    ce = CEye(token="xxxx")
+    ce = CEye(token="aaa")
     # 辅助生成flag字符串
     flag = ce.build_request("HelloWorld!")
     print(flag)

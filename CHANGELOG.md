@@ -30,3 +30,4 @@
 ---------------
 * support ceye token
 * bugfix plugin from seebug
+* refactoring ceye
