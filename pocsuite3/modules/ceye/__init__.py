@@ -186,7 +186,7 @@ class CEye(object):
 
 
 if __name__ == "__main__":
-    ce = CEye(token="f63a506894027b471ef8c7d3885493e7")
+    ce = CEye(token="xxxx")
     # 辅助生成flag字符串
     flag = ce.build_request("HelloWorld!")
     print(flag)
