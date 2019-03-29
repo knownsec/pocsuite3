@@ -10,14 +10,16 @@ from pocsuite3.lib.utils import get_middle_text, random_str
 
 
 class CEye(object):
-    def __init__(self, conf_path=paths.POCSUITE_RC_PATH, username=None, password=None):
+    def __init__(self, conf_path=paths.POCSUITE_RC_PATH, username=None, password=None, token=None):
         self.headers = None
-        self.token = None
+        self.token = token
         self.conf_path = conf_path
         self.username = username
         self.password = password
 
-        if self.conf_path:
+        if self.token:
+            self.check_account()
+        elif self.conf_path:
             self.parser = ConfigParser()
             self.parser.read(self.conf_path)
             try:
@@ -28,11 +30,18 @@ class CEye(object):
     def token_is_available(self):
         if self.token:
             headers = {'Authorization': 'JWT %s' % self.token}
+            headers2 = {'Authorization': self.token}
             try:
                 resp = requests.get('http://api.ceye.io/v1/identify', headers=headers)
                 if resp and resp.status_code == 200 and "data" in resp.json():
                     self.headers = headers
                     return True
+
+                resp = requests.get('http://api.ceye.io/v1/identify', headers=headers2)
+                if resp and resp.status_code == 200 and "data" in resp.json():
+                    self.headers = headers2
+                    return True
+
             except Exception as ex:
                 logger.error(str(ex))
         return False
@@ -165,14 +174,19 @@ class CEye(object):
         通过ceye token获取子域名
         :return:返回获取的域名
         """
+        if not self.check_account():
+            return None
         r = requests.get("http://api.ceye.io/v1/identify", headers=self.headers).json()
         suffix = ".ceye.io"
-        indetify = r["data"]["identify"]
+        try:
+            indetify = r["data"]["identify"]
+        except KeyError:
+            return None
         return indetify + suffix
 
 
 if __name__ == "__main__":
-    ce = CEye()
+    ce = CEye(token="f63a506894027b471ef8c7d3885493e7")
     # 辅助生成flag字符串
     flag = ce.build_request("HelloWorld!")
     print(flag)
