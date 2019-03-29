@@ -17,9 +17,11 @@ class CEye(object):
         self.username = username
         self.password = password
 
-        if self.conf_path and not self.token:
+        if self.conf_path:
             self.parser = ConfigParser()
             self.parser.read(self.conf_path)
+
+        if not self.token:
             try:
                 self.token = self.parser.get("Telnet404", 'Jwt token')
             except Exception:
@@ -79,7 +81,7 @@ class CEye(object):
                 else:
                     logger.error("The username or password is incorrect. "
                                  "Please enter the correct username and password.")
-                    return False
+        return False
 
     def write_conf(self):
         if not self.parser.has_section("Telnet404"):
