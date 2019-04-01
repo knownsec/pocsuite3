@@ -32,6 +32,17 @@ class Option(object):
     # def __setattr__(self, name, value):
     #     self[name] = value
 
+    def __iter__(self):
+        # first start by grabbing the Class items
+        iters = dict((x, y) for x, y in Option.__dict__.items() if x[:2] != '__')
+
+        # then update the class items with the instance items
+        iters.update(self.__dict__)
+
+        # now 'yield' through the items
+        for x, y in iters.items():
+            yield x, y
+
 
 class OptIP(Option):
     """ Option IP attribute """
