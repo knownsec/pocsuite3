@@ -886,3 +886,33 @@ def stop_after(space_number):
         return _wrapper
 
     return _outer_wrapper
+
+def check_port(ip, port, is_ipv6=False):
+    AF_INET = socket.AF_INET6 if is_ipv6 else socket.AF_INET
+    s = socket.socket(AF_INET, socket.SOCK_STREAM)
+    try:
+        s.connect((ip, port))
+        s.shutdown(2)
+        return True
+    except:
+        return False
+    finally:
+        s.close()
+
+
+def get_host_ipv6(ipv4):
+    ip4 = list()
+    ip6 = list()
+    try:
+        for interface in socket.getaddrinfo(socket.gethostname(), None):
+            ip = interface[4][0]
+            if interface[0] == socket.AF_INET:
+                ip4.append(ip.split('%')[0])
+            else:
+                ip6.append(ip.split('%')[0])
+    except Exception:
+        pass
+    d = dict()
+    for ip4, ip6 in zip(ip4, ip6):
+        d[ip4] = ip6
+    return d.get(ipv4)
