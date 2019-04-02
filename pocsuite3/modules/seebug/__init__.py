@@ -111,6 +111,15 @@ class Seebug():
                 if resp and resp.status_code == 200 and "code" in resp.json():
                     poc = resp.json()['code']
                     return poc
+                elif resp.status_code == 200 and "status" in resp.json() and resp.json()["status"] is False:
+                    if "message" in resp.json():
+                        msg = resp.json()["message"]
+                        if msg == "没有权限访问此漏洞":
+                            msg = "No permission to access the vulnerability POC"
+                    else:
+                        msg = "Unknown"
+                    msg = "[PLUGIN] " + msg
+                    raise Exception(msg)
             except Exception as ex:
                 logger.error(str(ex))
         else:
