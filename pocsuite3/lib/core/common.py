@@ -1,25 +1,23 @@
+import hashlib
+import inspect
+import logging
+import os
+import re
+import select
 import shlex
+import socket
 import struct
 import subprocess
 import sys
 import time
-
-import inspect
-import logging
-import select
+from collections import OrderedDict
 from functools import wraps
+from ipaddress import ip_address, ip_network
 from platform import machine
 from subprocess import call, Popen, PIPE
 
-import requests
 import chardet
-from collections import OrderedDict
-
-import hashlib
-import os
-import re
-import socket
-from ipaddress import ip_address, ip_network
+import requests
 
 from pocsuite3.lib.core.convert import stdout_encode
 from pocsuite3.lib.core.data import conf
@@ -37,12 +35,13 @@ from pocsuite3.lib.core.settings import IPV6_ADDRESS_REGEX
 from pocsuite3.lib.core.settings import IP_ADDRESS_REGEX
 from pocsuite3.lib.core.settings import OLD_VERSION_CHARACTER
 from pocsuite3.lib.core.settings import POCSUITE_VERSION_CHARACTER
+from pocsuite3.lib.core.settings import POC_NAME_REGEX
+from pocsuite3.lib.core.settings import POC_REQUIRES_REGEX
 from pocsuite3.lib.core.settings import UNICODE_ENCODING
 from pocsuite3.lib.core.settings import URL_ADDRESS_REGEX
-from pocsuite3.lib.core.settings import POC_REQUIRES_REGEX
-from pocsuite3.lib.core.settings import POC_NAME_REGEX
-from pocsuite3.thirdparty.termcolor.termcolor import colored
 from pocsuite3.thirdparty.colorama.initialise import init as coloramainit
+from pocsuite3.thirdparty.ifcfg import ifcfg
+from pocsuite3.thirdparty.termcolor.termcolor import colored
 
 
 def read_binary(filename):
@@ -889,6 +888,7 @@ def stop_after(space_number):
 
     return _outer_wrapper
 
+
 def check_port(ip, port):
     res = socket.getaddrinfo(ip, port, socket.AF_UNSPEC, socket.SOCK_STREAM)
     af, sock_type, proto, canonname, sa = res[0]
@@ -931,14 +931,9 @@ def exec_cmd(cmd, raw_data=True):
 
 
 def get_all_nic_info():
-    try:
-        import netifaces
-    except ImportError:
-        print("Try to get all nic info you should: `pip install netifaces`")
-        raise PocsuiteSystemException
     nic_info = dict()
-    for interface in netifaces.interfaces():
-        nic_info[interface] = netifaces.ifaddresses(interface)
+    for name, info in ifcfg.interfaces().items():
+        nic_info[name] = info
     return nic_info
 
 
@@ -947,13 +942,16 @@ def get_host_ipv6(with_nic=True):
     ipv4 = get_host_ip()
     ipv6 = None
     for nic, info in nic_info.items():
-        ip4 = info.get(socket.AF_INET)
-        ip4 = ip4.pop()['addr'] if ip4 else None
+        ip4 = info['inet4']
+        ip6 = info['inet6']
+        if not all([ip4, ip6]):
+            continue
+        ip4, ip6 = ip4.pop(), ip6.pop()
         if ip4 == ipv4:
-            ip6 = info.get(socket.AF_INET6)
-            ipv6 = ip6.pop()['addr'] if ip6 else None
+            ipv6 = ip6 if ip6 else None
             if ipv6 and '%' not in ipv6:
                 ipv6 = ipv6 + '%' + nic
+            break
 
     if ipv6:
         if not with_nic:
