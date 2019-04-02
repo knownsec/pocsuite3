@@ -18,8 +18,10 @@ def start():
     info_msg = "pocsusite got a total of {0} tasks".format(tasks_count)
     logger.info(info_msg)
 
-    run_threads(conf.threads, task_run)
-    task_done()
+    try:
+        run_threads(conf.threads, task_run)
+    finally:
+        task_done()
 
     if conf.mode == "shell":
         info_msg = "connect back ip: {0}    port: {1}".format(conf.connect_back_host, conf.connect_back_port)
