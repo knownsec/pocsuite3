@@ -97,7 +97,7 @@ class OptBool(Option):
         self.type = "Bool"
 
     def __set__(self, instance, value):
-        if isinstance(value,bool):
+        if isinstance(value, bool):
             self.value = value
             return
 
@@ -174,8 +174,9 @@ class OptItems(Option):
         self.value = self.display_value = value
 
 
-class OptDict():
+class OptDict(Option):
     def __init__(self, require=False, selected=False, default={}):
+        super().__init__(default, '', require)
         self.default = {}
         b = ""
         for k, v in default.items():
@@ -187,8 +188,8 @@ class OptDict():
         self.__set__("", selected)
 
         self.description = "{}\nYou can select {} ,default:{}".format(b,
-                                                                        repr(self.default.keys()),
-                                                                        self.selected)
+                                                                      repr(self.default.keys()),
+                                                                      self.selected)
 
     def __set__(self, instance, value):
         # if value not in self.default:

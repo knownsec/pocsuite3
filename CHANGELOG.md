@@ -31,3 +31,11 @@
 * support ceye token
 * bugfix plugin from seebug
 * refactoring ceye
+
+# version 1.2.9
+---------------
+* seebug poc friendly load reminder
+* new feature:displayed results after user interruption
+* POC specifies third-party module verification failure
+* customize option iter func
+* Built-in http server
