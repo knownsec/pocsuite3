@@ -556,6 +556,11 @@ install_requires =[str_item_,str_item,…] # 整个字段的值为list，每个�
 
 str_item 格式：模块名==版本号，模块名为pip install 安装时的模块名（请不要填写 import 的模块名）
 
+如果遇到安装时模块名与调用时的不一致情况，用`:`分割开，例如常见的加密算法库`pycryptodome`,但是调用是以`from Crypto.Cipher import AES`,此时就需要如下填写
+```python
+install_requires = ['pycryptodome:Crypto']
+```
+
 
 #### PoC 结果返回规范<div id="resultstandard"></div>
 

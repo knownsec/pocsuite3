@@ -47,7 +47,11 @@ class PocLoader(Loader):
             logger.info(info_msg)
             try:
                 for r in requires:
-                    __import__(r)
+                    if ":" in r:
+                        r, module = r.split(":")
+                        __import__(module)
+                    else:
+                        __import__(r)
             except ImportError:
                 err_msg = 'try install with "python -m pip install {0}"'.format(r)
                 logger.error(err_msg)
