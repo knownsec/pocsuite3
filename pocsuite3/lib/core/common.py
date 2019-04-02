@@ -1,4 +1,6 @@
+import shlex
 import struct
+import subprocess
 import sys
 import time
 
@@ -887,11 +889,13 @@ def stop_after(space_number):
 
     return _outer_wrapper
 
-def check_port(ip, port, is_ipv6=False):
-    AF_INET = socket.AF_INET6 if is_ipv6 else socket.AF_INET
-    s = socket.socket(AF_INET, socket.SOCK_STREAM)
+def check_port(ip, port):
+    res = socket.getaddrinfo(ip, port, socket.AF_UNSPEC, socket.SOCK_STREAM)
+    af, sock_type, proto, canonname, sa = res[0]
+    s = socket.socket(af, sock_type, proto)
+
     try:
-        s.connect((ip, port))
+        s.connect(sa)
         s.shutdown(2)
         return True
     except:
@@ -900,19 +904,58 @@ def check_port(ip, port, is_ipv6=False):
         s.close()
 
 
-def get_host_ipv6(ipv4):
-    ip4 = list()
-    ip6 = list()
+def exec_cmd(cmd, raw_data=True):
+    cmd = shlex.split(cmd)
+    out_data = b''
     try:
-        for interface in socket.getaddrinfo(socket.gethostname(), None):
-            ip = interface[4][0]
-            if interface[0] == socket.AF_INET:
-                ip4.append(ip.split('%')[0])
-            else:
-                ip6.append(ip.split('%')[0])
-    except Exception:
-        pass
-    d = dict()
-    for ip4, ip6 in zip(ip4, ip6):
-        d[ip4] = ip6
-    return d.get(ipv4)
+        p = subprocess.Popen(
+            cmd, shell=True, stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
+        while p.poll() is None:
+            line = p.stdout.read()
+            out_data += line
+    except Exception as ex:
+        print("Execute cmd error {}".format(str(ex)))
+
+    encoding = chardet.detect(out_data).get('encoding')
+    encoding = encoding if encoding else 'utf-8'
+    if IS_WIN:
+        out_data = out_data.split(b'\r\n\r\n')
+    else:
+        out_data = out_data.split(b'\n\n')
+    if not raw_data:
+        for i, data in enumerate(out_data):
+            out_data[i] = data.decode(encoding, errors='ignore')
+
+    return out_data
+
+
+def get_all_nic_info():
+    try:
+        import netifaces
+    except ImportError:
+        print("Try to get all nic info you should: `pip install netifaces`")
+        raise PocsuiteSystemException
+    nic_info = dict()
+    for interface in netifaces.interfaces():
+        nic_info[interface] = netifaces.ifaddresses(interface)
+    return nic_info
+
+
+def get_host_ipv6(with_nic=True):
+    nic_info = get_all_nic_info()
+    ipv4 = get_host_ip()
+    ipv6 = None
+    for nic, info in nic_info.items():
+        ip4 = info.get(socket.AF_INET)
+        ip4 = ip4.pop()['addr'] if ip4 else None
+        if ip4 == ipv4:
+            ip6 = info.get(socket.AF_INET6)
+            ipv6 = ip6.pop()['addr'] if ip6 else None
+            if ipv6 and '%' not in ipv6:
+                ipv6 = ipv6 + '%' + nic
+
+    if ipv6:
+        if not with_nic:
+            ipv6 = ipv6.split('%')[0]
+        return ipv6
