@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Time    : 2019/1/15 2:32 PM
-# @Author  : chenghs@knowsec.com
+# @Author  : chenghs
 # @File    : target_from_cidr.py
 import os
 from ipaddress import ip_network

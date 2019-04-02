@@ -5,9 +5,9 @@ pocsuite3 开发文档 及 PoC 编写规范及要求说明
   * [TARGETS 类型插件](#plugin_targets)
   * [POCS 类型插件](#plugin_pocs)
   * [RESULTS 类型插件](#plugin_results)
-  * [可自定义参数的插件](#可自定义参数的插件<div-id="plugin_div"></div>)
 * [PoC 脚本编写规范](#write_poc)
   * [PoC python脚本编写步骤](#pocpy)
+  * [可自定义参数的插件](#可自定义参数的插件<div-id="plugin_div"></div>)
   * [PoC 编写注意事项](#attention)
   * [Pocsuite 远程调用文件列表](#inclue_files)
   * [通用API列表](#common_api)
@@ -111,90 +111,7 @@ class HtmlReport(PluginBase):
 register_plugin(HtmlReport)
 
 ```
-#### 可自定义参数的插件<div id="plugin_div"></div>
-如果你需要编写一个可以交互参数的poc文件(例如有的poc脚本需要填写登录信息，或者任意命令执行时执行任意命令)，那么可以在poc文件中声明一个`_options`方法。一个简单的例子如下
 
-```python
-from collections import OrderedDict
-
-from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests
-from pocsuite3.api import OptString
-
-
-class DemoPOC(POCBase):
-    vulID = '00000'  # ssvid
-    version = '1.0'
-    author = ['knownsec.com']
-    vulDate = '2019-2-26'
-    createDate = '2019-2-26'
-    updateDate = '2019-2-25'
-    references = ['']
-    name = '自定义命令参数登录例子'
-    appPowerLink = 'http://www.knownsec.com/'
-    appName = 'test'
-    appVersion = 'test'
-    vulType = 'demo'
-    desc = '''这个例子说明了你可以使用console模式设置一些参数或者使用命令中的'--'来设置自定义的参数'''
-    samples = []
-    category = POC_CATEGORY.EXPLOITS.WEBAPP
-
-    def _options(self):
-        o = OrderedDict()
-        o["username"] = OptString('', description='这个poc需要用户登录，请输入登录账号', require=True)
-        o["password"] = OptString('', description='这个poc需要用户密码，请输出用户密码', require=False)
-        return o
-
-    def _verify(self):
-        result = {}
-        payload = "username={0}&password={1}".format(self.get_option("username"), self.get_option("password"))
-        r = requests.post(self.url, data=payload)
-        if r.status_code == 200:
-            result['VerifyInfo'] = {}
-            result['VerifyInfo']['URL'] = self.url
-            result['VerifyInfo']['Postdata'] = payload
-
-        return self.parse_output(result)
-
-    def _attack(self):
-        return self._verify()
-
-    def parse_output(self, result):
-        output = Output(self)
-        if result:
-            output.success(result)
-        else:
-            output.fail('target is not vulnerable')
-        return output
-
-
-register_poc(DemoPOC)
-```
-
-它可以使你在`console`或者`cli`模式下调用。
-
-- 在console模式下，pocsuite3模仿了msf的操作模式，你只需要使用`set`命令来设置相应的参数，然后`run`或者`check`来执行(`attack`和`shell`命令也可以)。
-- 在cli模式下，如上面例子所示，定义了`username`和`password`两个字段，你可以在参数后面加上`--username test --password test`来调用执行，需要注意的是，如果你的参数中包含了空格，用双引号`"`来包裹它。
-
-##### 自定义字段
-
-像其他工具一样，如果你想使用自定义的字段，将它定义到`_options`方法中，然后返回一个数组。如果在poc文件中想调用自定义字段，需要提前引入
-
-```python
-from pocsuite3.api import OptString,OptDict,OptIP,OptPort,OptBool,OptInteger,OptFloat,OptItems
-```
-
-| 字段类型   | 字段描述                                                     | 参数解释                                                     | 相关例子 |
-| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ | -------- |
-| OptString  | 接收字符串类型数据                                           | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptDict    | 接收一个字典类型参数，在选择上如果选择key，调用时会调用对应的value | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptIP      | 接收IP类型的字符串                                           | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptPort    | 接收端口类型参数                                             | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptBool    | 接收布尔类型参数                                             | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptInteger | 接收整数类型参数                                             | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptFloat   | 接收浮点数类型参数                                           | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptItems   | 接收list类型参数                                             | default:传入一个默认值<br />selectd:默认选择<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-
-需要注意的是，`console`模式支持所有的参数类型，`cli`模式除了`OptDict`、`OptBool`、`OptItems`类型外都支持。
 ### PoC 编写规范<div id="write_poc"></div>
 #### PoC python脚本编写步骤<div id="pocpy"></div>
 
@@ -322,7 +239,90 @@ class DemoPOC(POCBase):
 #注册 DemoPOC 类
 register_poc(DemoPOC)
 ```
+#### 可自定义参数的POC<div id="plugin_div"></div>
+如果你需要编写一个可以交互参数的poc文件(例如有的poc脚本需要填写登录信息，或者任意命令执行时执行任意命令)，那么可以在poc文件中声明一个`_options`方法。一个简单的例子如下
 
+```python
+from collections import OrderedDict
+
+from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests
+from pocsuite3.api import OptString
+
+
+class DemoPOC(POCBase):
+    vulID = '00000'  # ssvid
+    version = '1.0'
+    author = ['knownsec.com']
+    vulDate = '2019-2-26'
+    createDate = '2019-2-26'
+    updateDate = '2019-2-25'
+    references = ['']
+    name = '自定义命令参数登录例子'
+    appPowerLink = 'http://www.knownsec.com/'
+    appName = 'test'
+    appVersion = 'test'
+    vulType = 'demo'
+    desc = '''这个例子说明了你可以使用console模式设置一些参数或者使用命令中的'--'来设置自定义的参数'''
+    samples = []
+    category = POC_CATEGORY.EXPLOITS.WEBAPP
+
+    def _options(self):
+        o = OrderedDict()
+        o["username"] = OptString('', description='这个poc需要用户登录，请输入登录账号', require=True)
+        o["password"] = OptString('', description='这个poc需要用户密码，请输出用户密码', require=False)
+        return o
+
+    def _verify(self):
+        result = {}
+        payload = "username={0}&password={1}".format(self.get_option("username"), self.get_option("password"))
+        r = requests.post(self.url, data=payload)
+        if r.status_code == 200:
+            result['VerifyInfo'] = {}
+            result['VerifyInfo']['URL'] = self.url
+            result['VerifyInfo']['Postdata'] = payload
+
+        return self.parse_output(result)
+
+    def _attack(self):
+        return self._verify()
+
+    def parse_output(self, result):
+        output = Output(self)
+        if result:
+            output.success(result)
+        else:
+            output.fail('target is not vulnerable')
+        return output
+
+
+register_poc(DemoPOC)
+```
+
+它可以使你在`console`或者`cli`模式下调用。
+
+- 在console模式下，pocsuite3模仿了msf的操作模式，你只需要使用`set`命令来设置相应的参数，然后`run`或者`check`来执行(`attack`和`shell`命令也可以)。
+- 在cli模式下，如上面例子所示，定义了`username`和`password`两个字段，你可以在参数后面加上`--username test --password test`来调用执行，需要注意的是，如果你的参数中包含了空格，用双引号`"`来包裹它。
+
+##### 自定义字段
+
+像其他工具一样，如果你想使用自定义的字段，将它定义到`_options`方法中，然后返回一个数组。如果在poc文件中想调用自定义字段，需要提前引入
+
+```python
+from pocsuite3.api import OptString,OptDict,OptIP,OptPort,OptBool,OptInteger,OptFloat,OptItems
+```
+
+| 字段类型   | 字段描述                                                     | 参数解释                                                     | 相关例子 |
+| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ | -------- |
+| OptString  | 接收字符串类型数据                                           | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
+| OptDict    | 接收一个字典类型参数，在选择上如果选择key，调用时会调用对应的value | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
+| OptIP      | 接收IP类型的字符串                                           | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
+| OptPort    | 接收端口类型参数                                             | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
+| OptBool    | 接收布尔类型参数                                             | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
+| OptInteger | 接收整数类型参数                                             | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
+| OptFloat   | 接收浮点数类型参数                                           | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
+| OptItems   | 接收list类型参数                                             | default:传入一个默认值<br />selectd:默认选择<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
+
+需要注意的是，`console`模式支持所有的参数类型，`cli`模式除了`OptDict`、`OptBool`、`OptItems`类型外都支持。
 #### PoC 编写注意事项<div id="attention"></div>
 1. 要求在编写PoC的时候，尽量的不要使用第三方模块，如果在无法避免的情况下，请认真填写install_requires 字段，填写格式参考《PoC第三方模块依赖说明》。
 2.	要求编写PoC的时候，尽量的使用Pocsuite 已经封装的API提供的方法，避免自己重复造轮子，对于一些通用方法可以加入到API，具体参考《通用API列表》。
