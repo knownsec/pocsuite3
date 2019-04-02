@@ -16,6 +16,7 @@ from http.server import SimpleHTTPRequestHandler, HTTPServer
 from pocsuite3.lib.core.common import check_port
 from pocsuite3.lib.core.common import get_host_ip, get_host_ipv6
 from pocsuite3.lib.core.data import logger, paths
+from pocsuite3.lib.core.exception import PocsuiteSystemException
 
 
 class PHTTPSingleton(type):
@@ -105,7 +106,11 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
         self.server_started = False  # Aviod start server mutl-times
         self.requestHandler = requestHandler
         if ':' in bind_ip:
-            self.host_ip = get_host_ipv6(get_host_ip())
+            ipv6 = get_host_ipv6()
+            if not ipv6:
+                logger.error('Your machine may not support ipv6')
+                raise PocsuiteSystemException
+            self.host_ip = ipv6
             self.httpserver = HTTPServerV6
             self.is_ipv6 = True
         else:
@@ -125,7 +130,7 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
                 'Httpd serve has been started on {}://{}:{}, '.format(self.scheme, self.bind_ip, self.bind_port))
             return
 
-        if check_port(self.host_ip, self.bind_port, self.is_ipv6):
+        if check_port(self.host_ip, self.bind_port):
             logger.error('Port {} has been occupied, start Httpd serve failed!'.format(self.bind_port))
             return
 
@@ -137,7 +142,7 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
         while detect_count:
             try:
                 logger.info('Detect {} server is runing or not...'.format(self.scheme))
-                if check_port(self.host_ip, self.bind_port, self.is_ipv6):
+                if check_port(self.host_ip, self.bind_port):
                     break
             except Exception as ex:
                 logger.error(str(ex))
