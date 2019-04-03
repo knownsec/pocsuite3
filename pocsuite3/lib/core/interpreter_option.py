@@ -174,9 +174,9 @@ class OptItems(Option):
         self.value = self.display_value = value
 
 
-class OptDict(Option):
+class OptDict:
     def __init__(self, require=False, selected=False, default={}):
-        super().__init__(default, '', require)
+        # super().__init__(default, '', require)
         self.default = {}
         b = ""
         for k, v in default.items():
