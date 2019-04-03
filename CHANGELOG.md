@@ -39,3 +39,7 @@
 * POC specifies third-party module verification failure
 * customize option iter func
 * Built-in http server
+
+# version 1.2.10
+---------------
+* bugfix interpreter_option OptDict
