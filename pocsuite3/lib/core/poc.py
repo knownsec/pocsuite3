@@ -72,7 +72,7 @@ class POCBase(object):
             raise PocsuiteValidationException
         # 处理options中的payload,将Payload的IP和端口转换
         value = self.options[name].value
-        flag = re.search('\{0\}.+\{1\}', value)
+        flag = re.search('\{0\}.+\{1\}', str(value))
         if flag:
             value = value.format(conf.connect_back_host, conf.connect_back_port)
         return value
