@@ -1,23 +1,23 @@
-import struct
-import sys
-import time
-
+import hashlib
 import inspect
 import logging
+import os
+import re
 import select
+import shlex
+import socket
+import struct
+import subprocess
+import sys
+import time
+from collections import OrderedDict
 from functools import wraps
+from ipaddress import ip_address, ip_network
 from platform import machine
 from subprocess import call, Popen, PIPE
 
-import requests
 import chardet
-from collections import OrderedDict
-
-import hashlib
-import os
-import re
-import socket
-from ipaddress import ip_address, ip_network
+import requests
 
 from pocsuite3.lib.core.convert import stdout_encode
 from pocsuite3.lib.core.data import conf
@@ -35,12 +35,13 @@ from pocsuite3.lib.core.settings import IPV6_ADDRESS_REGEX
 from pocsuite3.lib.core.settings import IP_ADDRESS_REGEX
 from pocsuite3.lib.core.settings import OLD_VERSION_CHARACTER
 from pocsuite3.lib.core.settings import POCSUITE_VERSION_CHARACTER
+from pocsuite3.lib.core.settings import POC_NAME_REGEX
+from pocsuite3.lib.core.settings import POC_REQUIRES_REGEX
 from pocsuite3.lib.core.settings import UNICODE_ENCODING
 from pocsuite3.lib.core.settings import URL_ADDRESS_REGEX
-from pocsuite3.lib.core.settings import POC_REQUIRES_REGEX
-from pocsuite3.lib.core.settings import POC_NAME_REGEX
-from pocsuite3.thirdparty.termcolor.termcolor import colored
 from pocsuite3.thirdparty.colorama.initialise import init as coloramainit
+from pocsuite3.thirdparty.ifcfg import ifcfg
+from pocsuite3.thirdparty.termcolor.termcolor import colored
 
 
 def read_binary(filename):
@@ -887,11 +888,14 @@ def stop_after(space_number):
 
     return _outer_wrapper
 
-def check_port(ip, port, is_ipv6=False):
-    AF_INET = socket.AF_INET6 if is_ipv6 else socket.AF_INET
-    s = socket.socket(AF_INET, socket.SOCK_STREAM)
+
+def check_port(ip, port):
+    res = socket.getaddrinfo(ip, port, socket.AF_UNSPEC, socket.SOCK_STREAM)
+    af, sock_type, proto, canonname, sa = res[0]
+    s = socket.socket(af, sock_type, proto)
+
     try:
-        s.connect((ip, port))
+        s.connect(sa)
         s.shutdown(2)
         return True
     except:
@@ -900,19 +904,56 @@ def check_port(ip, port, is_ipv6=False):
         s.close()
 
 
-def get_host_ipv6(ipv4):
-    ip4 = list()
-    ip6 = list()
+def exec_cmd(cmd, raw_data=True):
+    cmd = shlex.split(cmd)
+    out_data = b''
     try:
-        for interface in socket.getaddrinfo(socket.gethostname(), None):
-            ip = interface[4][0]
-            if interface[0] == socket.AF_INET:
-                ip4.append(ip.split('%')[0])
-            else:
-                ip6.append(ip.split('%')[0])
-    except Exception:
-        pass
-    d = dict()
-    for ip4, ip6 in zip(ip4, ip6):
-        d[ip4] = ip6
-    return d.get(ipv4)
+        p = subprocess.Popen(
+            cmd, shell=True, stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
+        while p.poll() is None:
+            line = p.stdout.read()
+            out_data += line
+    except Exception as ex:
+        print("Execute cmd error {}".format(str(ex)))
+
+    encoding = chardet.detect(out_data).get('encoding')
+    encoding = encoding if encoding else 'utf-8'
+    if IS_WIN:
+        out_data = out_data.split(b'\r\n\r\n')
+    else:
+        out_data = out_data.split(b'\n\n')
+    if not raw_data:
+        for i, data in enumerate(out_data):
+            out_data[i] = data.decode(encoding, errors='ignore')
+
+    return out_data
+
+
+def get_all_nic_info():
+    nic_info = dict()
+    for name, info in ifcfg.interfaces().items():
+        nic_info[name] = info
+    return nic_info
+
+
+def get_host_ipv6(with_nic=True):
+    nic_info = get_all_nic_info()
+    ipv4 = get_host_ip()
+    ipv6 = None
+    for nic, info in nic_info.items():
+        ip4 = info['inet4']
+        ip6 = info['inet6']
+        if not all([ip4, ip6]):
+            continue
+        ip4, ip6 = ip4.pop(), ip6.pop()
+        if ip4 == ipv4:
+            ipv6 = ip6 if ip6 else None
+            if ipv6 and '%' not in ipv6:
+                ipv6 = ipv6 + '%' + nic
+            break
+
+    if ipv6:
+        if not with_nic:
+            ipv6 = ipv6.split('%')[0]
+        return ipv6
