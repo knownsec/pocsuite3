@@ -1,5 +1,6 @@
 from pocsuite3.lib.core.data import kb
 from pocsuite3.lib.core.data import logger
+from pocsuite3.lib.core.poc import Output
 from pocsuite3.lib.core.register import load_string_to_module
 from pocsuite3.lib.core.common import is_pocsuite3_poc, single_time_warn_message
 
@@ -61,6 +62,9 @@ class PluginBase(object):
 
     def start(self):
         raise NotImplementedError
+
+    def handle(self, output):
+        pass
 
 
 def register_plugin(plugin_class):
