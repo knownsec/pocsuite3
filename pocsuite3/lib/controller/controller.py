@@ -6,6 +6,7 @@ from pocsuite3.lib.core.data import conf, cmd_line_options
 from pocsuite3.lib.core.data import kb
 from pocsuite3.lib.core.data import logger
 from pocsuite3.lib.core.datatype import AttribDict
+from pocsuite3.lib.core.poc import Output
 from pocsuite3.lib.core.settings import CMD_PARSE_WHITELIST
 from pocsuite3.lib.core.threads import run_threads
 from pocsuite3.modules.listener import handle_listener_connection
@@ -99,6 +100,23 @@ def task_run():
                     raise SystemExit
 
         result = poc_module.execute(target, headers=conf.http_headers, mode=conf.mode, verbose=False)
+
+        if not isinstance(result, Output) and not None:
+            _result = Output(poc_module)
+            if result:
+                if isinstance(result, bool):
+                    _result.success({})
+                elif isinstance(result, str):
+                    _result.success({"Info": result})
+                elif isinstance(result, dict):
+                    _result.success(result)
+                else:
+                    _result.success({"Info": repr(result)})
+            else:
+                _result.fail('target is not vulnerable')
+
+            result = _result
+
         if not result:
             continue
 
