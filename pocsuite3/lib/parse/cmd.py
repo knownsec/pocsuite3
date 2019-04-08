@@ -40,6 +40,8 @@ def cmd_line_parser(argv=None):
 
         target.add_option("-f", "--file", dest="url_file", help="Scan multiple targets given in a textual file")
         target.add_option("-r", dest="poc", help="Load POC file from local or remote from seebug website")
+        target.add_option("-c", desc="configFile", help="Load options from a configuration INI file")
+
         # Mode options
         mode = OptionGroup(parser, "Mode", "Pocsuite running mode options")
 
