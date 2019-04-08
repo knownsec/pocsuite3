@@ -135,3 +135,10 @@ class POC_CATEGORY:
     PROTOCOL.SSH = "Ssh"
     PROTOCOL.TALENT = "Telent"
     PROTOCOL.REDIS = "Redis"
+
+
+class OPTION_TYPE:
+    BOOLEAN = "boolean"
+    INTEGER = "integer"
+    FLOAT = "float"
+    STRING = "string"

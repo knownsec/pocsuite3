@@ -10,6 +10,7 @@ class TestCase(unittest.TestCase):
     def setUp(self):
         self.root = paths.POCSUITE_ROOT_PATH
         self.path = os.path.join(self.root, "../pocsuite_test.ini")
+        self.path2 = os.path.join(self.root, "../pocsuite.ini")
 
     def tearDown(self):
         if os.path.isfile(self.path):
@@ -17,7 +18,6 @@ class TestCase(unittest.TestCase):
 
     def test_build_ini(self):
         config = ConfigParser(allow_no_value=True)
-
 
         usage = "pocsuite [options]"
         parser = OptionParser(usage=usage)
@@ -117,12 +117,14 @@ class TestCase(unittest.TestCase):
             print(Exception, e)
 
         d = parser.__dict__
+        optiondict = {}
         for group in d["option_groups"]:
             desc = group.description
             title = group.title
             # print(desc, title)
             # config.add_section("; " + desc)
             config.add_section(title)
+            optiondict[title] = {}
             for item in group.option_list:
                 _type = item.type
                 dest = item.dest
@@ -130,11 +132,23 @@ class TestCase(unittest.TestCase):
                 default = item.default
                 if isinstance(default, tuple) and default == ('NO', 'DEFAULT'):
                     default = ''
-                # print(_type, dest, help, default)
+                print(_type, dest, default)
                 config.set(title, '; ' + help)
                 config.set(title, dest, str(default))
+                optiondict[title][dest] = _type
         with open(self.path, 'w') as fp:
             config.write(fp)
 
         config.read(self.path)
+        print(optiondict)
         self.assertTrue(len(config.items("Target")) > 1)
+
+    def test_read_ini(self):
+        config = ConfigParser()
+        config.read(self.path2)
+        sections = config.sections()
+        for section in sections:
+            options = config.items(section)
+            if options:
+                for key, value in options:
+                    print(key, type(value))

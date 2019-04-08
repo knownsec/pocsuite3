@@ -1,5 +1,3 @@
-
-
 class PocsuiteBaseException(Exception):
     pass
 
@@ -49,4 +47,8 @@ class PocsuiteSyntaxException(PocsuiteBaseException):
 
 
 class PocsuiteValidationException(PocsuiteBaseException):
+    pass
+
+
+class PocsuiteMissingMandatoryOptionException(PocsuiteBaseException):
     pass

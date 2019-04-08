@@ -40,7 +40,7 @@ def cmd_line_parser(argv=None):
 
         target.add_option("-f", "--file", dest="url_file", help="Scan multiple targets given in a textual file")
         target.add_option("-r", dest="poc", help="Load POC file from local or remote from seebug website")
-        target.add_option("-c", desc="configFile", help="Load options from a configuration INI file")
+        target.add_option("-c", dest="configFile", help="Load options from a configuration INI file")
 
         # Mode options
         mode = OptionGroup(parser, "Mode", "Pocsuite running mode options")
@@ -119,7 +119,7 @@ def cmd_line_parser(argv=None):
         parser.add_option_group(diy_options)
 
         (args, _) = parser.parse_args(argv)
-        if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork)):
+        if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork, args.configFile)):
             err_msg = "missing a mandatory option (-u, --url-file, --update). "
             err_msg += "Use -h for basic and -hh for advanced help\n"
             parser.error(err_msg)

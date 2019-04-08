@@ -1,4 +1,4 @@
-import copy
+import glob
 import glob
 import logging
 import os
@@ -7,12 +7,13 @@ import socket
 from queue import Queue
 from urllib.parse import urlsplit
 
+from pocsuite3.lib.core.clear import remove_extra_log_message
 from pocsuite3.lib.core.common import boldify_message, check_file, get_file_items, parse_target, \
     get_public_type_members, data_to_stdout
 from pocsuite3.lib.core.common import check_path, extract_cookies
-from pocsuite3.lib.core.common import single_time_warn_message
 from pocsuite3.lib.core.common import get_local_ip
-from pocsuite3.lib.core.clear import remove_extra_log_message
+from pocsuite3.lib.core.common import single_time_warn_message
+from pocsuite3.lib.core.convert import stdout_encode
 from pocsuite3.lib.core.data import conf, cmd_line_options
 from pocsuite3.lib.core.data import kb
 from pocsuite3.lib.core.data import logger
@@ -24,9 +25,9 @@ from pocsuite3.lib.core.exception import PocsuiteSyntaxException, PocsuiteSystem
 from pocsuite3.lib.core.log import FORMATTER
 from pocsuite3.lib.core.register import load_file_to_module
 from pocsuite3.lib.core.settings import DEFAULT_USER_AGENT, DEFAULT_LISTENER_PORT, CMD_PARSE_WHITELIST
-from pocsuite3.lib.core.convert import stdout_encode
 from pocsuite3.lib.core.update import update
 from pocsuite3.lib.parse.cmd import DIY_OPTIONS
+from pocsuite3.lib.parse.configfile import config_file_parser
 from pocsuite3.modules.listener import start_listener
 from pocsuite3.thirdparty.oset.orderedset import OrderedSet
 from pocsuite3.thirdparty.pysocks import socks
@@ -525,6 +526,9 @@ def _merge_options(input_options, override_options):
     """
     Merge command line options with configuration file and default options.
     """
+    if input_options.get("configFile"):
+        config_file_parser(input_options["configFile"])
+
     if hasattr(input_options, "items"):
         input_options_items = input_options.items()
     else:
