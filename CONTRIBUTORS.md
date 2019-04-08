@@ -12,3 +12,6 @@ w7ay <https://github.com/boy-hack>
 
 phithon <root(at)leavesongs.com>
 * for suggesting a couple of features
+
+longofo
+* for contributing http server module

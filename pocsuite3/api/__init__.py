@@ -19,6 +19,7 @@ from pocsuite3.modules.seebug import Seebug
 from pocsuite3.modules.zoomeye import ZoomEye
 from pocsuite3.modules.shodan import Shodan
 from pocsuite3.modules.spider import crawl
+from pocsuite3.modules.httpserver import PHTTPServer
 from pocsuite3.shellcodes import OSShellcodes, WebShell
 from pocsuite3.lib.core.interpreter_option import OptDict, OptIP, OptPort, OptBool, OptInteger, OptFloat, OptString, \
     OptItems, OptDict
@@ -28,7 +29,7 @@ __all__ = (
     'PLUGIN_TYPE', 'POCBase', 'Output', 'AttribDict', 'POC_CATEGORY',
     'register_poc', 'conf', 'kb', 'logger', 'paths', 'DEFAULT_LISTENER_PORT', 'load_file_to_module',
     'load_string_to_module', 'single_time_warn_message', 'CEye', 'Seebug',
-    'ZoomEye', 'Shodan', 'REVERSE_PAYLOAD', 'get_listener_ip', 'get_listener_port',
+    'ZoomEye', 'Shodan', 'PHTTPServer','REVERSE_PAYLOAD', 'get_listener_ip', 'get_listener_port',
     'get_results', 'init_pocsuite', 'start_pocsuite', 'get_poc_options', 'crawl',
     'OSShellcodes', 'WebShell','OptDict', 'OptIP', 'OptPort', 'OptBool', 'OptInteger', 'OptFloat', 'OptString', \
     'OptItems', 'OptDict')

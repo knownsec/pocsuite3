@@ -132,7 +132,7 @@ def task_run():
             'created': time.strftime("%Y-%m-%d %X", time.localtime()),
             'status': result_status
         })
-
+        result_plugins_handle(output)
         kb.results.append(output)
 
         # TODO
@@ -146,6 +146,15 @@ def result_plugins_start():
     """
     for _, plugin in kb.plugins.results.items():
         plugin.start()
+
+
+def result_plugins_handle(output):
+    """
+    run result plugins when execute poc
+    :return:
+    """
+    for _, plugin in kb.plugins.results.items():
+        plugin.handle(output)
 
 
 def task_done():
