@@ -75,7 +75,7 @@ The latest version of this software is available from: http://pocsuite.org
 
 ## Documentation
 
-Documentation is available in the [```english docs```](./docs)  / [```chinese docs```](./docs/translations/) directory.
+Documentation is available in the [```docs```](./docs) directory.
 
 
 ## How to Contribute
