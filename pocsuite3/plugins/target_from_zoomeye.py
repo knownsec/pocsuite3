@@ -33,14 +33,14 @@ class TargetFromZoomeye(PluginBase):
         info_msg = "[PLUGIN] try fetch targets from zoomeye with dork: {0}".format(dork)
         logger.info(info_msg)
         targets = self.zoomeye.search(dork, conf.max_page, resource=conf.search_type)
+        count = 0
         if targets:
-            count = 0
             for target in targets:
                 if self.add_target(target):
                     count += 1
 
-            info_msg = "[PLUGIN] get {0} target(s) from zoomeye".format(count)
-            logger.info(info_msg)
+        info_msg = "[PLUGIN] get {0} target(s) from zoomeye".format(count)
+        logger.info(info_msg)
 
 
 register_plugin(TargetFromZoomeye)

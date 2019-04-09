@@ -35,14 +35,14 @@ class TargetFromCensys(PluginBase):
         else:
             search_type = "ipv4"
         targets = self.censys.search(dork, conf.max_page, resource=search_type)
+        count = 0
         if targets:
-            count = 0
             for target in targets:
                 if self.add_target(target):
                     count += 1
 
-            info_msg = "[PLUGIN] get {0} target(s) from Censys".format(count)
-            logger.info(info_msg)
+        info_msg = "[PLUGIN] get {0} target(s) from Censys".format(count)
+        logger.info(info_msg)
 
 
 register_plugin(TargetFromCensys)
