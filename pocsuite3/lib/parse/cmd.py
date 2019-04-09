@@ -95,6 +95,8 @@ def cmd_line_parser(argv=None):
                            help="Connect back host for target PoC in shell mode")
         modules.add_option("--lport", dest="connect_back_port", action="store", default=None,
                            help="Connect back port for target PoC in shell mode")
+        modules.add_option("--compare", dest="compare", help="Compare popular web search engines", action="store_true",
+                           default=False)
 
         # Optimization options
         optimization = OptionGroup(parser, "Optimization", "Optimization options")

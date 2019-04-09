@@ -36,7 +36,8 @@ optDict = {
         'vul_keyword': 'string',
         'ssvid': 'string',
         'connect_back_host': 'string',
-        'connect_back_port': 'string'
+        'connect_back_port': 'string',
+        "compare": "boolean"
     },
     'Optimization': {
         'plugins': 'string',

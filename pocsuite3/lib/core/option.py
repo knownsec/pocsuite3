@@ -472,6 +472,7 @@ def _set_conf_attributes():
     conf.dork_censys = None
     conf.max_page = 1
     conf.search_type = 'host'
+    conf.compare = False
     conf.vul_keyword = None
     conf.ssvid = None
     conf.plugins = []

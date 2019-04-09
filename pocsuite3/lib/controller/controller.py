@@ -157,6 +157,26 @@ def result_plugins_handle(output):
         plugin.handle(output)
 
 
+def result_compare_handle():
+    """
+
+    :return:
+    """
+    results_table = PrettyTable(["app-name", "total-data", "success-rate"])
+    results_table.align["target-url"] = "l"
+    results_table.padding_width = 1
+    results = [
+        ["Zoomeye", "1000", "50%"],
+        ["Shodan", "1000", "30%"],
+        ["Censys", "1000", "20%"]
+    ]
+    for row in results:
+        results_table.add_row(row)
+
+    data_to_stdout('\n{0}'.format(results_table.get_string()))
+
+
 def task_done():
     show_task_result()
     result_plugins_start()
+    result_compare_handle()
