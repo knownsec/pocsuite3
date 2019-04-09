@@ -20,10 +20,15 @@ class ZoomEye():
         if self.conf_path:
             self.parser = ConfigParser()
             self.parser.read(self.conf_path)
+
+        if username and password:
+            self.check_account()
+        else:
             try:
                 self.token = self.parser.get("Telnet404", 'Jwt token')
             except Exception:
                 pass
+
 
     def token_is_available(self):
         if self.token:
@@ -70,6 +75,7 @@ class ZoomEye():
                     logger.error("The username or password is incorrect. "
                                  "Please enter the correct username and password.")
                     return False
+        return False
 
     def write_conf(self):
         if not self.parser.has_section("Telnet404"):

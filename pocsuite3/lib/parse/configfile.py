@@ -37,7 +37,7 @@ def config_file_parser(configFile):
                 datatype = "string"
                 try:
                     datatype = optDict[section][option]
-                except ValueError:
+                except KeyError:
                     pass
 
                 try:

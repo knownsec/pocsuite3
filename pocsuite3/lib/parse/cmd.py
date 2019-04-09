@@ -70,10 +70,19 @@ def cmd_line_parser(argv=None):
         account = OptionGroup(parser, "Account", "Telnet404 account options")
         account.add_option("--login-user", dest="login_user", help="Telnet404 login user")
         account.add_option("--login-pass", dest="login_pass", help="Telnet404 login password")
+        account.add_option("--shodan-token", dest="shodan_token", help="Shodan token")
+        account.add_option("--censys-uid", dest="censys_uid", help="Censys uid")
+        account.add_option("--censys-secret", dest="censys_secret", help="Censys secret")
         # Modules options
         modules = OptionGroup(parser, "Modules", "Modules(Seebug Zoomeye CEye Listener) options")
         modules.add_option("--dork", dest="dork", action="store", default=None,
                            help="Zoomeye dork used for search.")
+        modules.add_option("--dork-zoomeye", dest="dork_zoomeye", action="store", default=None,
+                           help="Zoomeye dork used for search.")
+        modules.add_option("--dork-shodan", dest="dork_shodan", action="store", default=None,
+                           help="Shodan dork used for search.")
+        modules.add_option("--dork-censys", dest="dork_censys", action="store", default=None,
+                           help="Censys dork used for search.")
         modules.add_option("--max-page", dest="max_page", type=int, default=1,
                            help="Max page used in ZoomEye API(10 targets/Page).")
         modules.add_option("--search-type", dest="search_type", action="store", default='host',
