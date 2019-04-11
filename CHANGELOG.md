@@ -49,3 +49,10 @@
 * new feature: `_verify` `_attack` function can directly return bool, str, dict, etc.
 * new plugin: file report
 * bugfix get_option() not support int
+
+# version 1.3.1
+---------------
+* add confluence poc
+* fix pocs/drupalgeddon2
+* CYGWIN compatibility
+* bugfix revision.py `stdout_encode`
