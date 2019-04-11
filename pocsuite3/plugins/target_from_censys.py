@@ -27,8 +27,8 @@ class TargetFromCensys(PluginBase):
         if not dork:
             msg = "Need to set up dork (please --dork or --dork-censys)"
             raise PocsuitePluginDorkException(msg)
-        if kb.compare:
-            kb.compare.add_dork("Censys", dork)
+        if kb.comparison:
+            kb.comparison.add_dork("Censys", dork)
         info_msg = "[PLUGIN] try fetch targets from censys with dork: {0}".format(dork)
         logger.info(info_msg)
         search_type = conf.search_type
@@ -40,8 +40,8 @@ class TargetFromCensys(PluginBase):
         count = 0
         if targets:
             for target in targets:
-                if kb.compare:
-                    kb.compare.add_ip(target, "Censys")
+                if kb.comparison:
+                    kb.comparison.add_ip(target, "Censys")
                 if self.add_target(target):
                     count += 1
 

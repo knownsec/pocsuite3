@@ -24,7 +24,7 @@ from pocsuite3.lib.core.exception import PocsuiteSyntaxException, PocsuiteSystem
 from pocsuite3.lib.core.log import FORMATTER
 from pocsuite3.lib.core.register import load_file_to_module
 from pocsuite3.lib.core.settings import DEFAULT_USER_AGENT, DEFAULT_LISTENER_PORT, CMD_PARSE_WHITELIST
-from pocsuite3.lib.core.statistics_compare import StatisticsCompare
+from pocsuite3.lib.core.statistics_comparison import StatisticsComparison
 from pocsuite3.lib.core.update import update
 from pocsuite3.lib.parse.cmd import DIY_OPTIONS
 from pocsuite3.lib.parse.configfile import config_file_parser
@@ -472,7 +472,7 @@ def _set_conf_attributes():
     conf.dork_censys = None
     conf.max_page = 1
     conf.search_type = 'host'
-    conf.compare = False
+    conf.comparison = False
     conf.vul_keyword = None
     conf.ssvid = None
     conf.plugins = []
@@ -537,7 +537,7 @@ def _set_kb_attributes(flush_all=True):
     kb.task_queue = Queue()
     kb.cmd_line = DIY_OPTIONS or []
 
-    kb.compare = None
+    kb.comparison = None
 
 
 def _merge_options(input_options, override_options):
@@ -588,9 +588,9 @@ def _init_results_plugins():
         plugin.init()
 
 
-def _init_kb_compare():
-    if conf.compare:
-        kb.compare = StatisticsCompare()
+def _init_kb_comparison():
+    if conf.comparison:
+        kb.comparison = StatisticsComparison()
 
 
 def init():
@@ -603,7 +603,7 @@ def init():
     _cleanup_options()
     _basic_option_validation()
     _create_directory()
-    _init_kb_compare()
+    _init_kb_comparison()
     _set_multiple_targets()
     _set_user_pocs_path()
     _set_pocs_modules()

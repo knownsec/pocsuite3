@@ -2,7 +2,7 @@ import getpass
 import urllib
 
 from configparser import ConfigParser
-from pocsuite3.lib.core.data import logger
+from pocsuite3.lib.core.data import logger, kb
 from pocsuite3.lib.core.data import paths
 from pocsuite3.lib.request import requests
 
@@ -28,7 +28,6 @@ class ZoomEye():
                 self.token = self.parser.get("Telnet404", 'Jwt token')
             except Exception:
                 pass
-
 
     def token_is_available(self):
         if self.token:
@@ -101,6 +100,8 @@ class ZoomEye():
 
     def search(self, dork, pages=1, resource='web'):
         search_result = set()
+        if kb.comparison:
+            kb.comparison.add_dork("Zoomeye", dork)
         try:
             for page in range(1, pages + 1):
                 url = "https://api.zoomeye.org/{}/search?query={}&page={}&facet=app,os".format(resource,
@@ -110,13 +111,25 @@ class ZoomEye():
                 if resp and resp.status_code == 200 and "matches" in resp.json():
                     content = resp.json()
                     if resource == 'web':
-                        search_result.update([match['site'] for match in content['matches']])
+                        for match in content["matches"]:
+                            ans = match["site"]
+                            search_result.add(ans)
+                            if kb.comparison:
+                                honeypot = False
+                                if "honeypot" in content or "honeypot_lastupdate" in content:
+                                    honeypot = True
+                                kb.comparison.add_ip(ans, "Zoomeye", honeypot)
                     else:
                         for match in content['matches']:
                             ans = match['ip']
                             if 'portinfo' in match:
                                 ans += ':' + str(match['portinfo']['port'])
                             search_result.add(ans)
+                            if kb.comparison:
+                                honeypot = False
+                                if "honeypot" in match or "honeypot_lastupdate" in match:
+                                    honeypot = True
+                                kb.comparison.add_ip(ans, "Zoomeye", honeypot)
         except Exception as ex:
             logger.error(str(ex))
         return search_result

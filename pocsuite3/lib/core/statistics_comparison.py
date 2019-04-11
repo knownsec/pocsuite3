@@ -2,7 +2,7 @@ from pocsuite3.lib.core.common import data_to_stdout
 from pocsuite3.thirdparty.prettytable.prettytable import PrettyTable
 
 
-class StatisticsCompare(object):
+class StatisticsComparison(object):
 
     def __init__(self):
         self.data = {}
@@ -19,6 +19,12 @@ class StatisticsCompare(object):
                 "success": False
             }
         self.data[ip]["source"].append(source)
+
+    def getinfo(self, ip) -> tuple:
+        if ip not in self.data:
+            return "Other", "Unknown"
+        sources = self.data[ip]["source"]
+        return ','.join(sources), str(self.data[ip]["success"])
 
     def change_success(self, ip, success=False):
         if ip in self.data:
@@ -44,6 +50,7 @@ class StatisticsCompare(object):
 
     def output(self):
         results_table = PrettyTable(["Search-engine", "Dork", "Total-data", "Success-rate", "Repetition-rate"])
+        results_table.align["Search-engine"] = "c"
         results_table.padding_width = 1
         results = []
         for engine, item in self._statistics().items():

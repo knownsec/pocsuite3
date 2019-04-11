@@ -37,7 +37,7 @@ optDict = {
         'ssvid': 'string',
         'connect_back_host': 'string',
         'connect_back_port': 'string',
-        "compare": "boolean"
+        "comparison": "boolean"
     },
     'Optimization': {
         'plugins': 'string',

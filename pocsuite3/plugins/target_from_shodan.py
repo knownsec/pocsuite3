@@ -28,16 +28,16 @@ class TargetFromShodan(PluginBase):
             msg = "Need to set up dork (please --dork or --dork-shodan)"
             raise PocsuitePluginDorkException(msg)
 
-        if kb.compare:
-            kb.compare.add_dork("Shodan", dork)
+        if kb.comparison:
+            kb.comparison.add_dork("Shodan", dork)
         info_msg = "[PLUGIN] try fetch targets from shodan with dork: {0}".format(dork)
         logger.info(info_msg)
         targets = self.shodan.search(dork, conf.max_page, resource=conf.search_type)
         count = 0
         if targets:
             for target in targets:
-                if kb.compare:
-                    kb.compare.add_ip(target, "Shodan")
+                if kb.comparison:
+                    kb.comparison.add_ip(target, "Shodan")
                 if self.add_target(target):
                     count += 1
 

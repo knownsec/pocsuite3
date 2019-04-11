@@ -46,20 +46,29 @@ def show_task_result():
     if conf.mode == "shell":
         return
 
-    results_table = PrettyTable(["target-url", "poc-name", "poc-id", "component", "version", "status"])
+    fields = ["target-url", "poc-name", "poc-id", "component", "version", "status"]
+    if kb.comparison:
+        fields.append("source")
+        fields.append("honey")
+    results_table = PrettyTable(fields)
     results_table.align["target-url"] = "l"
     results_table.padding_width = 1
 
     total_num, success_num = 0, 0
     for row in kb.results:
-        results_table.add_row([
+        data = [
             row.target,
             row.poc_name,
             row.vul_id,
             row.app_name,
             row.app_version,
             row.status,
-        ])
+        ]
+        if kb.comparison:
+            source, honey = kb.comparison.getinfo(row.target)
+            data.append(source)
+            data.append(honey)
+        results_table.add_row(data)
         total_num += 1
         if row.status == 'success':
             success_num += 1
@@ -125,8 +134,8 @@ def task_run():
             result.show_result()
 
         result_status = "success" if result.is_success() else "failed"
-        if result_status == "success" and kb.compare:
-            kb.compare.change_success(target, True)
+        if result_status == "success" and kb.comparison:
+            kb.comparison.change_success(target, True)
 
         output = AttribDict(result.to_dict())
         output.update({
@@ -165,9 +174,9 @@ def result_compare_handle():
     show comparing data from various of search engine
     :return:
     """
-    if not kb.compare:
+    if not kb.comparison:
         return
-    kb.compare.output()
+    kb.comparison.output()
 
 
 def task_done():

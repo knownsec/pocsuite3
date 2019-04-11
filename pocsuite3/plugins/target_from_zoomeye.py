@@ -30,16 +30,13 @@ class TargetFromZoomeye(PluginBase):
         if not dork:
             msg = "Need to set up dork (please --dork or --dork-zoomeye)"
             raise PocsuitePluginDorkException(msg)
-        if kb.compare:
-            kb.compare.add_dork("Zoomeye", dork)
+
         info_msg = "[PLUGIN] try fetch targets from zoomeye with dork: {0}".format(dork)
         logger.info(info_msg)
         targets = self.zoomeye.search(dork, conf.max_page, resource=conf.search_type)
         count = 0
         if targets:
             for target in targets:
-                if kb.compare:
-                    kb.compare.add_ip(target, "Zoomeye")
                 if self.add_target(target):
                     count += 1
 
