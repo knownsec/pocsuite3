@@ -7,7 +7,7 @@ def stdout_encode(data):
     """
     Cross-linked function
     """
-    pass
+    return data
 
 
 def get_revision_number():
