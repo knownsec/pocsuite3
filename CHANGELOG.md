@@ -56,3 +56,7 @@
 * fix pocs/drupalgeddon2
 * CYGWIN compatibility
 * bugfix revision.py `stdout_encode`
+
+# version 1.3.2
+---------------
+* bugfix poc thinkphp_rce
