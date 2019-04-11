@@ -20,7 +20,7 @@ def get_parser_class():
     Returns the parser according to the system platform
     """
     global distro
-    if distro == 'Linux':
+    if distro == 'Linux' or 'CYGWIN' in distro:
         Parser = parser.LinuxParser
         if not os.path.exists(Parser.get_command()[0]):
             Parser = parser.UnixIPParser
