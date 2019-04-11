@@ -24,7 +24,7 @@ class StatisticsComparison(object):
         if ip not in self.data:
             return "Other", "Unknown"
         sources = self.data[ip]["source"]
-        return ','.join(sources), str(self.data[ip]["success"])
+        return ','.join(sources), str(self.data[ip]["honeypot"])
 
     def change_success(self, ip, success=False):
         if ip in self.data:
