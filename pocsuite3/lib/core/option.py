@@ -1,5 +1,4 @@
 import glob
-import glob
 import logging
 import os
 import re
@@ -536,6 +535,8 @@ def _set_kb_attributes(flush_all=True):
     kb.registered_pocs = AttribDict()
     kb.task_queue = Queue()
     kb.cmd_line = DIY_OPTIONS or []
+
+    kb.compare = None
 
 
 def _merge_options(input_options, override_options):
