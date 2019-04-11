@@ -18,6 +18,7 @@ def start():
     tasks_count = kb.task_queue.qsize()
     info_msg = "pocsusite got a total of {0} tasks".format(tasks_count)
     logger.info(info_msg)
+    logger.debug("pocsuite will open {} threads".format(conf.threads))
 
     try:
         run_threads(conf.threads, task_run)
@@ -124,6 +125,8 @@ def task_run():
             result.show_result()
 
         result_status = "success" if result.is_success() else "failed"
+        if result_status == "success" and kb.compare:
+            kb.compare.change_success(target, True)
 
         output = AttribDict(result.to_dict())
         output.update({
@@ -162,20 +165,9 @@ def result_compare_handle():
     show comparing data from various of search engine
     :return:
     """
-    if not conf.compare:
+    if not kb.compare:
         return
-    results_table = PrettyTable(["app-name", "total-data", "success-rate", "repetition-rate"])
-    results_table.align["target-url"] = "l"
-    results_table.padding_width = 1
-    results = [
-        ["Zoomeye", "1000", "50%", "1"],
-        ["Shodan", "1000", "30%", "2"],
-        ["Censys", "1000", "20%", "3"]
-    ]
-    for row in results:
-        results_table.add_row(row)
-
-    data_to_stdout('\n{0}'.format(results_table.get_string()))
+    kb.compare.output()
 
 
 def task_done():

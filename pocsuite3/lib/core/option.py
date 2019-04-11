@@ -24,6 +24,7 @@ from pocsuite3.lib.core.exception import PocsuiteSyntaxException, PocsuiteSystem
 from pocsuite3.lib.core.log import FORMATTER
 from pocsuite3.lib.core.register import load_file_to_module
 from pocsuite3.lib.core.settings import DEFAULT_USER_AGENT, DEFAULT_LISTENER_PORT, CMD_PARSE_WHITELIST
+from pocsuite3.lib.core.statistics_compare import StatisticsCompare
 from pocsuite3.lib.core.update import update
 from pocsuite3.lib.parse.cmd import DIY_OPTIONS
 from pocsuite3.lib.parse.configfile import config_file_parser
@@ -543,9 +544,6 @@ def _merge_options(input_options, override_options):
     """
     Merge command line options with configuration file and default options.
     """
-    if input_options.get("configFile"):
-        config_file_parser(input_options["configFile"])
-
     if hasattr(input_options, "items"):
         input_options_items = input_options.items()
     else:
@@ -554,6 +552,9 @@ def _merge_options(input_options, override_options):
     for key, value in input_options_items:
         if key not in conf or value not in (None, False) or override_options:
             conf[key] = value
+
+    if input_options.get("configFile"):
+        config_file_parser(input_options["configFile"])
 
     merged_options.update(conf)
 
@@ -587,6 +588,11 @@ def _init_results_plugins():
         plugin.init()
 
 
+def _init_kb_compare():
+    if conf.compare:
+        kb.compare = StatisticsCompare()
+
+
 def init():
     """
     Set attributes into both configuration and knowledge base singletons
@@ -597,6 +603,7 @@ def init():
     _cleanup_options()
     _basic_option_validation()
     _create_directory()
+    _init_kb_compare()
     _set_multiple_targets()
     _set_user_pocs_path()
     _set_pocs_modules()

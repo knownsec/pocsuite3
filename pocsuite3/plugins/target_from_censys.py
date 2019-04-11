@@ -4,6 +4,7 @@ from pocsuite3.api import logger
 from pocsuite3.api import conf
 from pocsuite3.api import Censys
 from pocsuite3.api import register_plugin
+from pocsuite3.api import kb
 from pocsuite3.lib.core.exception import PocsuitePluginDorkException
 
 
@@ -26,7 +27,8 @@ class TargetFromCensys(PluginBase):
         if not dork:
             msg = "Need to set up dork (please --dork or --dork-censys)"
             raise PocsuitePluginDorkException(msg)
-
+        if kb.compare:
+            kb.compare.add_dork("Censys", dork)
         info_msg = "[PLUGIN] try fetch targets from censys with dork: {0}".format(dork)
         logger.info(info_msg)
         search_type = conf.search_type
@@ -38,6 +40,8 @@ class TargetFromCensys(PluginBase):
         count = 0
         if targets:
             for target in targets:
+                if kb.compare:
+                    kb.compare.add_ip(target, "Censys")
                 if self.add_target(target):
                     count += 1
 

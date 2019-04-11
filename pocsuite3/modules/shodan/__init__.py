@@ -83,6 +83,8 @@ class Shodan():
                         if 'port' in match:
                             ans += ':' + str(match['port'])
                         search_result.add(ans)
+                else:
+                    logger.error("[PLUGIN] Shodan:{}".format(resp.text))
         except Exception as ex:
             logger.error(str(ex))
         return search_result

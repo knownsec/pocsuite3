@@ -4,6 +4,7 @@ from pocsuite3.api import logger
 from pocsuite3.api import conf
 from pocsuite3.api import Shodan
 from pocsuite3.api import register_plugin
+from pocsuite3.api import kb
 from pocsuite3.lib.core.exception import PocsuitePluginDorkException
 
 
@@ -27,12 +28,16 @@ class TargetFromShodan(PluginBase):
             msg = "Need to set up dork (please --dork or --dork-shodan)"
             raise PocsuitePluginDorkException(msg)
 
+        if kb.compare:
+            kb.compare.add_dork("Shodan", dork)
         info_msg = "[PLUGIN] try fetch targets from shodan with dork: {0}".format(dork)
         logger.info(info_msg)
         targets = self.shodan.search(dork, conf.max_page, resource=conf.search_type)
         count = 0
         if targets:
             for target in targets:
+                if kb.compare:
+                    kb.compare.add_ip(target, "Shodan")
                 if self.add_target(target):
                     count += 1
 

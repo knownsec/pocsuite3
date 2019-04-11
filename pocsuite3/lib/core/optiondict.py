@@ -31,7 +31,7 @@ optDict = {
     },
     'Modules': {
         'dork': 'string',
-        'max_page': 'int',
+        'max_page': 'integer',
         'search_type': 'string',
         'vul_keyword': 'string',
         'ssvid': 'string',
@@ -42,7 +42,7 @@ optDict = {
     'Optimization': {
         'plugins': 'string',
         'pocs_path': 'string',
-        'threads': 'int',
+        'threads': 'integer',
         'batch': 'string',
         'check_requires': 'boolean',
         'quiet': 'boolean'
