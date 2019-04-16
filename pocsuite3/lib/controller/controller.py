@@ -49,7 +49,7 @@ def show_task_result():
     fields = ["target-url", "poc-name", "poc-id", "component", "version", "status"]
     if kb.comparison:
         fields.append("source")
-        fields.append("honey")
+        fields.append("honey-pot")
     results_table = PrettyTable(fields)
     results_table.align["target-url"] = "l"
     results_table.padding_width = 1
