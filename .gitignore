@@ -63,3 +63,4 @@ build/
 dist/
 *.egg-info
 .eggs/
+pocsuite.ini
