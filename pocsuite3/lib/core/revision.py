@@ -7,6 +7,10 @@ def stdout_encode(data):
     """
     Cross-linked function
     """
+    if isinstance(data, bytes):
+        data = data.decode('utf-8')
+    else:
+        data = str(data)
     return data
 
 

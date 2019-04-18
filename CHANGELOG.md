@@ -60,3 +60,7 @@
 # version 1.3.2
 ---------------
 * bugfix poc thinkphp_rce
+
+# version 1.3.3
+---------------
+fix #37 pocsuite3\lib\core\revision.py
