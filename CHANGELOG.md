@@ -64,3 +64,7 @@
 # version 1.3.3
 ---------------
 fix #37 pocsuite3\lib\core\revision.py
+
+# version 1.3.4
+---------------
+Cross-platform shell code generation
