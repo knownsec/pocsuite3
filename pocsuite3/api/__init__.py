@@ -13,6 +13,7 @@ from pocsuite3.lib.core.register import (
 )
 from pocsuite3.lib.core.settings import DEFAULT_LISTENER_PORT
 from pocsuite3.lib.request import requests
+from pocsuite3.lib.utils import get_middle_text, generate_shellcode_list
 from pocsuite3.modules.ceye import CEye
 from pocsuite3.modules.listener import REVERSE_PAYLOAD
 from pocsuite3.modules.seebug import Seebug
@@ -29,10 +30,10 @@ __all__ = (
     'PLUGIN_TYPE', 'POCBase', 'Output', 'AttribDict', 'POC_CATEGORY',
     'register_poc', 'conf', 'kb', 'logger', 'paths', 'DEFAULT_LISTENER_PORT', 'load_file_to_module',
     'load_string_to_module', 'single_time_warn_message', 'CEye', 'Seebug',
-    'ZoomEye', 'Shodan', 'PHTTPServer','REVERSE_PAYLOAD', 'get_listener_ip', 'get_listener_port',
+    'ZoomEye', 'Shodan', 'PHTTPServer', 'REVERSE_PAYLOAD', 'get_listener_ip', 'get_listener_port',
     'get_results', 'init_pocsuite', 'start_pocsuite', 'get_poc_options', 'crawl',
-    'OSShellcodes', 'WebShell','OptDict', 'OptIP', 'OptPort', 'OptBool', 'OptInteger', 'OptFloat', 'OptString', \
-    'OptItems', 'OptDict')
+    'OSShellcodes', 'WebShell', 'OptDict', 'OptIP', 'OptPort', 'OptBool', 'OptInteger', 'OptFloat', 'OptString', \
+    'OptItems', 'OptDict', 'get_middle_text', 'generate_shellcode_list')
 
 
 def get_listener_ip():
