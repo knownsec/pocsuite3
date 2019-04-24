@@ -68,3 +68,9 @@ fix #37 pocsuite3\lib\core\revision.py
 # version 1.3.4
 ---------------
 Cross-platform shell code generation
+
+# version 1.3.5
+---------------
+* Add parameter `-c` for load configuration from the configuration file
+* Add parameter `--comparsion` for comparing comparing both of zoomeye and shodan
+* Interface supports from zoomeye,shodan and censys
