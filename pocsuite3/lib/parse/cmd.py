@@ -95,7 +95,8 @@ def cmd_line_parser(argv=None):
                            help="Connect back host for target PoC in shell mode")
         modules.add_option("--lport", dest="connect_back_port", action="store", default=None,
                            help="Connect back port for target PoC in shell mode")
-        modules.add_option("--comparison", dest="comparison", help="Compare popular web search engines", action="store_true",
+        modules.add_option("--comparison", dest="comparison", help="Compare popular web search engines",
+                           action="store_true",
                            default=False)
 
         # Optimization options
@@ -130,7 +131,8 @@ def cmd_line_parser(argv=None):
         parser.add_option_group(diy_options)
 
         (args, _) = parser.parse_args(argv)
-        if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork, args.configFile)):
+        if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork, args.configFile,
+                    args.show_version)):
             err_msg = "missing a mandatory option (-u, --url-file, --update). "
             err_msg += "Use -h for basic and -hh for advanced help\n"
             parser.error(err_msg)

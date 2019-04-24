@@ -571,6 +571,9 @@ def init_options(input_options=AttribDict(), override_options=False):
     _set_poc_options(input_options)
     _set_kb_attributes()
     _merge_options(input_options, override_options)
+    # if check version
+    if conf.show_version:
+        exit()
 
 
 def _init_targets_plugins():
