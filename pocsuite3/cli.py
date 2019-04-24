@@ -1,8 +1,9 @@
-import sys
-import time
 import os
-import traceback
+import sys
 import threading
+import time
+import traceback
+
 try:
     import pocsuite3
 except ImportError:
@@ -15,7 +16,6 @@ from pocsuite3.lib.core.exception import PocsuiteShellQuitException
 from pocsuite3.lib.core.common import set_paths
 from pocsuite3.lib.core.common import banner
 from pocsuite3.lib.core.common import data_to_stdout
-from pocsuite3.lib.core.data import cmd_line_options
 from pocsuite3.lib.core.data import logger
 from pocsuite3.lib.parse.cmd import cmd_line_parser
 from pocsuite3.lib.controller.controller import start
@@ -47,8 +47,7 @@ def main():
         set_paths(module_path())
         banner()
 
-        cmd_line_options.update(cmd_line_parser().__dict__)
-        init_options(cmd_line_options)
+        init_options(cmd_line_parser().__dict__)
 
         data_to_stdout("[*] starting at {0}\n\n".format(time.strftime("%X")))
         init()

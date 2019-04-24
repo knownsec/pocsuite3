@@ -40,6 +40,8 @@ def cmd_line_parser(argv=None):
 
         target.add_option("-f", "--file", dest="url_file", help="Scan multiple targets given in a textual file")
         target.add_option("-r", dest="poc", help="Load POC file from local or remote from seebug website")
+        target.add_option("-c", dest="configFile", help="Load options from a configuration INI file")
+
         # Mode options
         mode = OptionGroup(parser, "Mode", "Pocsuite running mode options")
 
@@ -68,10 +70,19 @@ def cmd_line_parser(argv=None):
         account = OptionGroup(parser, "Account", "Telnet404 account options")
         account.add_option("--login-user", dest="login_user", help="Telnet404 login user")
         account.add_option("--login-pass", dest="login_pass", help="Telnet404 login password")
+        account.add_option("--shodan-token", dest="shodan_token", help="Shodan token")
+        account.add_option("--censys-uid", dest="censys_uid", help="Censys uid")
+        account.add_option("--censys-secret", dest="censys_secret", help="Censys secret")
         # Modules options
         modules = OptionGroup(parser, "Modules", "Modules(Seebug Zoomeye CEye Listener) options")
         modules.add_option("--dork", dest="dork", action="store", default=None,
                            help="Zoomeye dork used for search.")
+        modules.add_option("--dork-zoomeye", dest="dork_zoomeye", action="store", default=None,
+                           help="Zoomeye dork used for search.")
+        modules.add_option("--dork-shodan", dest="dork_shodan", action="store", default=None,
+                           help="Shodan dork used for search.")
+        modules.add_option("--dork-censys", dest="dork_censys", action="store", default=None,
+                           help="Censys dork used for search.")
         modules.add_option("--max-page", dest="max_page", type=int, default=1,
                            help="Max page used in ZoomEye API(10 targets/Page).")
         modules.add_option("--search-type", dest="search_type", action="store", default='host',
@@ -84,6 +95,8 @@ def cmd_line_parser(argv=None):
                            help="Connect back host for target PoC in shell mode")
         modules.add_option("--lport", dest="connect_back_port", action="store", default=None,
                            help="Connect back port for target PoC in shell mode")
+        modules.add_option("--comparison", dest="comparison", help="Compare popular web search engines", action="store_true",
+                           default=False)
 
         # Optimization options
         optimization = OptionGroup(parser, "Optimization", "Optimization options")
@@ -117,7 +130,7 @@ def cmd_line_parser(argv=None):
         parser.add_option_group(diy_options)
 
         (args, _) = parser.parse_args(argv)
-        if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork)):
+        if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork, args.configFile)):
             err_msg = "missing a mandatory option (-u, --url-file, --update). "
             err_msg += "Use -h for basic and -hh for advanced help\n"
             parser.error(err_msg)

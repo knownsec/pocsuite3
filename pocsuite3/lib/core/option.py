@@ -1,4 +1,3 @@
-import copy
 import glob
 import logging
 import os
@@ -7,12 +6,13 @@ import socket
 from queue import Queue
 from urllib.parse import urlsplit
 
+from pocsuite3.lib.core.clear import remove_extra_log_message
 from pocsuite3.lib.core.common import boldify_message, check_file, get_file_items, parse_target, \
     get_public_type_members, data_to_stdout
 from pocsuite3.lib.core.common import check_path, extract_cookies
-from pocsuite3.lib.core.common import single_time_warn_message
 from pocsuite3.lib.core.common import get_local_ip
-from pocsuite3.lib.core.clear import remove_extra_log_message
+from pocsuite3.lib.core.common import single_time_warn_message
+from pocsuite3.lib.core.convert import stdout_encode
 from pocsuite3.lib.core.data import conf, cmd_line_options
 from pocsuite3.lib.core.data import kb
 from pocsuite3.lib.core.data import logger
@@ -24,9 +24,10 @@ from pocsuite3.lib.core.exception import PocsuiteSyntaxException, PocsuiteSystem
 from pocsuite3.lib.core.log import FORMATTER
 from pocsuite3.lib.core.register import load_file_to_module
 from pocsuite3.lib.core.settings import DEFAULT_USER_AGENT, DEFAULT_LISTENER_PORT, CMD_PARSE_WHITELIST
-from pocsuite3.lib.core.convert import stdout_encode
+from pocsuite3.lib.core.statistics_comparison import StatisticsComparison
 from pocsuite3.lib.core.update import update
 from pocsuite3.lib.parse.cmd import DIY_OPTIONS
+from pocsuite3.lib.parse.configfile import config_file_parser
 from pocsuite3.modules.listener import start_listener
 from pocsuite3.thirdparty.oset.orderedset import OrderedSet
 from pocsuite3.thirdparty.pysocks import socks
@@ -202,6 +203,15 @@ def _set_multiple_targets():
         # enable plugin 'target_from_zoomeye' by default
         if 'target_from_shodan' not in conf.plugins:
             conf.plugins.append('target_from_zoomeye')
+
+    if conf.dork_zoomeye:
+        conf.plugins.append('target_from_zoomeye')
+
+    if conf.dork_shodan:
+        conf.plugins.append('target_from_shodan')
+
+    if conf.dork_censys:
+        conf.plugins.append('target_from_censys')
 
 
 def _set_task_queue():
@@ -453,9 +463,16 @@ def _set_conf_attributes():
     conf.http_headers = {}
     conf.login_user = None
     conf.login_pass = None
+    conf.shodan_token = None
+    conf.censys_uid = None
+    conf.censys_secret = None
     conf.dork = None
+    conf.dork_zoomeye = None
+    conf.dork_shodan = None
+    conf.dork_censys = None
     conf.max_page = 1
     conf.search_type = 'host'
+    conf.comparison = False
     conf.vul_keyword = None
     conf.ssvid = None
     conf.plugins = []
@@ -520,6 +537,8 @@ def _set_kb_attributes(flush_all=True):
     kb.task_queue = Queue()
     kb.cmd_line = DIY_OPTIONS or []
 
+    kb.comparison = None
+
 
 def _merge_options(input_options, override_options):
     """
@@ -533,6 +552,9 @@ def _merge_options(input_options, override_options):
     for key, value in input_options_items:
         if key not in conf or value not in (None, False) or override_options:
             conf[key] = value
+
+    if input_options.get("configFile"):
+        config_file_parser(input_options["configFile"])
 
     merged_options.update(conf)
 
@@ -566,6 +588,11 @@ def _init_results_plugins():
         plugin.init()
 
 
+def _init_kb_comparison():
+    if conf.comparison:
+        kb.comparison = StatisticsComparison()
+
+
 def init():
     """
     Set attributes into both configuration and knowledge base singletons
@@ -576,6 +603,7 @@ def init():
     _cleanup_options()
     _basic_option_validation()
     _create_directory()
+    _init_kb_comparison()
     _set_multiple_targets()
     _set_user_pocs_path()
     _set_pocs_modules()

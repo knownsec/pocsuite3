@@ -9,7 +9,6 @@ from pocsuite3.lib.request import requests
 class Shodan():
     def __init__(self, conf_path=paths.POCSUITE_RC_PATH, token=None):
         self.headers = None
-        self.token = token
         self.credits = 0
         self.conf_path = conf_path
 
@@ -20,6 +19,10 @@ class Shodan():
                 self.token = self.parser.get("Shodan", 'Token')
             except Exception:
                 pass
+
+        if token:
+            self.token = token
+            self.write_conf()
 
     def token_is_available(self):
         if self.token:
@@ -36,15 +39,15 @@ class Shodan():
             return True
         else:
 
-                new_token = input("Shodan API Token:")
-                self.token = new_token
-                if self.token_is_available():
-                    self.write_conf()
-                    return True
-                else:
-                    logger.error("The shodan api token is incorrect. "
-                                 "Please enter the correct api token.")
-                    self.check_token()
+            new_token = input("Shodan API Token:")
+            self.token = new_token
+            if self.token_is_available():
+                self.write_conf()
+                return True
+            else:
+                logger.error("The shodan api token is incorrect. "
+                             "Please enter the correct api token.")
+                self.check_token()
 
     def write_conf(self):
         if not self.parser.has_section("Shodan"):
@@ -73,7 +76,8 @@ class Shodan():
             for page in range(1, pages + 1):
                 url = "https://api.shodan.io/shodan/{0}/search?key={1}&query={2}&page={3}".format(resource,
                                                                                                   self.token,
-                                                                                                  urllib.parse.quote(dork),
+                                                                                                  urllib.parse.quote(
+                                                                                                      dork),
                                                                                                   page)
                 resp = requests.get(url)
                 if resp and resp.status_code == 200 and "total" in resp.json():
@@ -83,6 +87,8 @@ class Shodan():
                         if 'port' in match:
                             ans += ':' + str(match['port'])
                         search_result.add(ans)
+                else:
+                    logger.error("[PLUGIN] Shodan:{}".format(resp.text))
         except Exception as ex:
             logger.error(str(ex))
         return search_result

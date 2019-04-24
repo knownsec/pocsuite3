@@ -19,6 +19,7 @@ from pocsuite3.modules.listener import REVERSE_PAYLOAD
 from pocsuite3.modules.seebug import Seebug
 from pocsuite3.modules.zoomeye import ZoomEye
 from pocsuite3.modules.shodan import Shodan
+from pocsuite3.modules.censys import Censys
 from pocsuite3.modules.spider import crawl
 from pocsuite3.modules.httpserver import PHTTPServer
 from pocsuite3.shellcodes import OSShellcodes, WebShell
