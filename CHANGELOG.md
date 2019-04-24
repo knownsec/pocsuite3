@@ -74,3 +74,7 @@ Cross-platform shell code generation
 * Add parameter `-c` for load configuration from the configuration file
 * Add parameter `--comparsion` for comparing comparing both of zoomeye and shodan
 * Interface supports from zoomeye,shodan and censys
+
+# version 1.3.6
+---------------
+* Bugfix parameter `version`
