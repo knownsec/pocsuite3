@@ -196,7 +196,7 @@ def _set_multiple_targets():
             kb.targets.add(target)
 
     if conf.url_file:
-        for line in get_file_items(conf.url_file, lowercase=True, unique=True):
+        for line in get_file_items(conf.url_file, lowercase=False, unique=True):
             kb.targets.add(line)
 
     if conf.dork:
