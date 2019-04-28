@@ -492,6 +492,7 @@ def _set_conf_attributes():
     conf.connect_back_host = None
     conf.connect_back_port = DEFAULT_LISTENER_PORT
     conf.console_mode = False
+    conf.show_version = False
 
 
 def _set_kb_attributes(flush_all=True):
