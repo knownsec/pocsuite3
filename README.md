@@ -60,7 +60,7 @@ It comes with a powerful proof-of-concept engine, many powerful features for the
 The quick way:
 
 ``` bash
-$ pip install pocsuite3
+$ pip3 install pocsuite3
 ```
 
 Or click [here](https://github.com/knownsec/pocsuite3/archive/master.zip) to download the latest source zip package and extract
