@@ -76,12 +76,24 @@ def list_clients():
     results = ''
     for i, client in enumerate(kb.data.clients):
         try:
-            client.conn.send(str.encode('pwd\n'))
-            client.conn.recv(20480)
+            client.conn.send(str.encode('uname\n'))
+            time.sleep(0.01)
+            ret = client.conn.recv(2048)
+            if ret:
+                ret = ret.decode('utf-8')
+                system = "unknown"
+                if "darwin" in ret.lower():
+                    system = "Darwin"
+                elif "linux" in ret.lower():
+                    system = "Linux"
+                elif "uname" in ret.lower():
+                    system = "Windows"
+
         except Exception:  # If a connection fails, remove it
             del kb.data.clients[i]
             continue
-        results += str(i) + "   " + str(client.address[0]) + "    " + str(client.address[1]) + '\n'
+        results += str(i) + "   " + str(client.address[0]) + "    " + str(client.address[1]) + " ({0})".format(
+            system) + '\n'
     data_to_stdout("----- Remote Clients -----" + "\n" + results)
 
 

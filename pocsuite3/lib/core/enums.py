@@ -74,8 +74,8 @@ class ERROR_TYPE_ID:
 
 
 class OS:
-    LINUX = "Linux"
-    WINDOWS = "Windows"
+    LINUX = "linux"
+    WINDOWS = "windows"
 
 
 class OS_ARCH:
