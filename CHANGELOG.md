@@ -78,3 +78,7 @@ Cross-platform shell code generation
 # version 1.3.6
 ---------------
 * Bugfix parameter `version`
+
+# version 1.3.7
+---------------
+* add poc-plugin to load poc from `pocs` directories.
