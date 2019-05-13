@@ -1,8 +1,9 @@
+import os
+
+from pocsuite3.lib.core.common import is_pocsuite3_poc, single_time_warn_message
 from pocsuite3.lib.core.data import kb
 from pocsuite3.lib.core.data import logger
-from pocsuite3.lib.core.poc import Output
-from pocsuite3.lib.core.register import load_string_to_module
-from pocsuite3.lib.core.common import is_pocsuite3_poc, single_time_warn_message
+from pocsuite3.lib.core.register import load_string_to_module, load_file_to_module
 
 
 class PluginBase(object):
@@ -40,7 +41,23 @@ class PluginBase(object):
         else:
             err_msg = "[PLUIGIN] invalid pocsuite3 PoC code"
             logger.error(err_msg)
+        return ret
 
+    def add_poc_from_file(self, filename):
+        ret = False
+
+        if os.path.exists(filename):
+            try:
+                load_file_to_module(filename)
+                ret = True
+            except SystemExit:
+                pass
+            except Exception as ex:
+                msg = "[PLUGIN] load PoC script failed: {0}".format(str(ex))
+                single_time_warn_message(msg)
+        else:
+            err_msg = "[PLUIGIN] invalid pocsuite3 PoC file {}".format(filename)
+            logger.error(err_msg)
         return ret
 
     @staticmethod
