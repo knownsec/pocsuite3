@@ -11,7 +11,8 @@ from urllib.parse import urljoin
 
 from requests.exceptions import ReadTimeout
 
-from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests, REVERSE_PAYLOAD, OptString, OptItems
+from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests, REVERSE_PAYLOAD, OptString, OptItems, \
+    OptDict
 from pocsuite3.lib.utils import get_middle_text
 
 
@@ -37,8 +38,8 @@ class DemoPOC(POCBase):
 
     def _options(self):
         o = OrderedDict()
-        o["command"] = OptString("whoami")
-        o["app_version"] = OptItems(['2.x', '3.x', 'Auto'], selected="Auto")
+        o["command"] = OptString("whoami", description='攻击时自定义命令')
+        o["app_version"] = OptItems(['2.x', '3.x', 'Auto'], selected="Auto", description='目标版本，可自动匹配')
         payload = {
             "nc": REVERSE_PAYLOAD.NC,
             "bash": REVERSE_PAYLOAD.BASH,

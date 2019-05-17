@@ -82,3 +82,7 @@ Cross-platform shell code generation
 # version 1.3.7
 ---------------
 * add poc-plugin to load poc from `pocs` directories.
+
+# version 1.3.8
+---------------
+* add field,option for compatibility with zipoc
