@@ -29,6 +29,7 @@ class POCBase(object):
         self.verbose = None
         self.expt = (0, 'None')
         self.current_protocol = getattr(self, "protocol", POC_CATEGORY.PROTOCOL.HTTP)
+        self.pocDesc = getattr(self, "pocDesc", "Poc的作者好懒呀！")
 
         # gloabl options init
         self.global_options = OrderedDict()

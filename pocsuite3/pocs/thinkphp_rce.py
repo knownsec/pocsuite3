@@ -27,6 +27,7 @@ class DemoPOC(POCBase):
     ，由于框架对控制器名没有进行足够的检测会导致在没有开启强制路由的情况下可能的getshell漏洞，受影响的版本包括5.0和5.1版本，推荐尽快更新到最新版本。'''
     samples = []
     category = POC_CATEGORY.EXPLOITS.WEBAPP
+    pocDesc = '''攻击模式下将会生成一个一句话shell，成功返回shell地址，shell密码为pass'''
 
     def _options(self):
         o = OrderedDict()

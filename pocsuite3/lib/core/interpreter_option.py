@@ -13,11 +13,11 @@ class Option(object):
     def __init__(self, default, description="", require=False):
         self.description = description
         self.require = require
+        self.display_value = default
 
         if default:
             self.__set__("", default)
         else:
-            self.display_value = ""
             self.value = ""
 
     def __get__(self, instance, owner):
@@ -51,7 +51,7 @@ class OptIP(Option):
         super().__init__(default, description, require)
         if description == "":
             self.description = "IPv4 or IPv6 address"
-        self.type = "IP Address"
+        self.type = "Ip"
 
     def __set__(self, instance, value):
         if not value or is_ip_address_format(value) or is_ipv6_address_format(value):
@@ -171,7 +171,7 @@ class OptItems(Option):
     def __set__(self, instance, value):
         # if value not in self.default:
         #     raise PocsuiteValidationException("Cannot set {},you must select {}".format(value, self.default))
-        self.value = self.display_value = value
+        self.value = value
 
 
 class OptDict:
