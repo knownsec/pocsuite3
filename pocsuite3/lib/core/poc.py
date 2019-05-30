@@ -198,6 +198,7 @@ class POCBase(object):
             logger.debug(str(e))
             output = Output(self)
 
+
         except Exception as e:
             self.expt = (ERROR_TYPE_ID.OTHER, e)
             logger.debug(str(e))

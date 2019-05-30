@@ -6,6 +6,7 @@ from pocsuite3.lib.core.data import conf, cmd_line_options
 from pocsuite3.lib.core.data import kb
 from pocsuite3.lib.core.data import logger
 from pocsuite3.lib.core.datatype import AttribDict
+from pocsuite3.lib.core.exception import PocsuiteValidationException
 from pocsuite3.lib.core.poc import Output
 from pocsuite3.lib.core.settings import CMD_PARSE_WHITELIST
 from pocsuite3.lib.core.threads import run_threads
@@ -25,7 +26,7 @@ def start():
     finally:
         task_done()
 
-    if conf.mode == "shell":
+    if conf.mode == "shell" and not conf.api:
         info_msg = "connect back ip: {0}    port: {1}".format(conf.connect_back_host, conf.connect_back_port)
         logger.info(info_msg)
         info_msg = "watting for shell connect to pocsuite"
@@ -109,7 +110,12 @@ def task_run():
                     logger.error(info_msg)
                     raise SystemExit
 
-        result = poc_module.execute(target, headers=conf.http_headers, mode=conf.mode, verbose=False)
+        try:
+            result = poc_module.execute(target, headers=conf.http_headers, mode=conf.mode, verbose=False)
+        except PocsuiteValidationException as ex:
+            info_msg = "Poc:'{}' PocsuiteValidationException:{}".format(poc_name, ex)
+            logger.error(info_msg)
+            result = None
 
         if not isinstance(result, Output) and not None:
             _result = Output(poc_module)

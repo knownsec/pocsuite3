@@ -1,3 +1,4 @@
+import copy
 import glob
 import logging
 import os
@@ -351,6 +352,9 @@ def _set_plugins():
     # TODO
     # load plugin scripts .pyc file support
     if conf.plugins:
+        founds = []
+        cache_plugins = copy.deepcopy(conf.plugins)
+
         for found in glob.glob(os.path.join(paths.POCSUITE_PLUGINS_PATH, "*.py*")):
             dirname, filename = os.path.split(found)
             plugin_name = os.path.splitext(filename)[0]
@@ -358,10 +362,17 @@ def _set_plugins():
                 continue
             if plugin_name not in conf.plugins:
                 continue
+            cache_plugins.remove(plugin_name)
+            founds.append(found)
+        if len(cache_plugins) > 0:
+            for file in cache_plugins:
+                if os.path.exists(file):
+                    founds.append(file)
 
-            debug_msg = "loading plugin script '{0}'".format(found)
+        for file in founds:
+            debug_msg = "loading plugin script '{0}'".format(file)
             logger.debug(debug_msg)
-            load_file_to_module(found)
+            load_file_to_module(file)
 
 
 def _cleanup_options():
@@ -493,6 +504,7 @@ def _set_conf_attributes():
     conf.connect_back_port = DEFAULT_LISTENER_PORT
     conf.console_mode = False
     conf.show_version = False
+    conf.api = False  # api for zipoc
 
 
 def _set_kb_attributes(flush_all=True):

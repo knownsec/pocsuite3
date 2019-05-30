@@ -28,12 +28,12 @@ class PluginBase(object):
 
         return ret
 
-    def add_poc(self, poc):
+    def add_poc(self, poc, fullname=None):
         ret = False
         poc = self.format_poc(poc)
         if self.check_poc(poc):
             try:
-                load_string_to_module(poc)
+                load_string_to_module(poc, fullname)
                 ret = True
             except Exception as ex:
                 msg = "[PLUGIN] load PoC script failed: {0}".format(str(ex))

@@ -86,3 +86,10 @@ Cross-platform shell code generation
 # version 1.3.8
 ---------------
 * add field,option for compatibility with zipoc
+
+# version 1.3.9
+---------------
+* 修复plugins选项加载绝对路径问题
+* 修复加载pocs目录扫描部分报错问题
+* PoC插件`add_poc`方法新增`fullname`参数用于定义加载poc名称
+* 定义api模式方便shell集成
