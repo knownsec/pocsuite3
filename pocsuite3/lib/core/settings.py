@@ -86,4 +86,4 @@ CMD_PARSE_WHITELIST = ['version', 'update', 'url', 'file', 'verify', 'attack', '
                        'user-agent', 'random-agent', 'proxy', 'proxy-cred', 'timeout', 'retry', 'delay', 'headers',
                        'login-user', 'login-pass', 'dork', 'max-page', 'search-type',
                        'vul-keyword', 'ssv-id', 'lhost', 'lport', 'plugins', 'pocs-path', 'threads', 'batch',
-                       'requires', 'quiet']
+                       'requires', 'quiet', 'poc', 'verbose', 'mode', 'api', 'connect_back_host', 'connect_back_port']
