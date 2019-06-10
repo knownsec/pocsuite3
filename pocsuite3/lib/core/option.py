@@ -287,7 +287,7 @@ def _set_connect_back():
 
 
 def _set_listener():
-    if conf.mode == "shell" and conf.api:
+    if conf.mode == "shell" and not conf.api:
         start_listener()
 
 
