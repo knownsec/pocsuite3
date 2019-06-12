@@ -195,4 +195,4 @@ class OptDict:
         # if value not in self.default:
         #     raise PocsuiteValidationException("Cannot set {},you must select {}".format(value, self.default))
         # self.value = self.display_value = value
-        self.value = self.default[value] if value in self.default else ""
+        self.value = self.default[value] if value in self.default else value
