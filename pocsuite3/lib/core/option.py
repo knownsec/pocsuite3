@@ -189,7 +189,11 @@ def _set_network_proxy():
 def _set_multiple_targets():
     # set multi targets to kb
     if conf.url:
-        targets = parse_target(conf.url)
+        targets = set()
+        for url in conf.url:
+            parsed = parse_target(url)
+            if parsed:
+                targets.add(parsed)
         if not targets:
             err_msg = "incorrect target url or ip format!"
             logger.error(err_msg)
@@ -309,30 +313,35 @@ def _set_pocs_modules():
         for found in glob.glob(os.path.join(paths.POCSUITE_POCS_PATH, "*.py*")):
             dirname, filename = os.path.split(found)
             poc_name = os.path.splitext(filename)[0]
-            if found.endswith(('__init__.py', '__init__.pyc')):
-                continue
-            if conf.poc in (filename, poc_name):
-                info_msg = "loading PoC script '{0}'".format(found)
-                logger.info(info_msg)
-                load_poc_sucess = load_file_to_module(found)
+            for poc_ in conf.poc:
+                if found.endswith(('__init__.py', '__init__.pyc')):
+                    continue
+                if poc_ in (filename, poc_name):
+                    info_msg = "loading PoC script '{0}'".format(found)
+                    logger.info(info_msg)
+                    load_poc_sucess = load_file_to_module(found)
 
         # step2. load poc from given file path
         try:
-            if not load_poc_sucess and (not conf.poc.startswith('ssvid-')) and check_file(conf.poc):
-                info_msg = "loading PoC script '{0}'".format(conf.poc)
-                logger.info(info_msg)
-                load_poc_sucess = load_file_to_module(conf.poc)
+            if not load_poc_sucess:
+                for poc_ in conf.poc:
+                    if not poc_.startswith('ssvid-') and check_file(poc_):
+                        info_msg = "loading PoC script '{0}'".format(conf.poc)
+                        logger.info(info_msg)
+                        load_poc_sucess = load_file_to_module(conf.poc)
         except PocsuiteSystemException:
             logger.error('PoC file "{0}" not found'.format(conf.poc))
             raise SystemExit
 
         # step3. load poc from seebug website using plugin 'poc_from_seebug'
-        if not load_poc_sucess and conf.poc.startswith('ssvid-'):
-            info_msg = "loading Poc script 'https://www.seebug.org/vuldb/{0}'".format(conf.poc)
-            logger.info(info_msg)
+        if not load_poc_sucess:
+            for poc_ in conf.poc:
+                if poc_.startswith('ssvid-'):
+                    info_msg = "loading Poc script 'https://www.seebug.org/vuldb/{0}'".format(conf.poc)
+                    logger.info(info_msg)
 
-            conf.plugins.append('poc_from_seebug')
-            load_poc_sucess = True
+                    conf.plugins.append('poc_from_seebug')
+                    load_poc_sucess = True
 
     if conf.vul_keyword:
         # step4. load poc with vul_keyword search seebug website
@@ -393,10 +402,10 @@ def _cleanup_options():
         conf.retry = min(conf.retry, 10)
 
     if conf.url:
-        conf.url = conf.url.strip()
+        conf.url = [x.strip() for x in conf.url]
 
-    if conf.poc and conf.poc.lower().startswith('ssvid-'):
-        conf.poc = conf.poc.lower()
+    if conf.poc:
+        conf.poc = pocs = [poc_.lower() if poc_.lower().startswith('ssvid-') else poc_ for poc_ in conf.poc]
 
     if conf.url_file:
         conf.url_file = os.path.expanduser(conf.url_file)
