@@ -93,3 +93,8 @@ Cross-platform shell code generation
 * 修复加载pocs目录扫描部分报错问题
 * PoC插件`add_poc`方法新增`fullname`参数用于定义加载poc名称
 * 定义api模式方便shell集成
+
+# version 1.4.0
+---------------
+* 在命令行下url和poc支持多个(空格分隔)
+* 更换`optparse`到`argparse`
