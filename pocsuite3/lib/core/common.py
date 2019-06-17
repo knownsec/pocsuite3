@@ -372,20 +372,20 @@ def get_file_items(filename, comment_prefix='#', unicode_=True, lowercase=False,
 
 
 def parse_target(address):
-    targets = set()
+    target = None
     if is_domain_format(address) \
             or is_url_format(address) \
             or is_ip_address_with_port_format(address):
-        targets.add(address)
+        target = address
 
     elif is_ipv6_url_format(address):
         conf.ipv6 = True
-        targets.add(address)
+        target = address
 
     elif is_ip_address_format(address):
         try:
             ip = ip_address(address)
-            targets.add(ip.exploded)
+            target = ip.exploded
         except ValueError:
             pass
     else:
@@ -393,16 +393,16 @@ def parse_target(address):
             conf.ipv6 = True
             try:
                 ip = ip_address(address)
-                targets.add(ip.exploded)
+                target = ip.exploded
             except ValueError:
                 try:
                     network = ip_network(address, strict=False)
                     for host in network.hosts():
-                        targets.add(host.exploded)
+                        target = host.exploded
                 except ValueError:
                     pass
 
-    return targets
+    return target
 
 
 def single_time_log_message(message, level=logging.INFO, flag=None):
