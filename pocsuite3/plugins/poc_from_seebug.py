@@ -14,13 +14,15 @@ class PocFromSeebug(PluginBase):
 
     def init(self):
         self.init_seebug_api()
-        if conf.poc and conf.poc.startswith('ssvid-'):
-            poc = self.seebug.fetch_poc(conf.poc)
-            if poc and self.add_poc(poc):
-                info_msg = "[PLUGIN] load PoC script {0} from seebug success".format(conf.poc)
-            else:
-                info_msg = "[PLUGIN] load PoC script {0} from seebug failed".format(conf.poc)
-            logger.info(info_msg)
+        if conf.poc:
+            for _ in conf.poc:
+                if _.startswith('ssvid-'):
+                    poc = self.seebug.fetch_poc(conf.poc)
+                    if poc and self.add_poc(poc):
+                        info_msg = "[PLUGIN] load PoC script {0} from seebug success".format(_)
+                    else:
+                        info_msg = "[PLUGIN] load PoC script {0} from seebug failed".format(_)
+                    logger.info(info_msg)
 
         if conf.vul_keyword:
             pocs = self.seebug.search_poc(conf.vul_keyword)

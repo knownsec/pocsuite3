@@ -19,22 +19,25 @@ class TargetFromCIDR(PluginBase):
 
         info_msg = "[PLUGIN] try fetch targets from CIDR..."
         logger.info(info_msg)
-        cidr_text = ""
+        cidr_set = set()
         if "CIDR" in os.environ:
-            cidr_text = os.environ.get("CIDR")
+            cidr_set.add(os.environ.get("CIDR"))
         elif conf.url:
-            cidr_text = conf.url
-            conf.url = ""
+            for i in conf.url:
+                cidr_set.add(i)
+            conf.url = []
         else:
             cidr_text = input("Please input CIDR address:")
+            cidr_set.add(cidr_text)
         count = 0
-        try:
-            network = ip_network(cidr_text, strict=False)
-            for host in network.hosts():
-                self.add_target(host.exploded)
-                count += 1
-        except ValueError:
-            logger.error("[PLUGIN] error format from " + cidr_text)
+        for i in cidr_set:
+            try:
+                network = ip_network(i, strict=False)
+                for host in network.hosts():
+                    self.add_target(host.exploded)
+                    count += 1
+            except ValueError:
+                logger.error("[PLUGIN] error format from " + i)
         info_msg = "[PLUGIN] get {0} target(s) from CIDR".format(count)
         logger.info(info_msg)
 

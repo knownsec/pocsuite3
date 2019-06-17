@@ -169,7 +169,7 @@ class HtmlReport(PluginBase):
         filename = "pocsuite_{0}.html".format(time.strftime("%Y%m%d_%H%M%S"))
         filename = os.path.join(paths.POCSUITE_OUTPUT_PATH, filename)
         if conf.url:
-            title = "Report of [{0}]".format(conf.url)
+            title = "Report of {0}".format(repr(conf.url))
         elif conf.dork:
             title = "Report of [{0}]".format(conf.dork)
         else:

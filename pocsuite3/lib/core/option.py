@@ -313,10 +313,10 @@ def _set_pocs_modules():
         for found in glob.glob(os.path.join(paths.POCSUITE_POCS_PATH, "*.py*")):
             dirname, filename = os.path.split(found)
             poc_name = os.path.splitext(filename)[0]
-            for poc_ in conf.poc:
+            for poc in conf.poc:
                 if found.endswith(('__init__.py', '__init__.pyc')):
                     continue
-                if poc_ in (filename, poc_name):
+                if poc in (filename, poc_name):
                     info_msg = "loading PoC script '{0}'".format(found)
                     logger.info(info_msg)
                     load_poc_sucess = load_file_to_module(found)
@@ -324,23 +324,23 @@ def _set_pocs_modules():
         # step2. load poc from given file path
         try:
             if not load_poc_sucess:
-                for poc_ in conf.poc:
-                    if not poc_.startswith('ssvid-') and check_file(poc_):
-                        info_msg = "loading PoC script '{0}'".format(conf.poc)
+                for poc in conf.poc:
+                    if not poc.startswith('ssvid-') and check_file(poc):
+                        info_msg = "loading PoC script '{0}'".format(poc)
                         logger.info(info_msg)
-                        load_poc_sucess = load_file_to_module(conf.poc)
+                        load_poc_sucess = load_file_to_module(poc)
         except PocsuiteSystemException:
-            logger.error('PoC file "{0}" not found'.format(conf.poc))
+            logger.error('PoC file "{0}" not found'.format(repr(conf.poc)))
             raise SystemExit
 
         # step3. load poc from seebug website using plugin 'poc_from_seebug'
         if not load_poc_sucess:
-            for poc_ in conf.poc:
-                if poc_.startswith('ssvid-'):
-                    info_msg = "loading Poc script 'https://www.seebug.org/vuldb/{0}'".format(conf.poc)
+            for poc in conf.poc:
+                if poc.startswith('ssvid-'):
+                    info_msg = "loading Poc script 'https://www.seebug.org/vuldb/{0}'".format(poc)
                     logger.info(info_msg)
-
-                    conf.plugins.append('poc_from_seebug')
+                    if "poc_from_seebug" not in conf.plugins:
+                        conf.plugins.append('poc_from_seebug')
                     load_poc_sucess = True
 
     if conf.vul_keyword:
@@ -402,10 +402,14 @@ def _cleanup_options():
         conf.retry = min(conf.retry, 10)
 
     if conf.url:
+        if isinstance(conf.url, str):
+            conf.url = [conf.url]
         conf.url = [x.strip() for x in conf.url]
 
     if conf.poc:
-        conf.poc = pocs = [poc_.lower() if poc_.lower().startswith('ssvid-') else poc_ for poc_ in conf.poc]
+        if isinstance(conf.poc, str):
+            conf.poc = [conf.poc]
+        conf.poc = [poc.lower() if poc.lower().startswith('ssvid-') else poc for poc in conf.poc]
 
     if conf.url_file:
         conf.url_file = os.path.expanduser(conf.url_file)
