@@ -98,3 +98,7 @@ Cross-platform shell code generation
 ---------------
 * 在命令行下url和poc支持多个(空格分隔)
 * 更换`optparse`到`argparse`
+
+# version 1.4.1
+---------------
+* 修复由poc插件中由conf.poc引起的错误
