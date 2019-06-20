@@ -17,7 +17,7 @@ class PocFromSeebug(PluginBase):
         if conf.poc:
             for _ in conf.poc:
                 if _.startswith('ssvid-'):
-                    poc = self.seebug.fetch_poc(conf.poc)
+                    poc = self.seebug.fetch_poc(_)
                     if poc and self.add_poc(poc):
                         info_msg = "[PLUGIN] load PoC script {0} from seebug success".format(_)
                     else:
