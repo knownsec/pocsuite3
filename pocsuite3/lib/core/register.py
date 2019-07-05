@@ -101,6 +101,7 @@ def load_string_to_module(code_string, fullname=None):
 def register_poc(poc_class):
     module = poc_class.__module__.split('.')[0]
     if module in kb.registered_pocs:
+        kb.current_poc = kb.registered_pocs[module]
         return
 
     kb.registered_pocs[module] = poc_class()
