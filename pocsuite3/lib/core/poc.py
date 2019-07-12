@@ -275,8 +275,28 @@ class Output(object):
             for k, v in self.result.items():
                 if isinstance(v, dict):
                     for kk, vv in v.items():
+                        if kk == "URL" or kk == "IP" and conf.ppt:
+                            length = len(vv)
+                            _target = vv
+                            if length > 15:
+                                _target = "*" + _target[length - 9:]
+                            elif length > 8:
+                                _target = "*" + _target[5:]
+                            else:
+                                _target = "*" + _target[3:]
+                            vv = _target
                         logger.log(CUSTOM_LOGGING.SUCCESS, "%s : %s" % (kk, vv))
                 else:
+                    if k == "URL" or k == "IP" and conf.ppt:
+                        length = len(v)
+                        _target = v
+                        if length > 15:
+                            _target = "*" + _target[length - 9:]
+                        elif length > 8:
+                            _target = "*" + _target[5:]
+                        else:
+                            _target = "*" + _target[3:]
+                        v = _target
                     logger.log(CUSTOM_LOGGING.SUCCESS, "%s : %s" % (k, v))
 
     def to_dict(self):

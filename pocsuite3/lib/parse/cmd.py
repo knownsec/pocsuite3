@@ -110,6 +110,8 @@ def cmd_line_parser(argv=None):
                                   help="Check install_requires")
         optimization.add_argument("--quiet", dest="quiet", action="store_true", default=False,
                                   help="Activate quiet mode, working without logger.")
+        optimization.add_argument("--ppt", dest="ppt", action="store_true", default=False,
+                                  help="Hiden sensitive information when published to the network")
 
         # Diy options
         diy = parser.add_argument_group("Poc options", "definition options for PoC")

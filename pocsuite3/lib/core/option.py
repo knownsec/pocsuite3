@@ -518,6 +518,7 @@ def _set_conf_attributes():
     conf.console_mode = False
     conf.show_version = False
     conf.api = False  # api for zipoc
+    conf.ppt = False
 
 
 def _set_kb_attributes(flush_all=True):

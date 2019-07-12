@@ -84,7 +84,19 @@ def task_run():
         if not conf.console_mode:
             poc_module = copy.deepcopy(kb.registered_pocs[poc_module])
         poc_name = poc_module.name
-        info_msg = "running poc:'{0}' target '{1}'".format(poc_name, target)
+
+        # for hide some infomations
+        if conf.ppt:
+            length = len(target)
+            _target = target
+            if length > 15:
+                _target = "*" + _target[length - 9:]
+            else:
+                _target = "*" + _target[length - 3:]
+            info_msg = "running poc:'{0}' target '{1}'".format(poc_name, _target)
+        else:
+            info_msg = "running poc:'{0}' target '{1}'".format(poc_name, target)
+
         logger.info(info_msg)
 
         # hand user define parameters
@@ -144,6 +156,17 @@ def task_run():
             kb.comparison.change_success(target, True)
 
         output = AttribDict(result.to_dict())
+        if conf.ppt:
+            # hide some information
+            length = len(target)
+            if length > 15:
+                target = "*" + target[length - 9:]
+            elif length > 8:
+                target = "*" + target[4:]
+            else:
+                target = "*" + target[1:]
+
+
         output.update({
             'target': target,
             'poc_name': poc_name,
