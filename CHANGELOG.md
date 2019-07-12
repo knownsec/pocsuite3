@@ -106,3 +106,7 @@ Cross-platform shell code generation
 # version 1.4.2
 ---------------
 * 修复console模式下一处bug，https://github.com/knownsec/pocsuite3/pull/61
+
+# version 1.4.3
+---------------
+* 加入PPT模式
