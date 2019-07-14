@@ -275,7 +275,7 @@ class Output(object):
             for k, v in self.result.items():
                 if isinstance(v, dict):
                     for kk, vv in v.items():
-                        if kk == "URL" or kk == "IP" and conf.ppt:
+                        if (kk == "URL" or kk == "IP") and conf.ppt:
                             length = len(vv)
                             _target = vv
                             if length > 15:
@@ -287,7 +287,7 @@ class Output(object):
                             vv = _target
                         logger.log(CUSTOM_LOGGING.SUCCESS, "%s : %s" % (kk, vv))
                 else:
-                    if k == "URL" or k == "IP" and conf.ppt:
+                    if (k == "URL" or k == "IP") and conf.ppt:
                         length = len(v)
                         _target = v
                         if length > 15:
