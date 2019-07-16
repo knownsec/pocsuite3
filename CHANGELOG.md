@@ -102,3 +102,11 @@ Cross-platform shell code generation
 # version 1.4.1
 ---------------
 * 修复由poc插件中由conf.poc引起的错误
+
+# version 1.4.2
+---------------
+* 修复console模式下一处bug，https://github.com/knownsec/pocsuite3/pull/61
+
+# version 1.4.3
+---------------
+* 加入PPT模式
