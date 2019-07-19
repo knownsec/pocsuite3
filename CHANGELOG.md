@@ -110,3 +110,7 @@ Cross-platform shell code generation
 # version 1.4.3
 ---------------
 * 加入PPT模式
+
+# version 1.4.5
+---------------
+* update usage.md

@@ -22,3 +22,6 @@ Ro0tk1t <https://github.com/Ro0tk1t>
 hawoosec <hanwu@protonmail.com>
 * for reporting a bug
 * for contributing a minor patch
+
+Explorer1092 <https://github.com/Explorer1092>
+* update usage.md
