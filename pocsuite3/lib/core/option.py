@@ -308,34 +308,35 @@ def _set_pocs_modules():
     # TODO
     # load poc scripts .pyc file support
     if conf.poc:
-        load_poc_sucess = False
         # step1. load system packed poc from pocsuite3/pocs folder
-        for found in glob.glob(os.path.join(paths.POCSUITE_POCS_PATH, "*.py*")):
-            dirname, filename = os.path.split(found)
-            poc_name = os.path.splitext(filename)[0]
-            for poc in conf.poc:
-                if found.endswith(('__init__.py', '__init__.pyc')):
-                    continue
-                if poc in (filename, poc_name):
-                    info_msg = "loading PoC script '{0}'".format(found)
+        exists_poc_with_ext = list(filter(lambda x: x not in ['__init__.py', '__init__.pyc'], os.listdir(paths.POCSUITE_POCS_PATH)))
+        exists_pocs = dict([os.path.splitext(x) for x in exists_poc_with_ext])
+        for poc in conf.poc:
+            load_poc_sucess = False
+            if any([poc in exists_poc_with_ext, poc in exists_pocs]):
+                poc_name, poc_ext = os.path.splitext(poc)
+                if poc_ext in ['.py', '.pyc']:
+                    file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc)
+                else:
+                    file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc+exists_pocs.get(poc))
+                if file_path:
+                    info_msg = "loading PoC script '{0}'".format(file_path)
                     logger.info(info_msg)
-                    load_poc_sucess = load_file_to_module(found)
+                    load_poc_sucess = load_file_to_module(file_path)
 
-        # step2. load poc from given file path
-        try:
-            if not load_poc_sucess:
-                for poc in conf.poc:
+            # step2. load poc from given file path
+            try:
+                if not load_poc_sucess:
                     if not poc.startswith('ssvid-') and check_file(poc):
                         info_msg = "loading PoC script '{0}'".format(poc)
                         logger.info(info_msg)
                         load_poc_sucess = load_file_to_module(poc)
-        except PocsuiteSystemException:
-            logger.error('PoC file "{0}" not found'.format(repr(conf.poc)))
-            raise SystemExit
+            except PocsuiteSystemException:
+                logger.error('PoC file "{0}" not found'.format(repr(poc)))
+                continue
 
-        # step3. load poc from seebug website using plugin 'poc_from_seebug'
-        if not load_poc_sucess:
-            for poc in conf.poc:
+            # step3. load poc from seebug website using plugin 'poc_from_seebug'
+            if not load_poc_sucess:
                 if poc.startswith('ssvid-'):
                     info_msg = "loading Poc script 'https://www.seebug.org/vuldb/{0}'".format(poc)
                     logger.info(info_msg)
@@ -343,18 +344,19 @@ def _set_pocs_modules():
                         conf.plugins.append('poc_from_seebug')
                     load_poc_sucess = True
 
+    load_keyword_poc_sucess = False
     if conf.vul_keyword:
         # step4. load poc with vul_keyword search seebug website
         info_msg = "loading PoC script from seebug website using search keyword '{0}' ".format(conf.vul_keyword)
         logger.info(info_msg)
 
         conf.plugins.append('poc_from_seebug')
-        load_poc_sucess = True
+        load_keyword_poc_sucess = True
 
-    if (conf.poc or conf.vul_keyword) and not load_poc_sucess:
-        error_msg = ""
+    if all([not kb.registered_pocs, not load_keyword_poc_sucess]):
+        error_msg = "no PoC loaded, please check your PoC file"
         logger.error(error_msg)
-        raise PocsuiteSyntaxException(error_msg)
+        raise PocsuiteSystemException(error_msg)
 
 
 def _set_plugins():
