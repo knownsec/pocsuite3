@@ -57,10 +57,13 @@ def set_verbosity():
     elif conf.verbose == 2:
         logger.setLevel(logging.DEBUG)
     elif conf.verbose == 3:
+        logger.setLevel(logging.DEBUG)
         logger.setLevel(CUSTOM_LOGGING.SYSINFO)
     elif conf.verbose == 4:
+        logger.setLevel(logging.DEBUG)
         logger.setLevel(CUSTOM_LOGGING.WARNING)
     elif conf.verbose >= 5:
+        logger.setLevel(logging.DEBUG)
         logger.setLevel(CUSTOM_LOGGING.ERROR)
 
 
