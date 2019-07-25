@@ -627,8 +627,8 @@ from pocsuite3.api import get_results
 def run_pocsuite():
     # config 配置可参见命令行参数， 用于初始化 pocsuite3.lib.core.data.conf
     config = {
-    'url': 'http://127.0.0.1:8080',
-    'poc': 'ecshop_rce',
+    'url': ['http://127.0.0.1:8080', 'http://127.0.0.1:21']
+    'poc': ['ecshop_rce', 'ftp_burst']
     }
     
     init_pocsuite(config)
