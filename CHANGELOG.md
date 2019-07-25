@@ -114,3 +114,8 @@ Cross-platform shell code generation
 # version 1.4.5
 ---------------
 * update usage.md
+
+# version 1.4.6
+---------------
+* 修复`-v`出现的问题
+* 修复加载多个poc可能出现的问题
