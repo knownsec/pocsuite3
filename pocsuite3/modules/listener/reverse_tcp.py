@@ -243,14 +243,19 @@ def print_cmd_help():
     data_to_stdout(msg)
 
 
-def handle_listener_connection_for_console():
-    while True:
+def handle_listener_connection_for_console(wait_time=3,try_count=3):
         cmd = "select 0"
         client = get_client(cmd)
         if client is not None:
             f = send_shell_commands_for_console(client)
             if f:
-                break
+                return
+
+        if try_count > 0:
+            time.sleep(wait_time)
+            data_to_stdout("connect err remaining number of retries %s times\n"%(try_count))
+            try_count -= 1
+            return handle_listener_connection_for_console(wait_time=wait_time,try_count=try_count)
 
 
 def handle_listener_connection():
