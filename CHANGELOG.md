@@ -119,3 +119,7 @@ Cross-platform shell code generation
 ---------------
 * 修复`-v`出现的问题
 * 修复加载多个poc可能出现的问题
+
+# version 1.4.7
+---------------
+* 修复console模式下回连shell循环的异常
