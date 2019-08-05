@@ -184,6 +184,7 @@ class PocsuiteInterpreter(BaseInterpreter):
         logger.info("Load Pocs :{}".format(self.modules_count))
 
         self.last_search = []
+        self.last_ip = []
         self.main_modules_dirs = []
         for module in self.modules:
             temp_module = module
@@ -244,11 +245,13 @@ class PocsuiteInterpreter(BaseInterpreter):
             data_to_stdout("\n")
 
     def _show_ip(self, *args, **kwargs):
+        self.last_ip = []
         ips = get_local_ip(all=True)
         tb = prettytable.PrettyTable(["Index", "IP"])
         index = 0
         for item in ips:
             tb.add_row([str(index), item])
+            self.last_ip.append(item)
             index += 1
         data_to_stdout("\n" + tb.get_string() + "\n")
 
@@ -319,6 +322,12 @@ class PocsuiteInterpreter(BaseInterpreter):
             self.current_module.setg_option(key, value)
             logger.info("{} => {}".format(key, value))
         elif key in self.current_module.payload_options:
+            if value.isdigit():
+                index = int(value)
+                if index >= len(self.last_ip):
+                    logger.warning("Index out of range")
+                    return
+                value = self.last_ip[index]
             self.current_module.setp_option(key, value)
             logger.info("{} => {}".format(key, value))
         else:
