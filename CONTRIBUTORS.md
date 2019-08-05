@@ -23,6 +23,7 @@ hawoosec <hanwu@protonmail.com>
 * for reporting a bug
 * for contributing a minor patch
 * bugfix invalid client
+* for contributing `set lhost index`
 
 Explorer1092 <https://github.com/Explorer1092>
 * update usage.md
