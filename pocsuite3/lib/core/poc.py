@@ -7,9 +7,9 @@ from requests.exceptions import ConnectionError
 from requests.exceptions import HTTPError
 from requests.exceptions import TooManyRedirects
 
-from pocsuite3.lib.core.common import parse_target_url
 from pocsuite3.lib.core.data import conf
 from pocsuite3.lib.core.data import logger
+from pocsuite3.lib.core.common import parse_target_url, is_ipv6_url_format
 from pocsuite3.lib.core.enums import OUTPUT_STATUS, CUSTOM_LOGGING, ERROR_TYPE_ID, POC_CATEGORY
 from pocsuite3.lib.core.exception import PocsuiteValidationException
 from pocsuite3.lib.core.interpreter_option import OptString, OptInteger, OptIP, OptPort, OptBool
@@ -27,6 +27,8 @@ class POCBase(object):
         self.mode = None
         self.params = None
         self.verbose = None
+        self.hostname = None
+        self.ipv6 = False
         self.expt = (0, 'None')
         self.current_protocol = getattr(self, "protocol", POC_CATEGORY.PROTOCOL.HTTP)
         self.pocDesc = getattr(self, "pocDesc", "Poc的作者好懒呀！")
@@ -156,6 +158,8 @@ class POCBase(object):
         self.mode = mode
         self.verbose = verbose
         self.expt = (0, 'None')
+        self.ipv6 = is_ipv6_url_format(self.url)
+        self.hostname = urlparse(self.url).hostname
         # TODO
         output = None
 
