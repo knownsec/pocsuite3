@@ -123,3 +123,8 @@ Cross-platform shell code generation
 # version 1.4.7
 ---------------
 * 修复console模式下回连shell循环的异常
+
+# version 1.4.8
+---------------
+* console模式下设置ip可以选择序号 `show ip` `set lhost 0`
+* bugfix for ceye dns api
