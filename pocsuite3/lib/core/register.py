@@ -48,7 +48,12 @@ class PocLoader(Loader):
             try:
                 for r in requires:
                     if ":" in r:
-                        r, module = r.split(":")
+                        rows = r.split(":")
+                        if len(rows) == 2:
+                            r, module = rows
+                        else:
+                            module = rows[-1]
+                            r = ''.join(rows[:-1])
                         __import__(module)
                     else:
                         __import__(r)
