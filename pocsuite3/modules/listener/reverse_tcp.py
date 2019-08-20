@@ -80,7 +80,7 @@ def list_clients():
             time.sleep(0.01)
             ret = client.conn.recv(2048)
             if ret:
-                ret = ret.decode('utf-8')
+                ret = ret.decode('utf-8', errors="ignore")
                 system = "unknown"
                 if "darwin" in ret.lower():
                     system = "Darwin"
@@ -89,7 +89,8 @@ def list_clients():
                 elif "uname" in ret.lower():
                     system = "Windows"
 
-        except Exception:  # If a connection fails, remove it
+        except Exception as ex:  # If a connection fails, remove it
+            logger.exception(ex)
             del kb.data.clients[i]
             continue
         results += str(i) + "   " + str(client.address[0]) + "    " + str(client.address[1]) + " ({0})".format(
