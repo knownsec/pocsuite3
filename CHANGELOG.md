@@ -109,7 +109,7 @@ Cross-platform shell code generation
 
 # version 1.4.3
 ---------------
-* 加入PPT模式
+* 加入PPT模式（用于演示，敏感信息将打上*）
 
 # version 1.4.5
 ---------------
@@ -128,3 +128,8 @@ Cross-platform shell code generation
 ---------------
 * console模式下设置ip可以选择序号 `show ip` `set lhost 0`
 * bugfix for ceye dns api
+
+# version 1.4.9
+---------------
+* 修复requirement检测一处bug
+* 修复reverse 一处异常
