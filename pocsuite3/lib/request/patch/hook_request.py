@@ -36,7 +36,7 @@ def session_request(self, method, url,
 
     # Send the request.
     send_kwargs = {
-        'timeout': timeout,
+        'timeout': float(timeout),
         'allow_redirects': allow_redirects,
     }
     send_kwargs.update(settings)
