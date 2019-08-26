@@ -10,6 +10,8 @@ def session_request(self, method, url,
                     params=None, data=None, headers=None, cookies=None, files=None, auth=None,
                     timeout=conf.timeout if 'timeout' in conf else None,
                     allow_redirects=True, proxies=None, hooks=None, stream=None, verify=False, cert=None, json=None):
+    if not timeout and conf.timeout:
+        timeout = conf.timeout
     # Create the Request.
     merged_cookies = merge_cookies(merge_cookies(RequestsCookieJar(), self.cookies),
                                    cookies or (conf.cookie if 'cookie' in conf else None))
@@ -36,7 +38,7 @@ def session_request(self, method, url,
 
     # Send the request.
     send_kwargs = {
-        'timeout': float(timeout),
+        'timeout': timeout,
         'allow_redirects': allow_redirects,
     }
     send_kwargs.update(settings)
