@@ -20,8 +20,8 @@ class Shodan():
             except Exception:
                 pass
 
+        self.token = token
         if token:
-            self.token = token
             self.write_conf()
 
     def token_is_available(self):
