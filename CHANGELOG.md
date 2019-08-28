@@ -133,3 +133,9 @@ Cross-platform shell code generation
 ---------------
 * 修复requirement检测一处bug
 * 修复reverse 一处异常
+
+# version 1.5.0
+---------------
+* 修复timeout一处异常
+* pocsuite3.api 添加 `random_str`
+* 优化update function

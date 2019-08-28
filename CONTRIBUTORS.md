@@ -18,6 +18,7 @@ longofo
 
 Ro0tk1t <https://github.com/Ro0tk1t>
 * for contributing multi-ip multi-poc execution features
+* fix some issues
 
 hawoosec <hanwu@protonmail.com>
 * for reporting a bug
