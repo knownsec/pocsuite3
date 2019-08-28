@@ -34,9 +34,12 @@ def session_request(self, method, url,
         prep.url, proxies, stream, verify, cert
     )
 
+    if timeout:
+        timeout = float(timeout)
+
     # Send the request.
     send_kwargs = {
-        'timeout': float(timeout),
+        'timeout': timeout,
         'allow_redirects': allow_redirects,
     }
     send_kwargs.update(settings)
