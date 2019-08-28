@@ -640,6 +640,7 @@ def init():
     _basic_option_validation()
     _create_directory()
     _init_kb_comparison()
+    update()
     _set_multiple_targets()
     _set_user_pocs_path()
     _set_pocs_modules()
@@ -663,4 +664,3 @@ def init():
     _set_listener()
     patch_all()
     remove_extra_log_message()
-    update()
