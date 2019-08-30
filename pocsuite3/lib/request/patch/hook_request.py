@@ -8,7 +8,7 @@ from requests.utils import get_encodings_from_content
 
 def session_request(self, method, url,
                     params=None, data=None, headers=None, cookies=None, files=None, auth=None,
-                    timeout=conf.timeout if 'timeout' in conf else None,
+                    timeout=None,
                     allow_redirects=True, proxies=None, hooks=None, stream=None, verify=False, cert=None, json=None):
     # Create the Request.
     merged_cookies = merge_cookies(merge_cookies(RequestsCookieJar(), self.cookies),
@@ -34,6 +34,7 @@ def session_request(self, method, url,
         prep.url, proxies, stream, verify, cert
     )
 
+    timeout = timeout or conf.timeout
     if timeout:
         timeout = float(timeout)
 

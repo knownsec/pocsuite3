@@ -9,11 +9,12 @@ from pocsuite3.api import paths
 class TestCase(unittest.TestCase):
     def setUp(self):
         self.config = {
-            'url': 'https://www.baidu.com/',
-            'poc': os.path.join(paths.POCSUITE_ROOT_PATH, "../tests/login_demo.py"),
+            'url': ['https://www.baidu.com/'],
+            'poc': [os.path.join(paths.POCSUITE_ROOT_PATH, "../tests/login_demo.py")],
             'username': "asd",
             'password': 'asdss',
-            'verbose': 0
+            'verbose': 0,
+            "timeout": 10,
         }
         init_pocsuite(self.config)
 
