@@ -139,3 +139,7 @@ Cross-platform shell code generation
 * 修复timeout一处异常
 * pocsuite3.api 添加 `random_str`
 * 优化update function
+
+# version 1.5.1
+---------------
+* 修复插件调用poc失败的问题
