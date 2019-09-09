@@ -643,10 +643,11 @@ def init():
     update()
     _set_multiple_targets()
     _set_user_pocs_path()
-    _set_pocs_modules()
     _set_plugins()  # load plugins
     _init_targets_plugins()
     _init_pocs_plugins()
+    # this method should put the end,because plugin also load poc
+    _set_pocs_modules()
     _set_task_queue()
     _init_results_plugins()
 
