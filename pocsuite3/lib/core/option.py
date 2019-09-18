@@ -87,8 +87,10 @@ def _set_http_referer():
 
 def _set_http_cookie():
     if conf.cookie:
-        # conf.http_headers[HTTP_HEADER.COOKIE] = conf.cookie
-        pass
+        if isinstance(conf.cookie, dict):
+            conf.http_headers[HTTP_HEADER.COOKIE] = '; '.join(map(lambda x: '='.join(x), conf.cookie.items()))
+        else:
+            conf.http_headers[HTTP_HEADER.COOKIE] = conf.cookie
 
 
 def _set_http_host():
