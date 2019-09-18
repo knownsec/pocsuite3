@@ -133,7 +133,7 @@ class POC_CATEGORY:
     PROTOCOL.HTTP = "Http"
     PROTOCOL.FTP = "Ftp"
     PROTOCOL.SSH = "Ssh"
-    PROTOCOL.TALENT = "Telent"
+    PROTOCOL.TELENT = "Telent"
     PROTOCOL.REDIS = "Redis"
 
 
