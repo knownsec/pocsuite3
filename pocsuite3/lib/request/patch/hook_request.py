@@ -34,7 +34,7 @@ def session_request(self, method, url,
         prep.url, proxies, stream, verify, cert
     )
 
-    timeout = timeout or conf.timeout
+    timeout = timeout or conf.get("timeout", None)
     if timeout:
         timeout = float(timeout)
 
