@@ -28,3 +28,7 @@ hawoosec <hanwu@protonmail.com>
 
 Explorer1092 <https://github.com/Explorer1092>
 * update usage.md
+
+gsfish <https://github.com/gsfish>
+* good first issue #85
+* repair the custom cookie anomalies
