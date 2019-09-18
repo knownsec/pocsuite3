@@ -143,3 +143,9 @@ Cross-platform shell code generation
 # version 1.5.1
 ---------------
 * 修复插件调用poc失败的问题
+
+# version 1.5.2
+---------------
+* typo fix #84
+* bugfix 自定义cookie产生的异常情况
+* bugfix 引入pocsuite3后再次引入requests导致的报错
