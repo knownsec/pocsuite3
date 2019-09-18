@@ -21,7 +21,7 @@ from pocsuite3.lib.core.data import merged_options
 from pocsuite3.lib.core.data import paths
 from pocsuite3.lib.core.datatype import AttribDict
 from pocsuite3.lib.core.enums import HTTP_HEADER, CUSTOM_LOGGING, PROXY_TYPE
-from pocsuite3.lib.core.exception import PocsuiteSyntaxException, PocsuiteSystemException
+from pocsuite3.lib.core.exception import PocsuiteSyntaxException, PocsuiteSystemException, PocsuiteHeaderTypeException
 from pocsuite3.lib.core.log import FORMATTER
 from pocsuite3.lib.core.register import load_file_to_module
 from pocsuite3.lib.core.settings import DEFAULT_USER_AGENT, DEFAULT_LISTENER_PORT, CMD_PARSE_WHITELIST
@@ -87,7 +87,8 @@ def _set_http_referer():
 
 def _set_http_cookie():
     if conf.cookie:
-        conf.http_headers[HTTP_HEADER.COOKIE] = conf.cookie
+        # conf.http_headers[HTTP_HEADER.COOKIE] = conf.cookie
+        pass
 
 
 def _set_http_host():
@@ -313,7 +314,8 @@ def _set_pocs_modules():
     # load poc scripts .pyc file support
     if conf.poc:
         # step1. load system packed poc from pocsuite3/pocs folder
-        exists_poc_with_ext = list(filter(lambda x: x not in ['__init__.py', '__init__.pyc'], os.listdir(paths.POCSUITE_POCS_PATH)))
+        exists_poc_with_ext = list(
+            filter(lambda x: x not in ['__init__.py', '__init__.pyc'], os.listdir(paths.POCSUITE_POCS_PATH)))
         exists_pocs = dict([os.path.splitext(x) for x in exists_poc_with_ext])
         for poc in conf.poc:
             load_poc_sucess = False
@@ -322,7 +324,7 @@ def _set_pocs_modules():
                 if poc_ext in ['.py', '.pyc']:
                     file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc)
                 else:
-                    file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc+exists_pocs.get(poc))
+                    file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc + exists_pocs.get(poc))
                 if file_path:
                     info_msg = "loading PoC script '{0}'".format(file_path)
                     logger.info(info_msg)
@@ -398,9 +400,11 @@ def _cleanup_options():
         conf.agent = re.sub(r"[\r\n]", "", conf.agent)
 
     if conf.cookie:
-        conf.cookie = re.sub(r"[\r\n]", "", conf.cookie)
-        conf.cookie = extract_cookies(conf.cookie)
-
+        if isinstance(conf.cookie, str):
+            conf.cookie = re.sub(r"[\r\n]", "", conf.cookie)
+            conf.cookie = extract_cookies(conf.cookie)
+        elif not isinstance(conf.cookie, dict):
+            raise PocsuiteHeaderTypeException('Does not support type for cookie')
     if conf.delay:
         conf.delay = float(conf.delay)
 
