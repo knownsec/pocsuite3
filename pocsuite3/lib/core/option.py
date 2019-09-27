@@ -175,6 +175,7 @@ def _set_network_proxy():
                 password=password,
                 rdns=True if scheme == PROXY_TYPE.SOCKS5H else False,
             )
+            conf.origin_socks = copy.deepcopy(socket.socket)  # Convenient behind recovery
             socket.socket = socks.socksocket
             conf.proxies = {
                 "http": conf.proxy,
@@ -434,6 +435,8 @@ def _cleanup_options():
 
     if conf.connect_back_port:
         conf.connect_back_port = int(conf.connect_back_port)
+
+    conf.origin_socks = None
 
 
 def _basic_option_validation():
