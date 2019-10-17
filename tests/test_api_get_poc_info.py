@@ -14,7 +14,7 @@ class TestCase(unittest.TestCase):
 
     def test_get_info(self):
         init_pocsuite({})
-        poc_filename = os.path.join(paths.POCSUITE_POCS_PATH,'20190404_WEB_Confluence_path_traversal.py')
+        poc_filename = os.path.join(paths.POCSUITE_POCS_PATH, '20190404_WEB_Confluence_path_traversal.py')
         mod = load_file_to_module(poc_filename)
         print(mod.get_infos())
-
+        self.assertTrue(len(mod.get_infos()) > 0)

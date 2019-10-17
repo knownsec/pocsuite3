@@ -86,14 +86,12 @@ class POCBase(object):
         fields = ["name", "VulID", "version", "author", "vulDate", "createDate", "updateDate", "references",
                   "appPowerLink", "appName", "appVersion", "vulType", "desc", "pocDesc", "current_protocol"]
         data = {
-            "infos": {},
-            "options": {}
         }
 
         for field in fields:
             value = getattr(self, field, None)
             if value:
-                data["infos"][field] = value
+                data[field] = value
 
         return data
 
