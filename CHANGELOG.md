@@ -159,3 +159,7 @@ Cross-platform shell code generation
 ---------------
 * 加入获取PoC信息的API
 * 更新测试用例
+
+# version 1.5.5
+---------------
+* fix #87
