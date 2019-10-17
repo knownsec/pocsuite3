@@ -151,5 +151,11 @@ Cross-platform shell code generation
 * bugfix 引入pocsuite3后再次引入requests导致的报错
 
 # version 1.5.3
+---------------
 * socket代理增加变量保存原始socket信息，方便使用后恢复(`conf.origin_socks`)
 * 修复requests代理指定为None时的逻辑问题
+
+# version 1.5.4
+---------------
+* 加入获取PoC信息的API
+* 更新测试用例
