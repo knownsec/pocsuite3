@@ -228,16 +228,6 @@ def _set_multiple_targets():
 
 
 def _set_task_queue():
-    if not kb.registered_pocs:
-        err_msg = "no PoC script was loaded!"
-        logger.error(err_msg)
-        # raise SystemExit
-
-    if not kb.targets:
-        err_msg = "no target(s) was added!"
-        logger.error(err_msg)
-        # raise SystemExit
-
     if kb.registered_pocs and kb.targets:
         for poc_module in kb.registered_pocs:
             for target in kb.targets:
@@ -360,12 +350,6 @@ def _set_pocs_modules():
         logger.info(info_msg)
 
         conf.plugins.append('poc_from_seebug')
-        load_keyword_poc_sucess = True
-
-    if all([not kb.registered_pocs, not load_keyword_poc_sucess]):
-        error_msg = "no PoC loaded, please check your PoC file"
-        logger.error(error_msg)
-        raise PocsuiteSystemException(error_msg)
 
 
 def _set_plugins():

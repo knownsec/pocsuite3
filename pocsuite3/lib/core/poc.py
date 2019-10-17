@@ -78,6 +78,25 @@ class POCBase(object):
             value = value.format(conf.connect_back_host, conf.connect_back_port)
         return value
 
+    def get_infos(self):
+        '''
+        得到Poc的信息，返回dict
+        :return:
+        '''
+        fields = ["name", "VulID", "version", "author", "vulDate", "createDate", "updateDate", "references",
+                  "appPowerLink", "appName", "appVersion", "vulType", "desc", "pocDesc", "current_protocol"]
+        data = {
+            "infos": {},
+            "options": {}
+        }
+
+        for field in fields:
+            value = getattr(self, field, None)
+            if value:
+                data["infos"][field] = value
+
+        return data
+
     def getg_option(self, name):
         if name not in self.global_options:
             raise PocsuiteValidationException
