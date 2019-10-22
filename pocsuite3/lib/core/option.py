@@ -305,6 +305,8 @@ def _set_user_pocs_path():
 def _set_pocs_modules():
     # TODO
     # load poc scripts .pyc file support
+    if conf.ssvid:
+        conf.plugins.append('poc_from_seebug')
     if conf.poc:
         # step1. load system packed poc from pocsuite3/pocs folder
         exists_poc_with_ext = list(
@@ -341,7 +343,6 @@ def _set_pocs_modules():
                     logger.info(info_msg)
                     if "poc_from_seebug" not in conf.plugins:
                         conf.plugins.append('poc_from_seebug')
-                    load_poc_sucess = True
 
     load_keyword_poc_sucess = False
     if conf.vul_keyword:
@@ -636,11 +637,10 @@ def init():
     update()
     _set_multiple_targets()
     _set_user_pocs_path()
-    _set_plugins()  # load plugins
+    _set_pocs_modules()  # poc module模块要在插件模块前，poc选项中某些参数调用了插件
+    _set_plugins()
     _init_targets_plugins()
     _init_pocs_plugins()
-    # this method should put the end,because plugin also load poc
-    _set_pocs_modules()
     _set_task_queue()
     _init_results_plugins()
 
