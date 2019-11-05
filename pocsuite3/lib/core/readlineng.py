@@ -13,7 +13,8 @@ except ImportError:
         from pyreadline import *
         import pyreadline as _readline
     except ImportError:
-        raise PocsuiteSystemException("Import pyreadline faild,try pip3 install pyreadline")
+        # raise PocsuiteSystemException("Import pyreadline faild,try pip3 install pyreadline")
+        pass
 
 if IS_WIN and _readline:
     try:
