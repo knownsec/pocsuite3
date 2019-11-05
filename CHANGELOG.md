@@ -163,3 +163,9 @@ Cross-platform shell code generation
 # version 1.5.5
 ---------------
 * fix #87
+
+# version 1.5.6
+---------------
+* 修复多线程卡住问题
+* 修复seebug api问题
+* 修复socks5代理问题
