@@ -177,21 +177,18 @@ def _set_network_proxy():
             )
             conf.origin_socks = copy.deepcopy(socket.socket)  # Convenient behind recovery
             socket.socket = socks.socksocket
-            conf.proxies = {
-                "http": conf.proxy,
-                "https": conf.proxy,
-            }
-        else:
-            if conf.proxy_cred:
-                proxy_string = "{0}@".format(conf.proxy_cred)
-            else:
-                proxy_string = ""
 
-            proxy_string = "{0}{1}:{2}".format(proxy_string, hostname, port)
-            conf.proxies = {
-                "http": proxy_string,
-                "https": proxy_string
-            }
+        if conf.proxy_cred:
+            proxy_string = "{0}@".format(conf.proxy_cred)
+        else:
+            proxy_string = ""
+
+        proxy_string = "{scheme}://{proxy_string}{hostname}:{port}".format(scheme=scheme.lower(), proxy_string=proxy_string,
+                                                                        hostname=hostname, port=port)
+        conf.proxies = {
+            "http": proxy_string,
+            "https": proxy_string
+        }
 
 
 def _set_multiple_targets():

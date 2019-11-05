@@ -31,6 +31,7 @@ def start():
 
     try:
         run_threads(conf.threads, task_run)
+        logger.info("Scan completed,ready to print")
     finally:
         task_done()
 

@@ -1,4 +1,5 @@
 from pocsuite3.lib.core.data import logger
+from pocsuite3.lib.core.exception import PocsuiteSystemException
 from pocsuite3.lib.core.settings import IS_WIN
 from pocsuite3.lib.core.settings import PLATFORM
 
@@ -12,7 +13,7 @@ except ImportError:
         from pyreadline import *
         import pyreadline as _readline
     except ImportError:
-        pass
+        raise PocsuiteSystemException("Import pyreadline faild,try pip3 install pyreadline")
 
 if IS_WIN and _readline:
     try:
@@ -54,5 +55,6 @@ if _readline:
     except AttributeError:
         def clear_history():
             pass
+
 
         _readline.clear_history = clear_history
