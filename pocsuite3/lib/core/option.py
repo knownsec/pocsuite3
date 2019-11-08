@@ -21,7 +21,7 @@ from pocsuite3.lib.core.data import merged_options
 from pocsuite3.lib.core.data import paths
 from pocsuite3.lib.core.datatype import AttribDict
 from pocsuite3.lib.core.enums import HTTP_HEADER, CUSTOM_LOGGING, PROXY_TYPE
-from pocsuite3.lib.core.exception import PocsuiteSyntaxException, PocsuiteSystemException
+from pocsuite3.lib.core.exception import PocsuiteSyntaxException, PocsuiteSystemException, PocsuiteHeaderTypeException
 from pocsuite3.lib.core.log import FORMATTER
 from pocsuite3.lib.core.register import load_file_to_module
 from pocsuite3.lib.core.settings import DEFAULT_USER_AGENT, DEFAULT_LISTENER_PORT, CMD_PARSE_WHITELIST
@@ -29,6 +29,7 @@ from pocsuite3.lib.core.statistics_comparison import StatisticsComparison
 from pocsuite3.lib.core.update import update
 from pocsuite3.lib.parse.cmd import DIY_OPTIONS
 from pocsuite3.lib.parse.configfile import config_file_parser
+from pocsuite3.lib.request import patch_all
 from pocsuite3.modules.listener import start_listener
 from pocsuite3.thirdparty.oset.orderedset import OrderedSet
 from pocsuite3.thirdparty.pysocks import socks
@@ -86,7 +87,10 @@ def _set_http_referer():
 
 def _set_http_cookie():
     if conf.cookie:
-        conf.http_headers[HTTP_HEADER.COOKIE] = conf.cookie
+        if isinstance(conf.cookie, dict):
+            conf.http_headers[HTTP_HEADER.COOKIE] = '; '.join(map(lambda x: '='.join(x), conf.cookie.items()))
+        else:
+            conf.http_headers[HTTP_HEADER.COOKIE] = conf.cookie
 
 
 def _set_http_host():
@@ -171,22 +175,20 @@ def _set_network_proxy():
                 password=password,
                 rdns=True if scheme == PROXY_TYPE.SOCKS5H else False,
             )
+            conf.origin_socks = copy.deepcopy(socket.socket)  # Convenient behind recovery
             socket.socket = socks.socksocket
-            conf.proxies = {
-                "http": conf.proxy,
-                "https": conf.proxy,
-            }
-        else:
-            if conf.proxy_cred:
-                proxy_string = "{0}@".format(conf.proxy_cred)
-            else:
-                proxy_string = ""
 
-            proxy_string = "{0}{1}:{2}".format(proxy_string, hostname, port)
-            conf.proxies = {
-                "http": proxy_string,
-                "https": proxy_string
-            }
+        if conf.proxy_cred:
+            proxy_string = "{0}@".format(conf.proxy_cred)
+        else:
+            proxy_string = ""
+
+        proxy_string = "{scheme}://{proxy_string}{hostname}:{port}".format(scheme=scheme.lower(), proxy_string=proxy_string,
+                                                                        hostname=hostname, port=port)
+        conf.proxies = {
+            "http": proxy_string,
+            "https": proxy_string
+        }
 
 
 def _set_multiple_targets():
@@ -223,16 +225,6 @@ def _set_multiple_targets():
 
 
 def _set_task_queue():
-    if not kb.registered_pocs:
-        err_msg = "no PoC script was loaded!"
-        logger.error(err_msg)
-        # raise SystemExit
-
-    if not kb.targets:
-        err_msg = "no target(s) was added!"
-        logger.error(err_msg)
-        # raise SystemExit
-
     if kb.registered_pocs and kb.targets:
         for poc_module in kb.registered_pocs:
             for target in kb.targets:
@@ -310,9 +302,12 @@ def _set_user_pocs_path():
 def _set_pocs_modules():
     # TODO
     # load poc scripts .pyc file support
+    if conf.ssvid:
+        conf.plugins.append('poc_from_seebug')
     if conf.poc:
         # step1. load system packed poc from pocsuite3/pocs folder
-        exists_poc_with_ext = list(filter(lambda x: x not in ['__init__.py', '__init__.pyc'], os.listdir(paths.POCSUITE_POCS_PATH)))
+        exists_poc_with_ext = list(
+            filter(lambda x: x not in ['__init__.py', '__init__.pyc'], os.listdir(paths.POCSUITE_POCS_PATH)))
         exists_pocs = dict([os.path.splitext(x) for x in exists_poc_with_ext])
         for poc in conf.poc:
             load_poc_sucess = False
@@ -321,7 +316,7 @@ def _set_pocs_modules():
                 if poc_ext in ['.py', '.pyc']:
                     file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc)
                 else:
-                    file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc+exists_pocs.get(poc))
+                    file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc + exists_pocs.get(poc))
                 if file_path:
                     info_msg = "loading PoC script '{0}'".format(file_path)
                     logger.info(info_msg)
@@ -345,7 +340,6 @@ def _set_pocs_modules():
                     logger.info(info_msg)
                     if "poc_from_seebug" not in conf.plugins:
                         conf.plugins.append('poc_from_seebug')
-                    load_poc_sucess = True
 
     load_keyword_poc_sucess = False
     if conf.vul_keyword:
@@ -354,12 +348,6 @@ def _set_pocs_modules():
         logger.info(info_msg)
 
         conf.plugins.append('poc_from_seebug')
-        load_keyword_poc_sucess = True
-
-    if all([not kb.registered_pocs, not load_keyword_poc_sucess]):
-        error_msg = "no PoC loaded, please check your PoC file"
-        logger.error(error_msg)
-        raise PocsuiteSystemException(error_msg)
 
 
 def _set_plugins():
@@ -397,9 +385,11 @@ def _cleanup_options():
         conf.agent = re.sub(r"[\r\n]", "", conf.agent)
 
     if conf.cookie:
-        conf.cookie = re.sub(r"[\r\n]", "", conf.cookie)
-        conf.cookie = extract_cookies(conf.cookie)
-
+        if isinstance(conf.cookie, str):
+            conf.cookie = re.sub(r"[\r\n]", "", conf.cookie)
+            conf.cookie = extract_cookies(conf.cookie)
+        elif not isinstance(conf.cookie, dict):
+            raise PocsuiteHeaderTypeException('Does not support type for cookie')
     if conf.delay:
         conf.delay = float(conf.delay)
 
@@ -427,6 +417,8 @@ def _cleanup_options():
 
     if conf.connect_back_port:
         conf.connect_back_port = int(conf.connect_back_port)
+
+    conf.origin_socks = None
 
 
 def _basic_option_validation():
@@ -639,10 +631,11 @@ def init():
     _basic_option_validation()
     _create_directory()
     _init_kb_comparison()
+    update()
     _set_multiple_targets()
     _set_user_pocs_path()
-    _set_pocs_modules()
-    _set_plugins()  # load plugins
+    _set_pocs_modules()  # poc module模块要在插件模块前，poc选项中某些参数调用了插件
+    _set_plugins()
     _init_targets_plugins()
     _init_pocs_plugins()
     _set_task_queue()
@@ -660,5 +653,5 @@ def init():
     _set_network_timeout()
     _set_threads()
     _set_listener()
+    patch_all()
     remove_extra_log_message()
-    update()

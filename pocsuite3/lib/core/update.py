@@ -69,3 +69,4 @@ def update():
             info_msg = "for Linux platform it's recommended "
             info_msg += "to install a standard 'git' package (e.g.: 'sudo apt-get install git')"
         logger.info(info_msg)
+    sys.exit()

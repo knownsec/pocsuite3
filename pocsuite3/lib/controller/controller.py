@@ -6,7 +6,7 @@ from pocsuite3.lib.core.data import conf, cmd_line_options
 from pocsuite3.lib.core.data import kb
 from pocsuite3.lib.core.data import logger
 from pocsuite3.lib.core.datatype import AttribDict
-from pocsuite3.lib.core.exception import PocsuiteValidationException
+from pocsuite3.lib.core.exception import PocsuiteValidationException, PocsuiteSystemException
 from pocsuite3.lib.core.poc import Output
 from pocsuite3.lib.core.settings import CMD_PARSE_WHITELIST
 from pocsuite3.lib.core.threads import run_threads
@@ -15,7 +15,15 @@ from pocsuite3.modules.listener.reverse_tcp import handle_listener_connection_fo
 from pocsuite3.thirdparty.prettytable.prettytable import PrettyTable
 
 
+def runtime_check():
+    if not kb.registered_pocs:
+        error_msg = "no PoC loaded, please check your PoC file"
+        logger.error(error_msg)
+        raise PocsuiteSystemException(error_msg)
+
+
 def start():
+    runtime_check()
     tasks_count = kb.task_queue.qsize()
     info_msg = "pocsusite got a total of {0} tasks".format(tasks_count)
     logger.info(info_msg)
@@ -23,6 +31,7 @@ def start():
 
     try:
         run_threads(conf.threads, task_run)
+        logger.info("Scan completed,ready to print")
     finally:
         task_done()
 
@@ -165,7 +174,6 @@ def task_run():
                 target = "*" + target[4:]
             else:
                 target = "*" + target[1:]
-
 
         output.update({
             'target': target,

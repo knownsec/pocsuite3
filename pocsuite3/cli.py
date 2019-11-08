@@ -11,7 +11,7 @@ except ImportError:
 
 from pocsuite3.lib.core.option import init
 from pocsuite3.lib.core.option import init_options
-from pocsuite3.lib.core.exception import PocsuiteUserQuitException
+from pocsuite3.lib.core.exception import PocsuiteUserQuitException, PocsuiteSystemException
 from pocsuite3.lib.core.exception import PocsuiteShellQuitException
 from pocsuite3.lib.core.common import set_paths
 from pocsuite3.lib.core.common import banner
@@ -60,6 +60,9 @@ def main():
         pass
 
     except PocsuiteShellQuitException:
+        pass
+
+    except PocsuiteSystemException:
         pass
 
     except KeyboardInterrupt:

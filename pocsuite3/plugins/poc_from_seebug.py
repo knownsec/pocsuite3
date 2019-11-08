@@ -38,5 +38,14 @@ class PocFromSeebug(PluginBase):
                     info_msg = "[PLUGIN] load PoC script '{0}' from seebug failed".format(poc_item['name'])
                 logger.info(info_msg)
 
+        if conf.ssvid:
+            ssvid = conf.ssvid
+            poc = self.seebug.fetch_poc(ssvid)
+            if poc and self.add_poc(poc):
+                info_msg = "[PLUGIN] load PoC script 'ssvid-{0}' from seebug success".format(ssvid)
+            else:
+                info_msg = "[PLUGIN] load PoC script 'ssvid-{0}' from seebug failed".format(ssvid)
+            logger.info(info_msg)
+
 
 register_plugin(PocFromSeebug)

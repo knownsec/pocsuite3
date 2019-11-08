@@ -60,3 +60,7 @@ class PocsuitePluginBaseException(PocsuiteBaseException):
 
 class PocsuitePluginDorkException(PocsuitePluginBaseException):
     pass
+
+
+class PocsuiteHeaderTypeException(PocsuiteBaseException):
+    pass

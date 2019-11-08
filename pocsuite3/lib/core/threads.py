@@ -22,7 +22,6 @@ def exception_handled_function(thread_function, args=(), silent=False):
     except Exception as ex:
         if not silent:
             logger.error("thread {0}: {1}".format(threading.currentThread().getName(), str(ex)))
-
             if conf.verbose > 1:
                 traceback.print_exc()
 
@@ -37,11 +36,11 @@ def run_threads(num_threads, thread_function, args: tuple = (), forward_exceptio
     try:
         if num_threads > 1:
             if start_msg:
-                info_msg = "staring {0} threads".format(num_threads)
+                info_msg = "starting {0} threads".format(num_threads)
                 logger.info(info_msg)
 
             if num_threads > MAX_NUMBER_OF_THREADS:
-                warn_msg = ""
+                warn_msg = "starting {0} threads, more than MAX_NUMBER_OF_THREADS:{1}".format(num_threads, MAX_NUMBER_OF_THREADS)
                 logger.warn(warn_msg)
 
         else:
@@ -74,17 +73,9 @@ def run_threads(num_threads, thread_function, args: tuple = (), forward_exceptio
     except (KeyboardInterrupt, PocsuiteUserQuitException) as ex:
         kb.thread_continue = False
         kb.thread_exception = True
-        if num_threads > 1:
-            logger.info("waiting for threads to finish{0}".format(
-                " (Ctrl+C was pressed)" if isinstance(ex, KeyboardInterrupt) else ""))
-        try:
-            while threading.activeCount() > 1:
-                pass
-        except KeyboardInterrupt:
-            raise PocsuiteThreadException("user aborted (Ctrl+C was pressed multiple times)")
-
+        logger.info("user aborted (Ctrl+C was pressed multiple times")
         if forward_exception:
-            raise
+            return
 
     except (PocsuiteConnectionException, PocsuiteValueException) as ex:
         kb.thread_exception = True

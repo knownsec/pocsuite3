@@ -1,10 +1,26 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# @Time    : 2019/2/26 2:33 PM
-# @Author  : chenghsm
-# @File    : login_demo.py
-# @Descript: 自定义命令参数登录例子
+import os
+import unittest
 
+from pocsuite3.api import init_pocsuite
+from pocsuite3.api import load_file_to_module, paths,load_string_to_module
+
+
+class TestCase(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_get_info(self):
+        init_pocsuite({})
+        poc_filename = os.path.join(paths.POCSUITE_POCS_PATH, '20190404_WEB_Confluence_path_traversal.py')
+        mod = load_file_to_module(poc_filename)
+        print(mod.get_infos())
+        self.assertTrue(len(mod.get_infos()) > 0)
+
+    def test_get_info_from_string(self):
+        source = r"""
 from collections import OrderedDict
 
 from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests
@@ -59,3 +75,9 @@ class DemoPOC(POCBase):
 
 
 register_poc(DemoPOC)
+        """.strip()
+        init_pocsuite({})
+        mod = load_string_to_module(source)
+        print(mod.get_infos())
+        self.assertTrue(len(mod.get_infos()) > 0)
+

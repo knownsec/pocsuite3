@@ -109,7 +109,7 @@ Cross-platform shell code generation
 
 # version 1.4.3
 ---------------
-* 加入PPT模式
+* 加入PPT模式（用于演示，敏感信息将打上*）
 
 # version 1.4.5
 ---------------
@@ -123,3 +123,49 @@ Cross-platform shell code generation
 # version 1.4.7
 ---------------
 * 修复console模式下回连shell循环的异常
+
+# version 1.4.8
+---------------
+* console模式下设置ip可以选择序号 `show ip` `set lhost 0`
+* bugfix for ceye dns api
+
+# version 1.4.9
+---------------
+* 修复requirement检测一处bug
+* 修复reverse 一处异常
+
+# version 1.5.0
+---------------
+* 修复timeout一处异常
+* pocsuite3.api 添加 `random_str`
+* 优化update function
+
+# version 1.5.1
+---------------
+* 修复插件调用poc失败的问题
+
+# version 1.5.2
+---------------
+* typo fix #84
+* bugfix 自定义cookie产生的异常情况
+* bugfix 引入pocsuite3后再次引入requests导致的报错
+
+# version 1.5.3
+---------------
+* socket代理增加变量保存原始socket信息，方便使用后恢复(`conf.origin_socks`)
+* 修复requests代理指定为None时的逻辑问题
+
+# version 1.5.4
+---------------
+* 加入获取PoC信息的API
+* 更新测试用例
+
+# version 1.5.5
+---------------
+* fix #87
+
+# version 1.5.6
+---------------
+* 修复多线程卡住问题
+* 修复seebug api问题
+* 修复socks5代理问题

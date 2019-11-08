@@ -27,7 +27,7 @@ pocsuite3 开发文档 及 PoC 编写规范及要求说明
 
 
 ### 概述<div id="overview"></div>
- 本文档为 Pocsuite3 插件及 PoC 脚本编写规范及要求说明，包含了插件 PoC 脚本编写的步骤以及相关 API 的一些说明。一个优秀的 PoC 离不开反复的调试、测试，在阅读本文档前，请先阅读 [《Pocsuite 使用文档》](./USAGE.md)。
+ 本文档为 Pocsuite3 插件及 PoC 脚本编写规范及要求说明，包含了插件 PoC 脚本编写的步骤以及相关 API 的一些说明。一个优秀的 PoC 离不开反复的调试、测试，在阅读本文档前，请先阅读 [《Pocsuite 使用文档》](./USAGE.md)。或参考https://paper.seebug.org/904/ 查看pocsuite3的一些新特性。
 
 ### 插件 编写规范<div id="write_plugin"></div>
 pocsuite3 共有三种类型的插件，定义在 `pocsuite3.lib.core.enums.PLUGIN_TYPE` 中.
@@ -112,7 +112,10 @@ register_plugin(HtmlReport)
 
 ```
 
+若需要`实时的`保存结果，需要在申明`handle`来处理，可参考https://github.com/knownsec/pocsuite3/blob/master/pocsuite3/plugins/file_record.py的写法。
+
 ### PoC 编写规范<div id="write_poc"></div>
+
 #### PoC python脚本编写步骤<div id="pocpy"></div>
 
 本小节介绍 PoC python脚本编写
@@ -154,6 +157,7 @@ from pocsuite3.lib.utils import random_str
     ''' # 漏洞简要描述
     samples = []# 测试样列,就是用 PoC 测试成功的网站
     install_requires = [] # PoC 第三方模块依赖，请尽量不要使用第三方模块，必要时请参考《PoC第三方模块依赖说明》填写
+   	pocDesc = ''' poc的用法描述 '''
 ```
 
 4. 编写验证模式
@@ -404,7 +408,22 @@ from pocsuite3.api import OptString,OptDict,OptIP,OptPort,OptBool,OptInteger,Opt
 * self.params 用来获取 --extra-params 赋值的变量, Pocsuite 会自动转化成字典格式, 未赋值时为空字典
 * self.url 用来获取 -u / --url 赋值的 URL, 如果之前赋值是 baidu.com 这样没有协议的格式时, Pocsuite 会自动转换成 http:// baidu.com
 
+##### ShellCode生成支持
 
+在一些特殊的Linux和Windows环境下，想得到反弹shell条件比较困难。为此我们制作了用于在Windows/Linux x86 x64环境下的用于反弹的shellcode，并制作了接口支持，你在只需要拥有命令执行权限下便可以自动将shellcode写入到目标机器以及执行反弹shell命令。Demo Poc：https://github.com/knownsec/pocsuite3/blob/master/pocsuite3/pocs/thinkphp_rce2.py
+
+```python
+from pocsuite3.api import generate_shellcode_list
+_list = generate_shellcode_list(listener_ip=get_listener_ip(),listener_port=get_listener_port(),os_target=OS.LINUX,os_target_arch=OS_ARCH.X86)
+```
+
+将生成一长串执行指令，执行这些指令便可以反弹出一个shell。
+
+##### HTTP服务内置
+
+对于一些需要第三方HTTP服务才能验证的漏洞，Pocsuite3也提供对应的API，支持在本地开启一个HTTP服务方便进行验证。
+
+可查看测试用例:https://github.com/knownsec/pocsuite3/blob/master/tests/test_httpserver.py
 
 #### PoC 代码示例<div id="PoCexample"></div>
 
@@ -647,7 +666,7 @@ PoC 编号ID 与漏洞 ID 一致.
 
 #### PoC 命名规范<div id="namedstandard"></div>
 
-PoC 命名分成3个部分组成漏洞应用名_版本号_漏洞类型名称 然后把文件名种的所有字母改成成小写,所有的符号改成_.
+PoC 命名分成3个部分组成漏洞应用名_版本号_漏洞类型名称 然后把文件名称中的所有字母改成小写,所有的符号改成_.
 文件名不能有特殊字符和大写字母 最后出来的文件名应该像这样
 
 ```

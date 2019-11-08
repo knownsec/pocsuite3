@@ -18,6 +18,7 @@ longofo
 
 Ro0tk1t <https://github.com/Ro0tk1t>
 * for contributing multi-ip multi-poc execution features
+* fix some issues
 
 hawoosec <hanwu@protonmail.com>
 * for reporting a bug
@@ -27,3 +28,7 @@ hawoosec <hanwu@protonmail.com>
 
 Explorer1092 <https://github.com/Explorer1092>
 * update usage.md
+
+gsfish <https://github.com/gsfish>
+* good first issue #85
+* repair the custom cookie anomalies

@@ -8,7 +8,7 @@ from requests.utils import get_encodings_from_content
 
 def session_request(self, method, url,
                     params=None, data=None, headers=None, cookies=None, files=None, auth=None,
-                    timeout=conf.timeout if 'timeout' in conf else None,
+                    timeout=None,
                     allow_redirects=True, proxies=None, hooks=None, stream=None, verify=False, cert=None, json=None):
     # Create the Request.
     merged_cookies = merge_cookies(merge_cookies(RequestsCookieJar(), self.cookies),
@@ -28,11 +28,17 @@ def session_request(self, method, url,
     )
     prep = self.prepare_request(req)
 
-    proxies = proxies or (conf.proxies if 'proxies' in conf else {})
+    # proxies = proxies or (conf.proxies if 'proxies' in conf else {})
+    if proxies is None:
+       proxies = conf.proxies if 'proxies' in conf else {}
 
     settings = self.merge_environment_settings(
         prep.url, proxies, stream, verify, cert
     )
+
+    timeout = timeout or conf.get("timeout", None)
+    if timeout:
+        timeout = float(timeout)
 
     # Send the request.
     send_kwargs = {

@@ -1,6 +1,7 @@
 import getpass
 import json
 import time
+import re
 from configparser import ConfigParser
 
 from pocsuite3.lib.core.data import logger
@@ -168,7 +169,7 @@ class CEye(object):
         if type == "request":
             url = "http://{}.{}/{}{}{}".format(ranstr, domain, ranstr, value, ranstr)
         elif type == "dns":
-            url = domain
+            url = "{}{}{}.{}".format(ranstr, re.sub("\W", "", value), ranstr, domain)
         return {"url": url, "flag": ranstr}
 
     def getsubdomain(self):

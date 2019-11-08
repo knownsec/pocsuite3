@@ -48,7 +48,12 @@ class PocLoader(Loader):
             try:
                 for r in requires:
                     if ":" in r:
-                        r, module = r.split(":")
+                        rows = r.split(":")
+                        if len(rows) == 2:
+                            r, module = rows
+                        else:
+                            module = rows[-1]
+                            r = ''.join(rows[:-1])
                         __import__(module)
                     else:
                         __import__(r)
@@ -65,20 +70,22 @@ class PocLoader(Loader):
         exec(obj, module.__dict__)
 
 
-def load_file_to_module(file_path):
+def load_file_to_module(file_path, module_name=None):
     if '' not in importlib.machinery.SOURCE_SUFFIXES:
         importlib.machinery.SOURCE_SUFFIXES.append('')
     try:
-        module_name = 'pocs_{0}'.format(get_filename(file_path, with_ext=False))
+        module_name = 'pocs_{0}'.format(get_filename(file_path, with_ext=False)) if module_name is None else module_name
         spec = importlib.util.spec_from_file_location(module_name, file_path, loader=PocLoader(module_name, file_path))
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
-        return mod
-
+        poc_model = kb.registered_pocs[module_name]
+    except KeyError:
+        poc_model = None
     except ImportError:
         error_msg = "load module failed! '{}'".format(file_path)
         logger.error(error_msg)
         raise
+    return poc_model
 
 
 def load_string_to_module(code_string, fullname=None):
@@ -90,12 +97,14 @@ def load_string_to_module(code_string, fullname=None):
         spec = importlib.util.spec_from_file_location(module_name, file_path, loader=poc_loader)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
-        return mod
-
+        poc_model = kb.registered_pocs[module_name]
+    except KeyError:
+        poc_model = None
     except ImportError:
         error_msg = "load module '{0}' failed!".format(fullname)
         logger.error(error_msg)
         raise
+    return poc_model
 
 
 def register_poc(poc_class):
