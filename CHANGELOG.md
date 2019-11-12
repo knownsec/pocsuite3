@@ -169,3 +169,13 @@ Cross-platform shell code generation
 * 修复多线程卡住问题
 * 修复seebug api问题
 * 修复socks5代理问题
+
+# version 1.5.7
+---------------
+* 取消pyreadline报错提示
+* 修改日志拼写错误
+
+# version 1.5.8
+---------------
+* 修复shadon api问题
+* 加入fofa api接口

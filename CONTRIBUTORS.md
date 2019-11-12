@@ -32,3 +32,7 @@ Explorer1092 <https://github.com/Explorer1092>
 gsfish <https://github.com/gsfish>
 * good first issue #85
 * repair the custom cookie anomalies
+
+Becivells <https://github.com/Becivells>
+* bugfix shodan api
+* for contributing fofa api
