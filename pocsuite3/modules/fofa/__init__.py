@@ -84,6 +84,8 @@ class Fofa():
                         else:
                             if not  match.startswith("https://"):
                                 search_result.add("http://"+match)
+                            else:
+                                search_result.add(match)
                 else:
                     logger.error("[PLUGIN] Fofa:{}".format(resp.text))
         except Exception as ex:
