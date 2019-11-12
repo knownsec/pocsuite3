@@ -30,6 +30,7 @@ It comes with a powerful proof-of-concept engine, many powerful features for the
 * Integrate with [ZoomEye](https://www.zoomeye.org) (for load target from ZoomEye `Dork`)
 * Integrate with [Shodan](https://www.shodan.io) (for load target from Shodan `Dork`)
 * Integrate with [Ceye](http://ceye.io/) (for verify blind DNS and HTTP request)
+* Integrate with Fofa (for load target from Fofa `Dork`)
 * Friendly debug PoC scripts with IDEs
 * More ...
 
