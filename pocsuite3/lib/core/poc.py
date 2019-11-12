@@ -219,7 +219,8 @@ class POCBase(object):
         except BaseException as e:
             self.expt = (ERROR_TYPE_ID.OTHER, e)
             logger.error("PoC has raised a exception")
-            logger.exception(e)
+            logger.error(str(e))
+            # logger.exception(e)
             output = Output(self)
 
         return output

@@ -68,6 +68,8 @@ def cmd_line_parser(argv=None):
         group.add_argument("--login-user", dest="login_user", help="Telnet404 login user")
         group.add_argument("--login-pass", dest="login_pass", help="Telnet404 login password")
         group.add_argument("--shodan-token", dest="shodan_token", help="Shodan token")
+        group.add_argument("--fofa-user", dest="fofa_user", help="fofa user")
+        group.add_argument("--fofa-token", dest="fofa_token", help="fofa token")
         group.add_argument("--censys-uid", dest="censys_uid", help="Censys uid")
         group.add_argument("--censys-secret", dest="censys_secret", help="Censys secret")
         # Modules options
@@ -80,6 +82,8 @@ def cmd_line_parser(argv=None):
                              help="Shodan dork used for search.")
         modules.add_argument("--dork-censys", dest="dork_censys", action="store", default=None,
                              help="Censys dork used for search.")
+        modules.add_argument("--dork-fofa", dest="dork_fofa", action="store", default=None,
+                             help="Fofa dork used for search.")
         modules.add_argument("--max-page", dest="max_page", type=int, default=1,
                              help="Max page used in ZoomEye API(10 targets/Page).")
         modules.add_argument("--search-type", dest="search_type", action="store", default='host',
@@ -122,8 +126,8 @@ def cmd_line_parser(argv=None):
                     diy.add_argument(line)
 
         args = parser.parse_args()
-        if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork, args.configFile,
-                    args.show_version)):
+        if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork, args.dork_shodan, args.dork_fofa,
+                    args.dork_censys, args.dork_zoomeye, args.configFile, args.show_version)):
             err_msg = "missing a mandatory option (-u, --url-file, --update). "
             err_msg += "Use -h for basic and -hh for advanced help\n"
             parser.error(err_msg)
