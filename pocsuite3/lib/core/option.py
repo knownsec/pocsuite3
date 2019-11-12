@@ -211,7 +211,7 @@ def _set_multiple_targets():
 
     if conf.dork:
         # enable plugin 'target_from_zoomeye' by default
-        if 'target_from_shodan' not in conf.plugins:
+        if 'target_from_shodan' not in conf.plugins and 'target_from_fofa' not in conf.plugins:
             conf.plugins.append('target_from_zoomeye')
 
     if conf.dork_zoomeye:
@@ -223,6 +223,8 @@ def _set_multiple_targets():
     if conf.dork_censys:
         conf.plugins.append('target_from_censys')
 
+    if conf.dork_fofa:
+        conf.plugins.append('target_from_fofa')
 
 def _set_task_queue():
     if kb.registered_pocs and kb.targets:
@@ -485,11 +487,14 @@ def _set_conf_attributes():
     conf.login_user = None
     conf.login_pass = None
     conf.shodan_token = None
+    conf.fofa_user = None
+    conf.fofa_token = None
     conf.censys_uid = None
     conf.censys_secret = None
     conf.dork = None
     conf.dork_zoomeye = None
     conf.dork_shodan = None
+    conf.dork_fofa = None
     conf.dork_censys = None
     conf.max_page = 1
     conf.search_type = 'host'
