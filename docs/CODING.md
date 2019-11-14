@@ -249,7 +249,7 @@ register_poc(DemoPOC)
 ```python
 from collections import OrderedDict
 
-from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests
+from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests, VUL_TYPE
 from pocsuite3.api import OptString
 
 
@@ -265,7 +265,7 @@ class DemoPOC(POCBase):
     appPowerLink = 'http://www.knownsec.com/'
     appName = 'test'
     appVersion = 'test'
-    vulType = 'demo'
+    vulType = VUL_TYPE.XSS
     desc = '''这个例子说明了你可以使用console模式设置一些参数或者使用命令中的'--'来设置自定义的参数'''
     samples = []
     category = POC_CATEGORY.EXPLOITS.WEBAPP
