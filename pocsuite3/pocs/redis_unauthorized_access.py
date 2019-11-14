@@ -6,7 +6,7 @@ for more about information, plz visit http://pocsuite.org
 
 import socket
 from pocsuite3.lib.utils import url2ip
-from pocsuite3.api import POCBase, Output, register_poc, logger, POC_CATEGORY, VUL_TYPE
+from pocsuite3.api import POCBase, Output, register_poc, logger, POC_CATEGORY
 
 
 class DemoPOC(POCBase):
