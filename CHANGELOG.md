@@ -179,3 +179,8 @@ Cross-platform shell code generation
 ---------------
 * 修复shadon api问题
 * 加入fofa api接口
+
+# version 1.5.9
+---------------
+* 增加了poc类型的枚举类型 #95
+* 修改了样例poc
