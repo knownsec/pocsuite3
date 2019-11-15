@@ -9,7 +9,7 @@ import socket
 
 import paramiko
 
-from pocsuite3.api import POCBase, Output, register_poc, logger, POC_CATEGORY
+from pocsuite3.api import POCBase, Output, register_poc, logger, POC_CATEGORY, VUL_TYPE
 
 
 class DemoPOC(POCBase):
@@ -24,7 +24,7 @@ class DemoPOC(POCBase):
     appPowerLink = ' https://www.libssh.org'
     appName = 'libssh'
     appVersion = '>=0.6'
-    vulType = 'Login Bypass'
+    vulType = VUL_TYPE.LOGIN_BYPASS
     desc = '''libssh版本0.6及更高版本在服务端代码中具有身份验证绕过漏洞。攻击者可以在没有任何凭据的情况下成功进行身份验证。 进而可以进行一些恶意操作。'''
     samples = ['']
     install_requires = ['paramiko']

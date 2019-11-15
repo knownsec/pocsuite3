@@ -11,7 +11,7 @@ import socket
 
 import paramiko
 
-from pocsuite3.api import POCBase, Output, register_poc, logger, POC_CATEGORY
+from pocsuite3.api import POCBase, Output, register_poc, logger, POC_CATEGORY, VUL_TYPE
 from pocsuite3.lib.core.data import paths
 from pocsuite3.lib.core.threads import run_threads
 
@@ -28,7 +28,7 @@ class DemoPOC(POCBase):
     appPowerLink = ''
     appName = 'ssh'
     appVersion = 'All'
-    vulType = 'Weak Password'
+    vulType = VUL_TYPE.WEAK_PASSWORD
     desc = '''ssh 存在弱密码，导致攻击者可连接主机进行恶意操作'''
     samples = ['']
     install_requires = ['paramiko']

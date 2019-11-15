@@ -6,7 +6,7 @@ for more about information, plz visit http://pocsuite.org
 from collections import OrderedDict
 from urllib.parse import quote
 
-from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests, REVERSE_PAYLOAD, OptDict
+from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests, REVERSE_PAYLOAD, OptDict, VUL_TYPE
 from pocsuite3.lib.utils import random_str
 
 
@@ -22,7 +22,7 @@ class DemoPOC(POCBase):
     appPowerLink = 'http://www.thinkphp.cn/'
     appName = 'thinkphp'
     appVersion = 'thinkphp5.1.31'
-    vulType = 'Code Execution'
+    vulType = VUL_TYPE.CODE_EXECUTION
     desc = '''ThinkPHP官方2018年12月9日发布重要的安全更新，修复了一个严重的远程代码执行漏洞。该更新主要涉及一个安全更新
     ，由于框架对控制器名没有进行足够的检测会导致在没有开启强制路由的情况下可能的getshell漏洞，受影响的版本包括5.0和5.1版本，推荐尽快更新到最新版本。'''
     samples = []

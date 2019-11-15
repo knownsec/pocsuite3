@@ -9,7 +9,7 @@ import re
 
 import websockets
 
-from pocsuite3.api import POCBase, Output, register_poc, logger, requests
+from pocsuite3.api import POCBase, Output, register_poc, logger, requests, VUL_TYPE
 from pocsuite3.api import REVERSE_PAYLOAD, POC_CATEGORY
 from pocsuite3.api import get_listener_ip, get_listener_port
 from pocsuite3.lib.utils import random_str
@@ -27,7 +27,7 @@ class DemoPOC(POCBase):
     appPowerLink = 'http://redis.io/'
     appName = 'Node-RED'
     appVersion = 'All'
-    vulType = 'Unauthorized Remote Command Execute'
+    vulType = VUL_TYPE.CODE_EXECUTION
     desc = '''
         默认情况下，Node-RED 应用程序不会强制执行任何类型的身份验证，因此可以未授权公开访问，攻击
         者通过组合特定的 Flows 可以在目标系统上执行任意命令。此外，未授权滥用其他 Node还可实现

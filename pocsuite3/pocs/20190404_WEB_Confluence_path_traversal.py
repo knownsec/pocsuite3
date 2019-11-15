@@ -1,6 +1,6 @@
 import re
 
-from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests
+from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests, VUL_TYPE
 
 
 class DemoPOC(POCBase):
@@ -15,7 +15,7 @@ class DemoPOC(POCBase):
     appPowerLink = ''
     appName = 'Confluence'
     appVersion = ''
-    vulType = 'Romote Code Execution'
+    vulType = VUL_TYPE.CODE_EXECUTION
     desc = '''2019 年 3 月 28 日，Confluence 官方发布预警 ，指出 Confluence Server 与 Confluence Data Center 中的 Widget Connector 存在服务端模板注入漏洞，攻击 者能利用此漏洞能够实现目录穿越与远程代码执行，同时该漏洞被赋予编号 CVE2019-3396。'''
     samples = []
     install_requires = ['']

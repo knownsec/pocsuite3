@@ -12,7 +12,7 @@ from urllib.parse import urljoin
 from requests.exceptions import ReadTimeout
 
 from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests, REVERSE_PAYLOAD, OptString, OptItems, \
-    OptDict
+    OptDict, VUL_TYPE
 from pocsuite3.lib.utils import get_middle_text
 
 
@@ -28,7 +28,7 @@ class DemoPOC(POCBase):
     appPowerLink = ''
     appName = 'ECSHOP'
     appVersion = '2.x,3.x'
-    vulType = 'Romote Code Execution'
+    vulType = VUL_TYPE.CODE_EXECUTION
     desc = '''近日，Ecshop爆出全版本SQL注入及任意代码执行漏洞，受影响的版本有：Ecshop 2.x,Ecshop 3.x-3.6.0'''
     samples = []
     install_requires = ['']

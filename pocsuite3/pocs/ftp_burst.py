@@ -9,7 +9,7 @@ import itertools
 import queue
 import socket
 
-from pocsuite3.api import POCBase, Output, register_poc, logger, POC_CATEGORY
+from pocsuite3.api import POCBase, Output, register_poc, logger, POC_CATEGORY, VUL_TYPE
 from pocsuite3.lib.core.data import paths
 from pocsuite3.lib.core.threads import run_threads
 
@@ -26,7 +26,7 @@ class DemoPOC(POCBase):
     appPowerLink = ''
     appName = 'ftp'
     appVersion = 'All'
-    vulType = 'Weak Password'
+    vulType = VUL_TYPE.WEAK_PASSWORD
     desc = '''ftp 存在弱密码，导致攻击者可连接进行文件管理进行恶意操作'''
     samples = ['']
     category = POC_CATEGORY.TOOLS.CRACK

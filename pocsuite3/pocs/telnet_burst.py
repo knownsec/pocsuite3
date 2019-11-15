@@ -7,12 +7,10 @@ import itertools
 import queue
 import socket
 import telnetlib
-from urllib.parse import urlparse
 
-from pocsuite3.api import POCBase, Output, register_poc, logger, POC_CATEGORY
+from pocsuite3.api import POCBase, Output, register_poc, logger, POC_CATEGORY, VUL_TYPE
 from pocsuite3.lib.core.data import paths
 from pocsuite3.lib.core.threads import run_threads
-from pocsuite3.lib.utils import url2ip
 
 
 class DemoPOC(POCBase):
@@ -27,7 +25,7 @@ class DemoPOC(POCBase):
     appPowerLink = ''
     appName = 'telnet'
     appVersion = 'All'
-    vulType = 'Weak Password'
+    vulType = VUL_TYPE.WEAK_PASSWORD
     desc = '''telnet 存在弱密码，导致攻击者可登录主机进行恶意操作'''
     samples = ['']
     category = POC_CATEGORY.TOOLS.CRACK

