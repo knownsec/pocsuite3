@@ -55,8 +55,8 @@ def cmd_line_parser(argv=None):
         request.add_argument("--host", dest="host", help="HTTP Host header value")
         request.add_argument("--referer", dest="referer", help="HTTP Referer header value")
         request.add_argument("--user-agent", dest="agent", help="HTTP User-Agent header value")
-        request.add_argument("--random-agent", dest="random_agent", action="store_true", default=False,
-                             help="Use randomly selected HTTP User-Agent header value")
+        request.add_argument("--random-agent", dest="random_agent", type=int, default=0, choices=list(range(3)),
+                             help="Use randomly selected HTTP User-Agent header value 0 uses the default value, 1 this request uses a random value. 2 use different values for each request")
         request.add_argument("--proxy", dest="proxy", help="Use a proxy to connect to the target URL")
         request.add_argument("--proxy-cred", dest="proxy_cred", help="Proxy authentication credentials (name:password)")
         request.add_argument("--timeout", dest="timeout", help="Seconds to wait before timeout connection (default 30)")
@@ -64,7 +64,7 @@ def cmd_line_parser(argv=None):
         request.add_argument("--delay", dest="delay", help="Delay between two request of one thread")
         request.add_argument("--headers", dest="headers", help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
         # Account options
-        group = parser.add_argument_group("Account", "Telnet404 account options")
+        group = parser.add_argument_group("Account", "Telnet404、Shodan、CEye、Fofa account options")
         group.add_argument("--login-user", dest="login_user", help="Telnet404 login user")
         group.add_argument("--login-pass", dest="login_pass", help="Telnet404 login password")
         group.add_argument("--shodan-token", dest="shodan_token", help="Shodan token")
@@ -73,7 +73,7 @@ def cmd_line_parser(argv=None):
         group.add_argument("--censys-uid", dest="censys_uid", help="Censys uid")
         group.add_argument("--censys-secret", dest="censys_secret", help="Censys secret")
         # Modules options
-        modules = parser.add_argument_group("Modules", "Modules(Seebug Zoomeye CEye Listener) options")
+        modules = parser.add_argument_group("Modules", "Modules(Seebug、Zoomeye、CEye、Fofa Listener) options")
         modules.add_argument("--dork", dest="dork", action="store", default=None,
                              help="Zoomeye dork used for search.")
         modules.add_argument("--dork-zoomeye", dest="dork_zoomeye", action="store", default=None,

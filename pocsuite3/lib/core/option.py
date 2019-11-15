@@ -5,6 +5,7 @@ import os
 import re
 import socket
 from queue import Queue
+from random import choice
 from urllib.parse import urlsplit
 
 from pocsuite3.lib.core.clear import remove_extra_log_message
@@ -69,10 +70,23 @@ def set_verbosity():
 
 
 def _set_http_user_agent():
-    if conf.random_agent:
-        # TODO
-        # load random HTTP User-Agent header(s) from files
-        pass
+    # load random HTTP User-Agent header(s) from files
+    uapath = 'data/user-agents.txt'
+
+    if os.path.exists(uapath):
+        with open(uapath) as f:
+            conf.user_agents = f.read().split("\n")
+    else:
+        conf.http_headers[HTTP_HEADER.USER_AGENT] = DEFAULT_USER_AGENT
+        conf.user_agents.append(DEFAULT_USER_AGENT)
+        logger.error("user-agents file not fond will use default")
+
+    if not conf.user_agents:
+        conf.user_agents.append(DEFAULT_USER_AGENT)
+        logger.error("user-agents no value will use default")
+
+    if conf.random_agent == 1:
+            conf.http_headers[HTTP_HEADER.USER_AGENT] = choice(conf.user_agents)
     else:
         conf.http_headers[HTTP_HEADER.USER_AGENT] = DEFAULT_USER_AGENT
 
@@ -484,6 +498,7 @@ def _set_conf_attributes():
     conf.retry = 0
     conf.delay = 0
     conf.http_headers = {}
+    conf.user_agents = []
     conf.login_user = None
     conf.login_pass = None
     conf.shodan_token = None
@@ -646,7 +661,7 @@ def init():
     _set_task_queue()
     _init_results_plugins()
 
-    if any((conf.url, conf.url_file)):
+    if any((conf.url, conf.url_file,conf.plugins)):
         _set_http_cookie()
         _set_http_host()
         _set_http_referer()

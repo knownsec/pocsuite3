@@ -1,4 +1,5 @@
 import re
+from random import choice
 from collections import OrderedDict
 from urllib.parse import urlparse
 
@@ -10,7 +11,7 @@ from requests.exceptions import TooManyRedirects
 from pocsuite3.lib.core.common import parse_target_url
 from pocsuite3.lib.core.data import conf
 from pocsuite3.lib.core.data import logger
-from pocsuite3.lib.core.enums import OUTPUT_STATUS, CUSTOM_LOGGING, ERROR_TYPE_ID, POC_CATEGORY
+from pocsuite3.lib.core.enums import HTTP_HEADER,OUTPUT_STATUS, CUSTOM_LOGGING, ERROR_TYPE_ID, POC_CATEGORY
 from pocsuite3.lib.core.exception import PocsuiteValidationException
 from pocsuite3.lib.core.interpreter_option import OptString, OptInteger, OptIP, OptPort, OptBool
 from pocsuite3.lib.utils import str_to_dict
@@ -169,6 +170,9 @@ class POCBase(object):
         self.target = target
         self.url = parse_target_url(target) if self.current_protocol == POC_CATEGORY.PROTOCOL.HTTP else self.build_url()
         self.headers = headers
+        if conf.random_agent == 2:
+            self.headers[HTTP_HEADER.USER_AGENT] = choice(conf.user_agents)
+
         self.params = str_to_dict(params) if params else {}
         self.mode = mode
         self.verbose = verbose

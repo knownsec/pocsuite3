@@ -45,7 +45,10 @@ Request:
   --host HOST           HTTP Host header value
   --referer REFERER     HTTP Referer header value
   --user-agent AGENT    HTTP User-Agent header value
-  --random-agent        Use randomly selected HTTP User-Agent header value
+  --random-agent {0,1,2}
+                        Use randomly selected HTTP User-Agent header value 0
+                        uses the default value, 1 this request uses a random
+                        value. 2 use different values for each request
   --proxy PROXY         Use a proxy to connect to the target URL
   --proxy-cred PROXY_CRED
                         Proxy authentication credentials (name:password)
@@ -55,7 +58,7 @@ Request:
   --headers HEADERS     Extra headers (e.g. "key1: value1\nkey2: value2")
 
 Account:
-  Telnet404 account options
+  Telnet404、Shodan、CEye、Fofa account options
 
   --login-user LOGIN_USER
                         Telnet404 login user
@@ -63,13 +66,17 @@ Account:
                         Telnet404 login password
   --shodan-token SHODAN_TOKEN
                         Shodan token
+  --fofa-user FOFA_USER
+                        fofa user
+  --fofa-token FOFA_TOKEN
+                        fofa token
   --censys-uid CENSYS_UID
                         Censys uid
   --censys-secret CENSYS_SECRET
                         Censys secret
 
 Modules:
-  Modules(Seebug Zoomeye CEye Listener) options
+  Modules(Seebug、Zoomeye、CEye、Fofa Listener) options
 
   --dork DORK           Zoomeye dork used for search.
   --dork-zoomeye DORK_ZOOMEYE
@@ -78,6 +85,8 @@ Modules:
                         Shodan dork used for search.
   --dork-censys DORK_CENSYS
                         Censys dork used for search.
+  --dork-fofa DORK_FOFA
+                        Fofa dork used for search.
   --max-page MAX_PAGE   Max page used in ZoomEye API(10 targets/Page).
   --search-type SEARCH_TYPE
                         search type used in ZoomEye API, web or host
@@ -102,9 +111,6 @@ Optimization:
   --quiet               Activate quiet mode, working without logger.
   --ppt                 Hiden sensitive information when published to the
                         network
-
-Poc options:
-  definition options for PoC
 ```
 
 **-f, --file URLFILE**
@@ -167,7 +173,35 @@ Search redis server with ```port:6379``` and ```redis``` keyword.
 
 ```
 $ python cli.py --dork 'port:6379' --vul-keyword 'redis' --max-page 2
+```
 
+**--dork-shodan DORK**
+
+If you are a [**Shodan**](https://www.shodan.io/) user, The API is a cool and hackable interface. ex:
+
+Search libssh server  with  `libssh` keyword.
+
+```
+python3 cli.py -r pocs/libssh_auth_bypass.py --dork-shodan libssh --thread 10
+```
+
+r
+
+ ```
+python3 cli.py -r pocs/libssh_auth_bypass.py  --plugins target_from_shodan  --dork libssh
+ ```
+
+
+
+**--dork-fofa DORK**
+
+If you are a [**Fofa**](https://fofa.so/) user, The API is a cool and hackable interface. ex:
+
+Search web server thinkphp with  `body="thinkphp"` keyword.
+
+
+```
+$ python3 cli.py -r pocs/check_http_status.py --dork-fofa 'body="thinkphp"' --search-type web  --thread 10
 ```
 
 If you have good ideas, please show them on your way.
