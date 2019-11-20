@@ -183,8 +183,9 @@ def _set_network_proxy():
         else:
             proxy_string = ""
 
-        proxy_string = "{scheme}://{proxy_string}{hostname}:{port}".format(scheme=scheme.lower(), proxy_string=proxy_string,
-                                                                        hostname=hostname, port=port)
+        proxy_string = "{scheme}://{proxy_string}{hostname}:{port}".format(scheme=scheme.lower(),
+                                                                           proxy_string=proxy_string,
+                                                                           hostname=hostname, port=port)
         conf.proxies = {
             "http": proxy_string,
             "https": proxy_string
@@ -225,6 +226,7 @@ def _set_multiple_targets():
 
     if conf.dork_fofa:
         conf.plugins.append('target_from_fofa')
+
 
 def _set_task_queue():
     if kb.registered_pocs and kb.targets:
@@ -646,7 +648,7 @@ def init():
     _set_task_queue()
     _init_results_plugins()
 
-    if any((conf.url, conf.url_file)):
+    if any((conf.url, conf.url_file, conf.plugins)):
         _set_http_cookie()
         _set_http_host()
         _set_http_referer()
