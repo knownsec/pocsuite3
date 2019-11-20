@@ -69,12 +69,23 @@ def set_verbosity():
 
 
 def _set_http_user_agent():
-    if conf.random_agent:
-        # TODO
-        # load random HTTP User-Agent header(s) from files
-        pass
+    '''
+    set user-agent
+    :return:
+    '''
+
+    conf.http_headers[HTTP_HEADER.USER_AGENT] = DEFAULT_USER_AGENT
+    uapath = os.path.join(paths.POCSUITE_DATA_PATH, 'user-agents.txt')
+
+    if os.path.exists(uapath):
+        with open(uapath) as f:
+            agents = f.read().split("\n")
+            if len(agents) == 1 and "" in agents:
+                logger.error("user-agents file is empty will use default")
+            else:
+                conf.agents = agents
     else:
-        conf.http_headers[HTTP_HEADER.USER_AGENT] = DEFAULT_USER_AGENT
+        logger.error("user-agents file not fond will use default")
 
     if conf.agent:
         conf.http_headers[HTTP_HEADER.USER_AGENT] = conf.agent
@@ -486,6 +497,7 @@ def _set_conf_attributes():
     conf.retry = 0
     conf.delay = 0
     conf.http_headers = {}
+    conf.agents = [DEFAULT_USER_AGENT]  # 数据源从插件加载的时候无默认值需要处理
     conf.login_user = None
     conf.login_pass = None
     conf.shodan_token = None
