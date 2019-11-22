@@ -34,7 +34,7 @@ def session_request(self, method, url,
 
     # proxies = proxies or (conf.proxies if 'proxies' in conf else {})
     if proxies is None:
-        proxies = conf.proxies if 'proxies' in conf else {}
+       proxies = conf.proxies if 'proxies' in conf else {}
 
     settings = self.merge_environment_settings(
         prep.url, proxies, stream, verify, cert
