@@ -75,20 +75,21 @@ def _set_http_user_agent():
     '''
 
     conf.http_headers[HTTP_HEADER.USER_AGENT] = DEFAULT_USER_AGENT
-    uapath = os.path.join(paths.POCSUITE_DATA_PATH, 'user-agents.txt')
 
-    if os.path.exists(uapath):
-        with open(uapath) as f:
-            agents = f.read().split("\n")
-            if len(agents) == 1 and "" in agents:
-                logger.error("user-agents file is empty will use default")
-            else:
-                conf.agents = agents
-    else:
-        logger.error("user-agents file not fond will use default")
+    if conf.random_agent:
+        uapath = os.path.join(paths.POCSUITE_DATA_PATH, 'user-agents.txt')
+        if os.path.exists(uapath):
+            with open(uapath) as f:
+                agents = f.read().split("\n")
+                if len(agents) == 1 and "" in agents:
+                    logger.error("user-agents file is empty will use default")
+                else:
+                    conf.agents = agents
+        else:
+            logger.error("user-agents file not fond will use default")
 
-    if conf.agent:
-        conf.http_headers[HTTP_HEADER.USER_AGENT] = conf.agent
+        if conf.agent:
+            conf.http_headers[HTTP_HEADER.USER_AGENT] = conf.agent
 
 
 def _set_http_referer():
