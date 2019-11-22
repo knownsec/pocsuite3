@@ -88,8 +88,8 @@ def _set_http_user_agent():
         else:
             logger.error("user-agents file not fond will use default")
 
-        if conf.agent:
-            conf.http_headers[HTTP_HEADER.USER_AGENT] = conf.agent
+    if conf.agent:
+        conf.http_headers[HTTP_HEADER.USER_AGENT] = conf.agent
 
 
 def _set_http_referer():
