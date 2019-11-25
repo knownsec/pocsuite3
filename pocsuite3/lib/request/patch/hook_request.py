@@ -1,4 +1,6 @@
+from random import choice
 from pocsuite3.lib.core.data import conf
+from pocsuite3.lib.core.enums import HTTP_HEADER
 from requests.models import Request
 from requests.sessions import Session
 from requests.sessions import merge_setting, merge_cookies
@@ -13,6 +15,8 @@ def session_request(self, method, url,
     # Create the Request.
     merged_cookies = merge_cookies(merge_cookies(RequestsCookieJar(), self.cookies),
                                    cookies or (conf.cookie if 'cookie' in conf else None))
+    if conf.random_agent:
+        conf.http_headers[HTTP_HEADER.USER_AGENT] = choice(conf.agents)
 
     req = Request(
         method=method.upper(),
