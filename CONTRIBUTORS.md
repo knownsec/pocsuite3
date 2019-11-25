@@ -36,3 +36,4 @@ gsfish <https://github.com/gsfish>
 Becivells <https://github.com/Becivells>
 * bugfix shodan api
 * for contributing fofa api
+* for contributing random user-agent switch
