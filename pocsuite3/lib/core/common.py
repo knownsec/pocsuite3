@@ -937,6 +937,17 @@ def get_all_nic_info():
     return nic_info
 
 
+def desensitization(s):
+    """ Hide sensitive information.
+    """
+    s = str(s)
+    return (
+        s[:len(s) // 4 if len(s) < 30 else 8] +
+        '***' +
+        s[len(s) * 3 // 4:]
+    )
+
+
 def get_host_ipv6(with_nic=True):
     nic_info = get_all_nic_info()
     ipv4 = get_host_ip()

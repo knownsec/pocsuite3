@@ -11,7 +11,7 @@ from pocsuite3.lib.core.clear import remove_extra_log_message
 from pocsuite3.lib.core.common import boldify_message, check_file, get_file_items, parse_target, \
     get_public_type_members, data_to_stdout
 from pocsuite3.lib.core.common import check_path, extract_cookies
-from pocsuite3.lib.core.common import get_local_ip
+from pocsuite3.lib.core.common import get_local_ip, desensitization
 from pocsuite3.lib.core.common import single_time_warn_message
 from pocsuite3.lib.core.convert import stdout_encode
 from pocsuite3.lib.core.data import conf, cmd_line_options
@@ -284,7 +284,7 @@ def _set_connect_back():
         data_to_stdout("[i] pocsusite is running in shell mode, you need to set connect back host:\n")
         message = '----- Local IP Address -----\n'
         for i, ip in enumerate(kb.data.local_ips):
-            message += "{0}    {1}\n".format(i, ip)
+            message += "{0}    {1}\n".format(i, desensitization(ip) if conf.ppt else ip)
         data_to_stdout(message)
         while True:
             choose = None
@@ -295,7 +295,8 @@ def _set_connect_back():
                 if choose.isdigit():
                     choose = int(choose)
                     conf.connect_back_host = kb.data.local_ips[choose]
-                    data_to_stdout("you choose {0}\n".format(conf.connect_back_host))
+                    data_to_stdout("you choose {0}\n".format(
+                        desensitization(conf.connect_back_host) if conf.ppt else conf.connect_back_host))
                     break
             except Exception:
                 data_to_stdout("wrong number, choose again\n")

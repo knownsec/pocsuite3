@@ -7,7 +7,7 @@ from requests.exceptions import ConnectionError
 from requests.exceptions import HTTPError
 from requests.exceptions import TooManyRedirects
 
-from pocsuite3.lib.core.common import parse_target_url
+from pocsuite3.lib.core.common import parse_target_url, desensitization
 from pocsuite3.lib.core.data import conf
 from pocsuite3.lib.core.data import logger
 from pocsuite3.lib.core.enums import OUTPUT_STATUS, CUSTOM_LOGGING, ERROR_TYPE_ID, POC_CATEGORY
@@ -195,7 +195,7 @@ class POCBase(object):
                     logger.debug('POC: {0} time-out retry failed!'.format(self.name))
                 conf.retry -= 1
             else:
-                msg = "connect target '{0}' failed!".format(target)
+                msg = "connect target '{0}' failed!".format(desensitization(target) if conf.ppt else target)
                 logger.error(msg)
                 output = Output(self)
 
@@ -206,7 +206,7 @@ class POCBase(object):
 
         except ConnectionError as e:
             self.expt = (ERROR_TYPE_ID.CONNECTIONERROR, e)
-            msg = "connect target '{0}' failed!".format(target)
+            msg = "connect target '{0}' failed!".format(desensitization(target) if conf.ppt else target)
             logger.error(msg)
             output = Output(self)
 
@@ -295,27 +295,11 @@ class Output(object):
                 if isinstance(v, dict):
                     for kk, vv in v.items():
                         if (kk == "URL" or kk == "IP") and conf.ppt:
-                            length = len(vv)
-                            _target = vv
-                            if length > 15:
-                                _target = "*" + _target[length - 9:]
-                            elif length > 8:
-                                _target = "*" + _target[5:]
-                            else:
-                                _target = "*" + _target[3:]
-                            vv = _target
+                            vv = desensitization(vv)
                         logger.log(CUSTOM_LOGGING.SUCCESS, "%s : %s" % (kk, vv))
                 else:
                     if (k == "URL" or k == "IP") and conf.ppt:
-                        length = len(v)
-                        _target = v
-                        if length > 15:
-                            _target = "*" + _target[length - 9:]
-                        elif length > 8:
-                            _target = "*" + _target[5:]
-                        else:
-                            _target = "*" + _target[3:]
-                        v = _target
+                        v = desensitization(v)
                     logger.log(CUSTOM_LOGGING.SUCCESS, "%s : %s" % (k, v))
 
     def to_dict(self):
