@@ -1,7 +1,7 @@
 import copy
 import time
 
-from pocsuite3.lib.core.common import data_to_stdout
+from pocsuite3.lib.core.common import data_to_stdout, desensitization
 from pocsuite3.lib.core.data import conf, cmd_line_options
 from pocsuite3.lib.core.data import kb
 from pocsuite3.lib.core.data import logger
@@ -36,7 +36,8 @@ def start():
         task_done()
 
     if conf.mode == "shell" and not conf.api:
-        info_msg = "connect back ip: {0}    port: {1}".format(conf.connect_back_host, conf.connect_back_port)
+        info_msg = "connect back ip: {0}    port: {1}".format(
+            desensitization(conf.connect_back_host) if conf.ppt else conf.connect_back_host, conf.connect_back_port)
         logger.info(info_msg)
         info_msg = "watting for shell connect to pocsuite"
         logger.info(info_msg)
@@ -96,13 +97,7 @@ def task_run():
 
         # for hide some infomations
         if conf.ppt:
-            length = len(target)
-            _target = target
-            if length > 15:
-                _target = "*" + _target[length - 9:]
-            else:
-                _target = "*" + _target[length - 3:]
-            info_msg = "running poc:'{0}' target '{1}'".format(poc_name, _target)
+            info_msg = "running poc:'{0}' target '{1}'".format(poc_name, desensitization(target))
         else:
             info_msg = "running poc:'{0}' target '{1}'".format(poc_name, target)
 
@@ -167,13 +162,7 @@ def task_run():
         output = AttribDict(result.to_dict())
         if conf.ppt:
             # hide some information
-            length = len(target)
-            if length > 15:
-                target = "*" + target[length - 9:]
-            elif length > 8:
-                target = "*" + target[4:]
-            else:
-                target = "*" + target[1:]
+            target = desensitization(target)
 
         output.update({
             'target': target,

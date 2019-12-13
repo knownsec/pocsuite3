@@ -3,7 +3,7 @@ import socket
 import threading
 import time
 
-from pocsuite3.lib.core.common import data_to_stdout, has_poll, get_unicode
+from pocsuite3.lib.core.common import data_to_stdout, has_poll, get_unicode, desensitization
 from pocsuite3.lib.core.data import conf, kb, logger
 from pocsuite3.lib.core.datatype import AttribDict
 from pocsuite3.lib.core.enums import AUTOCOMPLETE_TYPE, OS, CUSTOM_LOGGING
@@ -66,7 +66,8 @@ def listener_worker():
             client.conn = conn
             client.address = address
             kb.data.clients.append(client)
-            info_msg = "new connection established from {0}".format(address[0])
+            info_msg = "new connection established from {0}".format(
+                desensitization(address[0]) if conf.ppt else address[0])
             logger.log(CUSTOM_LOGGING.SUCCESS, info_msg)
         except Exception:
             pass
@@ -93,8 +94,15 @@ def list_clients():
             logger.exception(ex)
             del kb.data.clients[i]
             continue
-        results += str(i) + "   " + str(client.address[0]) + "    " + str(client.address[1]) + " ({0})".format(
-            system) + '\n'
+        results += (
+            str(i) +
+            "   " +
+            (desensitization(client.address[0]) if conf.ppt else str(client.address[0])) +
+            "    " +
+            str(client.address[1]) +
+            " ({0})".format(system) +
+            '\n'
+        )
     data_to_stdout("----- Remote Clients -----" + "\n" + results)
 
 
@@ -103,7 +111,8 @@ def get_client(cmd):
         target = cmd.replace("select ", "")
         target = int(target)
         client = kb.data.clients[target]  # Connect to the selected clients
-        data_to_stdout("Now Connected: {0}\n".format(str(kb.data.clients[target].address[0])))
+        data_to_stdout("Now Connected: {0}\n".format(
+            desensitization(client.address[0] if conf.ppt else client.address[0])))
         return client
     except Exception:
         data_to_stdout("Invalid Client\n")
@@ -146,7 +155,7 @@ def send_shell_commands(client):
         cmd = None
         try:
             address = client.address[0]
-            cmd = input("{0}>: ".format(address))
+            cmd = input("{0}>: ".format(desensitization(address) if conf.ppt else address))
             if not cmd:
                 continue
 
