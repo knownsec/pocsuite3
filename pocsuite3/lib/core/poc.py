@@ -1,4 +1,5 @@
 import re
+import traceback
 from collections import OrderedDict
 from urllib.parse import urlparse
 
@@ -219,7 +220,7 @@ class POCBase(object):
         except BaseException as e:
             self.expt = (ERROR_TYPE_ID.OTHER, e)
             logger.error("PoC has raised a exception")
-            logger.error(str(e))
+            logger.error(str(traceback.format_exc()))
             # logger.exception(e)
             output = Output(self)
 
