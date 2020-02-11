@@ -44,7 +44,7 @@ def run_threads(num_threads, thread_function, args: tuple = (), forward_exceptio
                 logger.warn(warn_msg)
 
         else:
-            thread_function()
+            thread_function(*args)
             return
 
         # Start the threads
