@@ -2,6 +2,8 @@ import requests
 from requests.sessions import Session
 import json
 
+from requests.structures import CaseInsensitiveDict
+
 
 def extract_dict(text, sep, sep2="="):
     """根据分割方式将字符串分割为字典
@@ -12,7 +14,7 @@ def extract_dict(text, sep, sep2="="):
     :return: 返回一个dict类型，key为sep2的第0个位置，value为sep2的第一个位置
         只能将文本转换为字典，若text为其他类型则会出错
     """
-    _dict = dict([l.split(sep2, 1) for l in text.split(sep)])
+    _dict = CaseInsensitiveDict([l.split(sep2, 1) for l in text.split(sep)])
     return _dict
 
 
