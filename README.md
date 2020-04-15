@@ -78,6 +78,26 @@ The latest version of this software is available from: http://pocsuite.org
 
 Documentation is available in the [```docs```](./docs) directory.
 
+## 常用命令
+```
+命令行模式下
+	pocsuite -u http://example.com -r example.py -v 2 # 基础用法 v2开启详细信息
+
+	pocsuite -u http://example.com -r example.py -v 2 --shell # shell反连模式，基础用法 v2开启详细信息
+
+	pocsuite -r redis.py --dork service:redis --threads 20 # 从zoomeye搜索redis目标批量检测，线程设置为20
+
+	pocsuite -u http://example.com --plugins poc_from_pocs,html_report # 加载poc目录下所有poc,并将结果保存为html
+
+	pocsuite -f batch.txt --plugins poc_from_pocs,html_report # 从文件中加载目标，并使用poc目录下poc批量扫描
+
+	pocsuite -u 10.0.0.0/24 -r example.py --plugins target_from_cidr # 加载CIDR目标
+
+	pocsuite -u http://example.com -r ecshop_rce.py --attack --command "whoami" # ecshop poc中实现了自定义命令`command`,可以从外部参数传递。
+
+console模式 
+    poc-console
+```
 
 ## How to Contribute
 
