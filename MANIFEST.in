@@ -1,5 +1,5 @@
 include MANIFEST.in
-include LICENSE
+include COPYING
 include README.md
 include CHANGELOG.md
 include CONTRIBUTORS.md
