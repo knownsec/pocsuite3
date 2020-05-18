@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Time    : 2018/12/25 上午10:58
 # @Author  : chenghs
