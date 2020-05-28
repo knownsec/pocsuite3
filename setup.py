@@ -39,5 +39,6 @@ Pocsuite is an open-sourced remote vulnerability testing and proof-of-concept de
     install_requires=[
         'requests',
         'requests-toolbelt',
+        'PySocks',
     ],
 )
