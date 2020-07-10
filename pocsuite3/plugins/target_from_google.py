@@ -17,7 +17,8 @@ from pocsuite3.lib.core.exception import PocsuitePluginDorkException
 #   $ docker pull fate0/headless-chrome
 #   $ docker run -it --rm --cap-add=SYS_ADMIN -p9222:9222 fate0/headless-chrome
 
-#   PS:使用google-dork等需要那啥的时候打开ss就好
+#   PS: 需要proxy的时候打开全局就好了
+#   
 
 # 使用说明:
 #   对目标使用搜索dork语法，程序会返回抓取的域名
