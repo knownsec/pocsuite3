@@ -8,6 +8,21 @@ from pocsuite3.api import register_plugin
 from pocsuite3.api import kb
 from pocsuite3.lib.core.exception import PocsuitePluginDorkException
 
+# 环境配置:
+#   本地配置chrome的headless，执行如下命令:
+#   headless mode (chrome version >= 59):
+#   $ google-chrome --headless --disable-gpu --remote-debugging-port=9222
+
+#   或者直接使用docker
+#   $ docker pull fate0/headless-chrome
+#   $ docker run -it --rm --cap-add=SYS_ADMIN -p9222:9222 fate0/headless-chrome
+
+#   PS:使用google-dork等需要那啥的时候打开ss就好
+
+# 使用说明:
+#   对目标使用搜索dork语法，程序会返回抓取的域名
+#   python  pocsuite3/cli.py -r pocsuite3/pocs/CVE-2020-5902.py --dork-google 'intitle:"BIG-IP" inurl:"tmui"' --thread 10
+#   默认对域名做了去重输出，根据需要可以修改script
 
 class TargetFromGoogle(PluginBase):
     category = PLUGIN_TYPE.TARGETS
