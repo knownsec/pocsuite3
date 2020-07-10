@@ -100,7 +100,8 @@ def _set_http_referer():
 def _set_http_cookie():
     if conf.cookie:
         if isinstance(conf.cookie, dict):
-            conf.http_headers[HTTP_HEADER.COOKIE] = '; '.join(map(lambda x: '='.join(x), conf.cookie.items()))
+            conf.http_headers[HTTP_HEADER.COOKIE] = '; '.join(
+                map(lambda x: '='.join(x), conf.cookie.items()))
         else:
             conf.http_headers[HTTP_HEADER.COOKIE] = conf.cookie
 
@@ -112,13 +113,15 @@ def _set_http_host():
 
 def _set_http_extra_headers():
     if conf.headers:
-        conf.headers = conf.headers.split("\n") if "\n" in conf.headers else conf.headers.split("\\n")
+        conf.headers = conf.headers.split(
+            "\n") if "\n" in conf.headers else conf.headers.split("\\n")
         for header_value in conf.headers:
             if not header_value.strip():
                 continue
 
             if header_value.count(':') >= 1:
-                header, value = (_.lstrip() for _ in header_value.split(":", 1))
+                header, value = (_.lstrip()
+                                 for _ in header_value.split(":", 1))
                 if header and value:
                     if header not in conf.http_headers:
                         conf.http_headers[header] = value
@@ -147,7 +150,8 @@ def _set_network_proxy():
         try:
             _ = urlsplit(conf.proxy)
         except Exception as ex:
-            err_msg = "invalid proxy address '{0}' ('{1}')".format(conf.proxy, str(ex))
+            err_msg = "invalid proxy address '{0}' ('{1}')".format(
+                conf.proxy, str(ex))
             raise PocsuiteSyntaxException(err_msg)
 
         hostname_port = _.netloc.split(":")
@@ -187,7 +191,8 @@ def _set_network_proxy():
                 password=password,
                 rdns=True if scheme == PROXY_TYPE.SOCKS5H else False,
             )
-            conf.origin_socks = copy.deepcopy(socket.socket)  # Convenient behind recovery
+            conf.origin_socks = copy.deepcopy(
+                socket.socket)  # Convenient behind recovery
             socket.socket = socks.socksocket
 
         if conf.proxy_cred:
@@ -232,6 +237,9 @@ def _set_multiple_targets():
 
     if conf.dork_shodan:
         conf.plugins.append('target_from_shodan')
+
+    if conf.dork_google:
+        conf.plugins.append('target_from_google')
 
     if conf.dork_censys:
         conf.plugins.append('target_from_censys')
@@ -281,10 +289,12 @@ def _set_connect_back():
     if ips:
         kb.data.local_ips = ips
     if conf.mode == "shell" and conf.connect_back_host is None:
-        data_to_stdout("[i] pocsusite is running in shell mode, you need to set connect back host:\n")
+        data_to_stdout(
+            "[i] pocsusite is running in shell mode, you need to set connect back host:\n")
         message = '----- Local IP Address -----\n'
         for i, ip in enumerate(kb.data.local_ips):
-            message += "{0}    {1}\n".format(i, desensitization(ip) if conf.ppt else ip)
+            message += "{0}    {1}\n".format(i,
+                                             desensitization(ip) if conf.ppt else ip)
         data_to_stdout(message)
         while True:
             choose = None
@@ -312,7 +322,8 @@ def _set_user_pocs_path():
         if check_path(conf.pocs_path):
             paths.USER_POCS_PATH = conf.pocs_path
         else:
-            warm_msg = "User defined pocs path {0} is invalid".format(conf.pocs_path)
+            warm_msg = "User defined pocs path {0} is invalid".format(
+                conf.pocs_path)
             logger.warn(warm_msg)
 
 
@@ -333,7 +344,8 @@ def _set_pocs_modules():
                 if poc_ext in ['.py', '.pyc']:
                     file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc)
                 else:
-                    file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc + exists_pocs.get(poc))
+                    file_path = os.path.join(
+                        paths.POCSUITE_POCS_PATH, poc + exists_pocs.get(poc))
                 if file_path:
                     info_msg = "loading PoC script '{0}'".format(file_path)
                     logger.info(info_msg)
@@ -353,7 +365,8 @@ def _set_pocs_modules():
             # step3. load poc from seebug website using plugin 'poc_from_seebug'
             if not load_poc_sucess:
                 if poc.startswith('ssvid-'):
-                    info_msg = "loading Poc script 'https://www.seebug.org/vuldb/{0}'".format(poc)
+                    info_msg = "loading Poc script 'https://www.seebug.org/vuldb/{0}'".format(
+                        poc)
                     logger.info(info_msg)
                     if "poc_from_seebug" not in conf.plugins:
                         conf.plugins.append('poc_from_seebug')
@@ -361,7 +374,8 @@ def _set_pocs_modules():
     load_keyword_poc_sucess = False
     if conf.vul_keyword:
         # step4. load poc with vul_keyword search seebug website
-        info_msg = "loading PoC script from seebug website using search keyword '{0}' ".format(conf.vul_keyword)
+        info_msg = "loading PoC script from seebug website using search keyword '{0}' ".format(
+            conf.vul_keyword)
         logger.info(info_msg)
 
         conf.plugins.append('poc_from_seebug')
@@ -406,7 +420,8 @@ def _cleanup_options():
             conf.cookie = re.sub(r"[\r\n]", "", conf.cookie)
             conf.cookie = extract_cookies(conf.cookie)
         elif not isinstance(conf.cookie, dict):
-            raise PocsuiteHeaderTypeException('Does not support type for cookie')
+            raise PocsuiteHeaderTypeException(
+                'Does not support type for cookie')
     if conf.delay:
         conf.delay = float(conf.delay)
 
@@ -421,7 +436,8 @@ def _cleanup_options():
     if conf.poc:
         if isinstance(conf.poc, str):
             conf.poc = [conf.poc]
-        conf.poc = [poc.lower() if poc.lower().startswith('ssvid-') else poc for poc in conf.poc]
+        conf.poc = [poc.lower() if poc.lower().startswith(
+            'ssvid-') else poc for poc in conf.poc]
 
     if conf.url_file:
         conf.url_file = os.path.expanduser(conf.url_file)
@@ -510,6 +526,7 @@ def _set_conf_attributes():
     conf.dork = None
     conf.dork_zoomeye = None
     conf.dork_shodan = None
+    conf.dork_google = None
     conf.dork_fofa = None
     conf.dork_censys = None
     conf.max_page = 1

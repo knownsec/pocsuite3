@@ -27,7 +27,8 @@ class Shodan():
     def token_is_available(self):
         if self.token:
             try:
-                resp = requests.get('https://api.shodan.io/account/profile?key={0}'.format(self.token))
+                resp = requests.get(
+                    'https://api.shodan.io/account/profile?key={0}'.format(self.token))
                 if resp and resp.status_code == 200 and "member" in resp.json():
                     return True
             except Exception as ex:
@@ -35,10 +36,10 @@ class Shodan():
         return False
 
     def check_token(self):
-        if self.token_is_available():
+        token_is_available = self.token_is_available()
+        if token_is_available == True:
             return True
         else:
-
             new_token = input("Shodan API Token:")
             self.token = new_token
             if self.token_is_available():
@@ -61,7 +62,8 @@ class Shodan():
     def get_resource_info(self):
         if self.check_token():
             try:
-                resp = requests.get('https://api.shodan.io/account/profile?key={0}'.format(self.token))
+                resp = requests.get(
+                    'https://api.shodan.io/account/profile?key={0}'.format(self.token))
                 if resp and resp.status_code == 200 and 'credits' in resp.json():
                     content = resp.json()
                     self.credits = content['credits']

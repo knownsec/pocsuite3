@@ -25,10 +25,13 @@ class Censys():
     def token_is_available(self):
         if self.secret and self.uid:
             try:
-                resp = requests.get("https://censys.io/api/v1/account", auth=(self.uid, self.secret))
+                resp = requests.get(
+                    "https://censys.io/api/v1/account", auth=(self.uid, self.secret))
                 if resp.status_code == 200 and "email" in resp.json():
-                    logger.info("[PLUGIN] Censys login success email:{}".format(resp.json()["email"]))
-                    self.credits = resp.json()["quota"]["allowance"] - resp.json()["quota"]["used"]
+                    logger.info("[PLUGIN] Censys login success email:{}".format(
+                        resp.json()["email"]))
+                    self.credits = resp.json(
+                    )["quota"]["allowance"] - resp.json()["quota"]["used"]
                     return True
             except Exception as ex:
                 logger.error(ex)
@@ -46,7 +49,7 @@ class Censys():
                 self.write_conf()
                 return True
             else:
-                logger.error("The shodan api token is incorrect. "
+                logger.error("The censys api token is incorrect. "
                              "Please enter the correct api token.")
                 self.check_token()
 
@@ -75,7 +78,8 @@ class Censys():
                     "fields": ["ip"],
                     "page": page
                 }
-                resp = requests.post(url, data=json.dumps(data), auth=(self.uid, self.secret))
+                resp = requests.post(url, data=json.dumps(
+                    data), auth=(self.uid, self.secret))
                 if resp and resp.status_code == 200 and "results" in resp.json():
                     content = resp.json()["results"]
                     for match in content:

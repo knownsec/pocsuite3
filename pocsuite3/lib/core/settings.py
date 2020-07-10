@@ -17,7 +17,8 @@ VERSION_STRING = "pocsuite/%s%s" % (VERSION, "-%s" % REVISION if REVISION else "
                                                                                                                         '.py') if __file__.endswith(
                                                                                                                         'pyc') else __file__))))
 
-IS_WIN = True if (sys.platform in ["win32", "cygwin"] or os.name == "nt") else False
+IS_WIN = True if (
+    sys.platform in ["win32", "cygwin"] or os.name == "nt") else False
 PLATFORM = os.name
 PYVERSION = sys.version.split()[0]
 
@@ -43,8 +44,10 @@ DEFAULT_USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKi
 
 BOLD_PATTERNS = ("' is vulnerable", "success", "\d    ",)
 
-OLD_VERSION_CHARACTER = ("from comm import cmdline", "from comm import generic")
-POCSUITE_VERSION_CHARACTER = ("from pocsuite.poc import", "from pocsuite.net import")
+OLD_VERSION_CHARACTER = ("from comm import cmdline",
+                         "from comm import generic")
+POCSUITE_VERSION_CHARACTER = (
+    "from pocsuite.poc import", "from pocsuite.net import")
 POC_IMPORTDICT = {
     "import urlparse": "from urllib import parse as urlparse",
     "import urllib2": "from urllib import request as urllib2",
@@ -90,7 +93,7 @@ OS_ARCH = machine()
 # Cmd line parse whitelist
 CMD_PARSE_WHITELIST = ['version', 'update', 'url', 'file', 'verify', 'attack', 'shell', 'cookie', 'host', 'referer',
                        'user-agent', 'random-agent', 'proxy', 'proxy-cred', 'timeout', 'retry', 'delay', 'headers',
-                       'login-user', 'login-pass', 'dork', 'dork-shodan', 'dork-censys', 'dork-zoomeye', 'dork-fofa',
+                       'login-user', 'login-pass', 'dork', 'dork-shodan', 'dork-censys', 'dork-zoomeye', 'dork-fofa', 'dork-google',
                        'max-page', 'search-type', 'shodan-token', 'fofa-user', 'fofa-token', 'vul-keyword', 'ssv-id',
                        'lhost', 'lport', 'plugins', 'pocs-path', 'threads', 'batch', 'requires', 'quiet', 'poc',
                        'verbose', 'mode', 'api', 'connect_back_host', 'connect_back_port', 'ppt']

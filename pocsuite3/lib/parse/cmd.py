@@ -35,12 +35,16 @@ def cmd_line_parser(argv=None):
         target.add_argument("-u", "--url", dest="url", nargs='+',
                             help="Target URL (e.g. \"http://www.site.com/vuln.php?id=1\")")
 
-        target.add_argument("-f", "--file", dest="url_file", help="Scan multiple targets given in a textual file")
-        target.add_argument("-r", dest="poc", nargs='+', help="Load POC file from local or remote from seebug website")
-        target.add_argument("-c", dest="configFile", help="Load options from a configuration INI file")
+        target.add_argument("-f", "--file", dest="url_file",
+                            help="Scan multiple targets given in a textual file")
+        target.add_argument("-r", dest="poc", nargs='+',
+                            help="Load POC file from local or remote from seebug website")
+        target.add_argument("-c", dest="configFile",
+                            help="Load options from a configuration INI file")
 
         # Mode options
-        mode = parser.add_argument_group("Mode", "Pocsuite running mode options")
+        mode = parser.add_argument_group(
+            "Mode", "Pocsuite running mode options")
 
         mode.add_argument("--verify", dest="mode", default='verify', action="store_const", const='verify',
                           help="Run poc with verify mode")
@@ -50,30 +54,49 @@ def cmd_line_parser(argv=None):
         mode.add_argument("--shell", dest="mode", action="store_const", const='shell',
                           help="Run poc with shell mode")
         # Requests options
-        request = parser.add_argument_group("Request", "Network request options")
-        request.add_argument("--cookie", dest="cookie", help="HTTP Cookie header value")
-        request.add_argument("--host", dest="host", help="HTTP Host header value")
-        request.add_argument("--referer", dest="referer", help="HTTP Referer header value")
-        request.add_argument("--user-agent", dest="agent", help="HTTP User-Agent header value")
+        request = parser.add_argument_group(
+            "Request", "Network request options")
+        request.add_argument("--cookie", dest="cookie",
+                             help="HTTP Cookie header value")
+        request.add_argument("--host", dest="host",
+                             help="HTTP Host header value")
+        request.add_argument("--referer", dest="referer",
+                             help="HTTP Referer header value")
+        request.add_argument("--user-agent", dest="agent",
+                             help="HTTP User-Agent header value")
         request.add_argument("--random-agent", dest="random_agent", action="store_true", default=False,
                              help="Use randomly selected HTTP User-Agent header value")
-        request.add_argument("--proxy", dest="proxy", help="Use a proxy to connect to the target URL")
-        request.add_argument("--proxy-cred", dest="proxy_cred", help="Proxy authentication credentials (name:password)")
-        request.add_argument("--timeout", dest="timeout", help="Seconds to wait before timeout connection (default 30)")
-        request.add_argument("--retry", dest="retry", default=False, help="Time out retrials times.")
-        request.add_argument("--delay", dest="delay", help="Delay between two request of one thread")
-        request.add_argument("--headers", dest="headers", help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
+        request.add_argument("--proxy", dest="proxy",
+                             help="Use a proxy to connect to the target URL")
+        request.add_argument("--proxy-cred", dest="proxy_cred",
+                             help="Proxy authentication credentials (name:password)")
+        request.add_argument("--timeout", dest="timeout",
+                             help="Seconds to wait before timeout connection (default 30)")
+        request.add_argument("--retry", dest="retry",
+                             default=False, help="Time out retrials times.")
+        request.add_argument("--delay", dest="delay",
+                             help="Delay between two request of one thread")
+        request.add_argument("--headers", dest="headers",
+                             help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
         # Account options
-        group = parser.add_argument_group("Account", "Telnet404、Shodan、CEye、Fofa account options")
-        group.add_argument("--login-user", dest="login_user", help="Telnet404 login user")
-        group.add_argument("--login-pass", dest="login_pass", help="Telnet404 login password")
-        group.add_argument("--shodan-token", dest="shodan_token", help="Shodan token")
+        group = parser.add_argument_group(
+            "Account", "Telnet404、Shodan、CEye、Fofa account options")
+        group.add_argument("--login-user", dest="login_user",
+                           help="Telnet404 login user")
+        group.add_argument("--login-pass", dest="login_pass",
+                           help="Telnet404 login password")
+        group.add_argument(
+            "--shodan-token", dest="shodan_token", help="Shodan token")
         group.add_argument("--fofa-user", dest="fofa_user", help="fofa user")
-        group.add_argument("--fofa-token", dest="fofa_token", help="fofa token")
-        group.add_argument("--censys-uid", dest="censys_uid", help="Censys uid")
-        group.add_argument("--censys-secret", dest="censys_secret", help="Censys secret")
+        group.add_argument(
+            "--fofa-token", dest="fofa_token", help="fofa token")
+        group.add_argument(
+            "--censys-uid", dest="censys_uid", help="Censys uid")
+        group.add_argument("--censys-secret",
+                           dest="censys_secret", help="Censys secret")
         # Modules options
-        modules = parser.add_argument_group("Modules", "Modules(Seebug、Zoomeye、CEye、Fofa Listener) options")
+        modules = parser.add_argument_group(
+            "Modules", "Modules(Seebug、Zoomeye、CEye、Fofa、Google、Listener) options")
         modules.add_argument("--dork", dest="dork", action="store", default=None,
                              help="Zoomeye dork used for search.")
         modules.add_argument("--dork-zoomeye", dest="dork_zoomeye", action="store", default=None,
@@ -84,6 +107,8 @@ def cmd_line_parser(argv=None):
                              help="Censys dork used for search.")
         modules.add_argument("--dork-fofa", dest="dork_fofa", action="store", default=None,
                              help="Fofa dork used for search.")
+        modules.add_argument("--dork-google", dest="dork_google", action="store", default=None,
+                             help="Google dork used for search.")
         modules.add_argument("--max-page", dest="max_page", type=int, default=1,
                              help="Max page used in ZoomEye API(10 targets/Page).")
         modules.add_argument("--search-type", dest="search_type", action="store", default='host',
@@ -101,7 +126,8 @@ def cmd_line_parser(argv=None):
                              default=False)
 
         # Optimization options
-        optimization = parser.add_argument_group("Optimization", "Optimization options")
+        optimization = parser.add_argument_group(
+            "Optimization", "Optimization options")
         optimization.add_argument("--plugins", dest="plugins", action="store", default=None,
                                   help="Load plugins to execute")
         optimization.add_argument("--pocs-path", dest="pocs_path", action="store", default=None,
@@ -118,7 +144,8 @@ def cmd_line_parser(argv=None):
                                   help="Hiden sensitive information when published to the network")
 
         # Diy options
-        diy = parser.add_argument_group("Poc options", "definition options for PoC")
+        diy = parser.add_argument_group(
+            "Poc options", "definition options for PoC")
 
         for line in argv:
             if line.startswith("--"):
@@ -126,7 +153,7 @@ def cmd_line_parser(argv=None):
                     diy.add_argument(line)
 
         args = parser.parse_args()
-        if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork, args.dork_shodan, args.dork_fofa,
+        if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork, args.dork_shodan, args.dork_fofa, args.dork_google,
                     args.dork_censys, args.dork_zoomeye, args.configFile, args.show_version)):
             err_msg = "missing a mandatory option (-u, --url-file, --update). "
             err_msg += "Use -h for basic and -hh for advanced help\n"
