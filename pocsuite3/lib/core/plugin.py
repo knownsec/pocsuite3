@@ -23,7 +23,7 @@ class PluginBase(object):
             kb.targets.add(target)
             ret = True
         else:
-            err_msg = "[PLUIGIN] invalid target format: {0}".format(target)
+            err_msg = "[PLUGIN] invalid target format: {0}".format(target)
             logger.error(err_msg)
 
         return ret
@@ -39,7 +39,7 @@ class PluginBase(object):
                 msg = "[PLUGIN] load PoC script failed: {0}".format(str(ex))
                 single_time_warn_message(msg)
         else:
-            err_msg = "[PLUIGIN] invalid pocsuite3 PoC code"
+            err_msg = "[PLUGIN] invalid pocsuite3 PoC code"
             logger.error(err_msg)
         return ret
 
@@ -56,7 +56,7 @@ class PluginBase(object):
                 msg = "[PLUGIN] load PoC script failed: {0}".format(str(ex))
                 single_time_warn_message(msg)
         else:
-            err_msg = "[PLUIGIN] invalid pocsuite3 PoC file {}".format(filename)
+            err_msg = "[PLUGIN] invalid pocsuite3 PoC file {}".format(filename)
             logger.error(err_msg)
         return ret
 
