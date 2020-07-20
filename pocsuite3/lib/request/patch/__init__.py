@@ -1,11 +1,11 @@
 import urllib3
 
+from pocsuite3.lib.core.exception import PocsuiteIncompleteRead
 from .remove_ssl_verify import remove_ssl_verify
 from .remove_warnings import disable_warnings
 from .hook_request import patch_session
 from .add_httpraw import patch_addraw
 from .hook_request_redirect import patch_redirect
-from six.moves import http_client as httplib
 
 
 def patch_all():
@@ -33,4 +33,4 @@ def _update_chunk_length(self):
     except ValueError:
         # Invalid chunked protocol response, abort.
         self.close()
-        raise httplib.IncompleteRead(line)
+        raise PocsuiteIncompleteRead(line)
