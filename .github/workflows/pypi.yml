@@ -2,7 +2,7 @@ name: Upload Python Package
 
 on:
 #  workflow_dispatch
-- create:
+  create:
     tags:
     - v*
 
