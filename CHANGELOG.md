@@ -184,3 +184,12 @@ Cross-platform shell code generation
 ---------------
 * 增加了poc类型的枚举类型 #95
 * 修改了样例poc
+
+# version 1.6.0~1.6.3
+---------------
+* 添加随机UA头选项
+* 重构--ppt隐藏信息选项
+* 当poc有语法错误时，显示详细信息
+* 添加InMemoryWar
+* 修复urllib3的`chunk_length`错误
+* 加入打tag自动构建发布到pypi

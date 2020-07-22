@@ -1,9 +1,10 @@
 name: Upload Python Package
 
-on: workflow_dispatch
-#  - push:
-#      tags:
-#      - v*
+on:
+#  workflow_dispatch
+- create:
+    tags:
+    - v*
 
 jobs:
   deploy:
