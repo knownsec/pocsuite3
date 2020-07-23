@@ -59,21 +59,21 @@ It comes with a powerful proof-of-concept engine, many powerful features for the
 
 ## Installation
 
-The quick way:
+git clone it
 
-``` bash
-$ pip3 install pocsuite3
+```bash
+git clone https://github.com/zer0yu/pocsuite-z.git
 ```
 
-Or click [here](https://github.com/knownsec/pocsuite3/archive/master.zip) to download the latest source zip package and extract
+or click [here](https://github.com/zer0yu/pocsuite-z/archive/master.zip) to download the latest source zip package and extract
 
 ``` bash
-$ wget https://github.com/knownsec/pocsuite3/archive/master.zip
+$ wget https://github.com/zer0yu/pocsuite-z/archive/master.zip
 $ unzip master.zip
 ```
 
 
-The latest version of this software is available from: http://pocsuite.org
+The latest version of this software is available from: https://github.com/zer0yu/pocsuite-z
 
 ## Documentation
 
