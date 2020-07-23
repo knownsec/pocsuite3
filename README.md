@@ -1,4 +1,4 @@
-# pocsuite3
+# pocsuite-z
 
 [![Python 3.x](https://img.shields.io/badge/python-3.x-yellow.svg)](https://www.python.org/) [![License](https://img.shields.io/badge/license-GPLv2-red.svg)](https://raw.githubusercontent.com/knownsec/Pocsuite/master/docs/COPYING) [![Twitter](https://img.shields.io/badge/twitter-@seebug-blue.svg)](https://twitter.com/seebug_team) [![build](https://api.travis-ci.org/knownsec/pocsuite3.svg)](https://travis-ci.org/knownsec/pocsuite3)
 
@@ -7,12 +7,12 @@ Usage of pocsuite for attacking targets without prior mutual consent is illegal.
 pocsuite is for security testing purposes only
 
 ## 法律免责声明
-未经事先双方同意，使用pocsuite攻击目标是非法的。  
-pocsuite仅用于安全测试目的
+未经事先双方同意，使用pocsuite-z攻击目标是非法的。  
+pocsuite-z仅用于安全测试目的
 
 ## Overview
 
-pocsuite3 is an open-sourced remote vulnerability testing and proof-of-concept development framework developed by the [**Knownsec 404 Team**](http://www.knownsec.com/). 
+pocsuite-z is an open-sourced remote vulnerability testing and proof-of-concept development framework developed by the [**Knownsec 404 Team**](http://www.knownsec.com/) ,and enhanced by z3r0yu. 
 It comes with a powerful proof-of-concept engine, many powerful features for the ultimate penetration testers and security researchers.
 
 ## Features
@@ -87,6 +87,8 @@ Documentation is available in the [```docs```](./docs) directory.
 	pocsuite -u http://example.com -r example.py -v 2 --shell # shell反连模式，基础用法 v2开启详细信息
 
 	pocsuite -r redis.py --dork service:redis --threads 20 # 从zoomeye搜索redis目标批量检测，线程设置为20
+	
+	python pocsuite3/cli.py -r pocsuite3/pocs/CVE-2020-5902.py --dork-google 'intitle:"BIG-IP" inurl:"tmui"' --thread 10 # 从google搜索目标并进行批量检测
 
 	pocsuite -u http://example.com --plugins poc_from_pocs,html_report # 加载poc目录下所有poc,并将结果保存为html
 
@@ -112,7 +114,7 @@ console模式
 
 * [Contributors](./CONTRIBUTORS.md)
 * [Change Log](./CHANGELOG.md)
-* [Bug tracking](https://github.com/knownsec/pocsuite3/issues)
+* [Bug tracking](https://github.com/zer0yu/pocsuite-z/issues)
 * [Copyright](./COPYING)
 * [Pocsuite](http://pocsuite.org)
 * [Seebug](https://www.seebug.org)
