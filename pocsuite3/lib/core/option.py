@@ -464,10 +464,16 @@ def _adjust_logging_formatter():
 
 def _create_directory():
     if not os.path.isdir(paths.POCSUITE_OUTPUT_PATH):
-        os.makedirs(paths.POCSUITE_OUTPUT_PATH)
+        try:
+            os.makedirs(paths.POCSUITE_OUTPUT_PATH)
+        except FileExistsError:
+            pass
 
     if not os.path.isdir(paths.POCSUITE_TMP_PATH):
-        os.makedirs(paths.POCSUITE_TMP_PATH)
+        try:
+            os.makedirs(paths.POCSUITE_TMP_PATH)
+        except FileExistsError:
+            pass
 
     if not os.path.isfile(paths.POCSUITE_RC_PATH):
         open(paths.POCSUITE_RC_PATH, 'a').close()
