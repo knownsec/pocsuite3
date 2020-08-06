@@ -5,13 +5,35 @@ from requests.models import Request
 from requests.sessions import Session
 from requests.sessions import merge_setting, merge_cookies
 from requests.cookies import RequestsCookieJar
-from requests.utils import get_encodings_from_content
+from requests.utils import get_encodings_from_content, to_key_val_list
+from requests.compat import OrderedDict, Mapping
 
 
 def session_request(self, method, url,
                     params=None, data=None, headers=None, cookies=None, files=None, auth=None,
                     timeout=None,
                     allow_redirects=True, proxies=None, hooks=None, stream=None, verify=False, cert=None, json=None):
+    # In order to remove headers that are set to None
+    def _merge_retain_none(request_setting, session_setting, dict_class=OrderedDict):
+
+        if session_setting is None:
+            return request_setting
+
+        if request_setting is None:
+            return session_setting
+
+        # Bypass if not a dictionary (e.g. verify)
+        if not (
+                isinstance(session_setting, Mapping) and
+                isinstance(request_setting, Mapping)
+        ):
+            return request_setting
+
+        merged_setting = dict_class(to_key_val_list(session_setting))
+        merged_setting.update(to_key_val_list(request_setting))
+
+        return merged_setting
+
     # Create the Request.
     merged_cookies = merge_cookies(merge_cookies(RequestsCookieJar(), self.cookies),
                                    cookies or (conf.cookie if 'cookie' in conf else None))
@@ -21,7 +43,7 @@ def session_request(self, method, url,
     req = Request(
         method=method.upper(),
         url=url,
-        headers=merge_setting(headers, conf.http_headers if 'http_headers' in conf else {}),
+        headers=_merge_retain_none(headers, conf.http_headers if 'http_headers' in conf else {}),
         files=files,
         data=data or {},
         json=json,
