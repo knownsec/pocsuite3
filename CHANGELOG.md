@@ -193,3 +193,14 @@ Cross-platform shell code generation
 * 添加InMemoryWar
 * 修复urllib3的`chunk_length`错误
 * 加入打tag自动构建发布到pypi
+
+# version 1.6.4
+----------------
+* 测试Github Action自动发布pypi
+
+# version 1.6.5
+----------------
+* 修复http请求头不能删除
+* 修复html导出编码错误
+* 修复console模式下lport设置失败
+* shell模式可以使用select或use选择shell

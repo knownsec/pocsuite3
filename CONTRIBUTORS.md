@@ -16,6 +16,8 @@ phithon <root(at)leavesongs.com>
 longofo
 * for contributing http server module
 
+
+
 Ro0tk1t <https://github.com/Ro0tk1t>
 * for contributing multi-ip multi-poc execution features
 * fix some issues
@@ -37,3 +39,6 @@ Becivells <https://github.com/Becivells>
 * bugfix shodan api
 * for contributing fofa api
 * for contributing random user-agent switch
+
+hex0wn <https://github.com/hex0wn>
+* bugfix #139
