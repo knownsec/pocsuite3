@@ -322,7 +322,7 @@ class PocsuiteInterpreter(BaseInterpreter):
             self.current_module.setg_option(key, value)
             logger.info("{} => {}".format(key, value))
         elif key in self.current_module.payload_options:
-            if value.isdigit():
+            if value.isdigit() and key != "lport":
                 index = int(value)
                 if index >= len(self.last_ip):
                     logger.warning("Index out of range")
