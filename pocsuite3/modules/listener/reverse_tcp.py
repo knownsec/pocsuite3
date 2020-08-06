@@ -95,20 +95,20 @@ def list_clients():
             del kb.data.clients[i]
             continue
         results += (
-            str(i) +
-            "   " +
-            (desensitization(client.address[0]) if conf.ppt else str(client.address[0])) +
-            "    " +
-            str(client.address[1]) +
-            " ({0})".format(system) +
-            '\n'
+                str(i) +
+                "   " +
+                (desensitization(client.address[0]) if conf.ppt else str(client.address[0])) +
+                "    " +
+                str(client.address[1]) +
+                " ({0})".format(system) +
+                '\n'
         )
     data_to_stdout("----- Remote Clients -----" + "\n" + results)
 
 
 def get_client(cmd):
     try:
-        target = cmd.replace("select ", "")
+        target = cmd.split(" ")[1]
         target = int(target)
         client = kb.data.clients[target]  # Connect to the selected clients
         data_to_stdout("Now Connected: {0}\n".format(
@@ -253,19 +253,19 @@ def print_cmd_help():
     data_to_stdout(msg)
 
 
-def handle_listener_connection_for_console(wait_time=3,try_count=3):
-        cmd = "select 0"
-        client = get_client(cmd)
-        if client is not None:
-            f = send_shell_commands_for_console(client)
-            if f:
-                return
+def handle_listener_connection_for_console(wait_time=3, try_count=3):
+    cmd = "select 0"
+    client = get_client(cmd)
+    if client is not None:
+        f = send_shell_commands_for_console(client)
+        if f:
+            return
 
-        if try_count > 0:
-            time.sleep(wait_time)
-            data_to_stdout("connect err remaining number of retries %s times\n"%(try_count))
-            try_count -= 1
-            return handle_listener_connection_for_console(wait_time=wait_time,try_count=try_count)
+    if try_count > 0:
+        time.sleep(wait_time)
+        data_to_stdout("connect err remaining number of retries %s times\n" % (try_count))
+        try_count -= 1
+        return handle_listener_connection_for_console(wait_time=wait_time, try_count=try_count)
 
 
 def handle_listener_connection():
@@ -287,7 +287,7 @@ def handle_listener_connection():
             raise PocsuiteShellQuitException
         elif cmd == "list":
             list_clients()
-        elif "select" in cmd:
+        elif cmd.lower().split(" ")[0] in ('select', 'use'):
             client = get_client(cmd)
             if client is not None:
                 send_shell_commands(client)
