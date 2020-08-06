@@ -29,7 +29,7 @@ from pocsuite3.lib.core.statistics_comparison import StatisticsComparison
 from pocsuite3.lib.core.update import update
 from pocsuite3.lib.parse.cmd import DIY_OPTIONS
 from pocsuite3.lib.parse.configfile import config_file_parser
-from pocsuite3.lib.request import patch_all
+from pocsuite3.lib.request.patch import patch_all
 from pocsuite3.modules.listener import start_listener
 from pocsuite3.thirdparty.oset.orderedset import OrderedSet
 from pocsuite3.thirdparty.pysocks import socks

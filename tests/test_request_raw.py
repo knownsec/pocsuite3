@@ -1,8 +1,14 @@
 import unittest
-from pocsuite3.api import requests
+from pocsuite3.api import requests, init_pocsuite
 
 
 class TestCase(unittest.TestCase):
+    def setUp(self):
+        init_pocsuite()
+
+    def tearDown(self):
+        pass
+
     def test_get(self):
         raw = '''
         GET /get?a=1&b=2 HTTP/1.1

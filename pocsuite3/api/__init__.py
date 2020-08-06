@@ -32,7 +32,7 @@ __all__ = (
     'PLUGIN_TYPE', 'POCBase', 'Output', 'AttribDict', 'POC_CATEGORY', 'VUL_TYPE',
     'register_poc', 'conf', 'kb', 'logger', 'paths', 'DEFAULT_LISTENER_PORT', 'load_file_to_module',
     'load_string_to_module', 'single_time_warn_message', 'CEye', 'Seebug',
-    'ZoomEye', 'Shodan','Fofa','Censys', 'PHTTPServer', 'REVERSE_PAYLOAD', 'get_listener_ip', 'get_listener_port',
+    'ZoomEye', 'Shodan', 'Fofa', 'Censys', 'PHTTPServer', 'REVERSE_PAYLOAD', 'get_listener_ip', 'get_listener_port',
     'get_results', 'init_pocsuite', 'start_pocsuite', 'get_poc_options', 'crawl',
     'OSShellcodes', 'WebShell', 'OptDict', 'OptIP', 'OptPort', 'OptBool', 'OptInteger', 'OptFloat', 'OptString',
     'OptItems', 'OptDict', 'get_middle_text', 'generate_shellcode_list', 'random_str')
@@ -59,7 +59,7 @@ def get_results():
     return kb.results
 
 
-def init_pocsuite(options):
+def init_pocsuite(options={}):
     init_options(options)
     init()
 
