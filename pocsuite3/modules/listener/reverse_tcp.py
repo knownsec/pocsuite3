@@ -76,31 +76,31 @@ def listener_worker():
 def list_clients():
     results = ''
     for i, client in enumerate(kb.data.clients):
-        try:
-            client.conn.send(str.encode('uname\n'))
-            time.sleep(0.01)
-            ret = client.conn.recv(2048)
-            if ret:
-                ret = ret.decode('utf-8', errors="ignore")
-                system = "unknown"
-                if "darwin" in ret.lower():
-                    system = "Darwin"
-                elif "linux" in ret.lower():
-                    system = "Linux"
-                elif "uname" in ret.lower():
-                    system = "Windows"
-
-        except Exception as ex:  # If a connection fails, remove it
-            logger.exception(ex)
-            del kb.data.clients[i]
-            continue
+        # try:
+        #     client.conn.send(str.encode('uname\n'))
+        #     time.sleep(0.01)
+        #     ret = client.conn.recv(2048)
+        #     if ret:
+        #         ret = ret.decode('utf-8', errors="ignore")
+        #         system = "unknown"
+        #         if "darwin" in ret.lower():
+        #             system = "Darwin"
+        #         elif "linux" in ret.lower():
+        #             system = "Linux"
+        #         elif "uname" in ret.lower():
+        #             system = "Windows"
+        #
+        # except Exception as ex:  # If a connection fails, remove it
+        #     logger.exception(ex)
+        #     del kb.data.clients[i]
+        #     continue
         results += (
                 str(i) +
                 "   " +
                 (desensitization(client.address[0]) if conf.ppt else str(client.address[0])) +
                 "    " +
                 str(client.address[1]) +
-                " ({0})".format(system) +
+                # " ({0})".format(system) +
                 '\n'
         )
     data_to_stdout("----- Remote Clients -----" + "\n" + results)
