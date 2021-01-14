@@ -69,6 +69,7 @@ class BaseInterpreter(object):
             cmd = self.input_command + " " + self.input_args
             for line in exec_cmd(cmd=cmd):
                 print(line.decode(chardet.detect(line)['encoding']))
+            raise PocsuiteBaseException("Pocsuite3 Unknown this command, and run it on system: '{}'".format(command))
             # raise PocsuiteBaseException("Unknown command: '{}'".format(command))
         return command_handler
 
