@@ -39,7 +39,7 @@ class DemoPOC(POCBase):
 
     def _options(self):
         o = OrderedDict()
-        o["ssh_burst_threads"] = OptInteger(4, description='set threads for this burst_poc', require=False)
+        o["ssh_burst_threads"] = OptInteger(4, description='set ssh_burst_threads', require=False)
         return o
 
     def _verify(self):
