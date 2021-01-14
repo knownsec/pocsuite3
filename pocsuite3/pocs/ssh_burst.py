@@ -39,18 +39,18 @@ class DemoPOC(POCBase):
 
     def _options(self):
         o = OrderedDict()
-        o["threads"] = OptInteger(4, description='set threads for this burst_poc', require=False)
+        o["ssh_burst_threads"] = OptInteger(4, description='set threads for this burst_poc', require=False)
         return o
 
     def _verify(self):
         result = {}
         host = self.getg_option("rhost")
         port = self.getg_option("rport") or 22
-        threads = self.get_option("threads")
+        ssh_burst_threads = self.get_option("ssh_burst_threads")
 
         task_queue = queue.Queue()
         result_queue = queue.Queue()
-        ssh_burst(host, port, task_queue, result_queue, threads)
+        ssh_burst(host, port, task_queue, result_queue, ssh_burst_threads)
         if not result_queue.empty():
             username, password = result_queue.get()
             result['VerifyInfo'] = {}
@@ -121,7 +121,7 @@ def task_thread(task_queue, result_queue):
             result_queue.put((username, password))
 
 
-def ssh_burst(host, port, task_queue, result_queue, threads):
+def ssh_burst(host, port, task_queue, result_queue, ssh_burst_threads):
     log = paramiko.util.logging.getLogger()
     log.setLevel(logging.CRITICAL)
 
@@ -130,7 +130,7 @@ def ssh_burst(host, port, task_queue, result_queue, threads):
         return
     try:
         task_init(host, port, task_queue, result_queue)
-        run_threads(threads, task_thread, args=(task_queue, result_queue))
+        run_threads(ssh_burst_threads, task_thread, args=(task_queue, result_queue))
     except Exception:
         pass
 
