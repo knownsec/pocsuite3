@@ -5,10 +5,11 @@
 # @File    : interpreter.py
 import os
 import re
+import chardet
 
 from pocsuite3.lib.controller.controller import start
 from pocsuite3.lib.core.common import banner, index_modules, data_to_stdout, humanize_path, module_required, \
-    get_poc_name, stop_after, get_local_ip, is_ipv6_address_format, rtrim, ltrim
+    get_poc_name, stop_after, get_local_ip, is_ipv6_address_format, rtrim, ltrim, exec_cmd
 from pocsuite3.lib.core.data import logger, paths, kb, conf
 from pocsuite3.lib.core.enums import POC_CATEGORY, AUTOCOMPLETE_TYPE
 from pocsuite3.lib.core.exception import PocsuiteBaseException, PocsuiteShellQuitException
@@ -28,6 +29,9 @@ class BaseInterpreter(object):
         self.setup()
         self.banner = ""
         self.complete = None
+        # Prepare to execute system commands
+        self.input_command = ""
+        self.input_args = ""
 
     def setup(self):
         """ Initialization of third-party libraries
@@ -62,8 +66,10 @@ class BaseInterpreter(object):
         try:
             command_handler = getattr(self, "command_{}".format(command))
         except AttributeError:
-            raise PocsuiteBaseException("Unknown command: '{}'".format(command))
-
+            cmd = self.input_command + " " + self.input_args
+            for line in exec_cmd(cmd=cmd):
+                print(line.decode(chardet.detect(line)['encoding']))
+            # raise PocsuiteBaseException("Unknown command: '{}'".format(command))
         return command_handler
 
     def start(self):
@@ -71,12 +77,12 @@ class BaseInterpreter(object):
 
         while True:
             try:
-                command, args = self.parse_line(input(self.prompt))
-                command = command.lower()
+                self.input_command, self.input_args = self.parse_line(input(self.prompt))
+                command = self.input_command.lower()
                 if not command:
                     continue
                 command_handler = self.get_command_handler(command)
-                command_handler(args)
+                command_handler(self.input_args)
             except PocsuiteBaseException as err:
                 logger.error(err)
             except EOFError:

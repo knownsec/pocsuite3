@@ -968,3 +968,4 @@ def get_host_ipv6(with_nic=True):
         if not with_nic:
             ipv6 = ipv6.split('%')[0]
         return ipv6
+
