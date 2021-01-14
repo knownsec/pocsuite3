@@ -156,6 +156,7 @@ class PocsuiteInterpreter(BaseInterpreter):
     use <module>                Select a module for usage
     search <search term>        Search for appropriate module
     list|show all               Show all available pocs
+    clear                       clear the console screen
     exit                        Exit Pocsuite3"""
 
     module_help = """Module commands:
@@ -178,7 +179,7 @@ class PocsuiteInterpreter(BaseInterpreter):
         self.show_sub_commands = (
             "info", "options", "ip", "all")
 
-        self.global_commands = sorted(["use ", "help", "exit", "show ", "search "])
+        self.global_commands = sorted(["use ", "help", "exit", "show ", "search ", "clear"])
         self.module_commands = ["run", "back", "set ", "setg ", "check"]
         self.module_commands.extend(self.global_commands)
         self.module_commands.sort()
@@ -242,6 +243,12 @@ class PocsuiteInterpreter(BaseInterpreter):
 
     def command_exit(self, *args, **kwargs):
         raise EOFError
+
+    def command_clear(self, *args, **kwargs):
+        if IS_WIN:
+            os.system('cls')
+        else:
+            os.system('clear')
 
     def command_help(self, *args, **kwargs):
         data_to_stdout(self.global_help)
