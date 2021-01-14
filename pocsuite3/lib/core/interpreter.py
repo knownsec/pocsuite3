@@ -84,8 +84,8 @@ class BaseInterpreter(object):
                     continue
                 command_handler = self.get_command_handler(command)
                 command_handler(self.input_args)
-            except PocsuiteBaseException as err:
-                logger.error(err)
+            except PocsuiteBaseException as warn:
+                logger.warn(warn)
             except EOFError:
                 logger.info("Pocsuite stopped")
                 break
