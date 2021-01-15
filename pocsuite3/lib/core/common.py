@@ -969,3 +969,8 @@ def get_host_ipv6(with_nic=True):
             ipv6 = ipv6.split('%')[0]
         return ipv6
 
+
+if __name__ == '__main__':
+    cmd = 'ping baidu.com'
+    res = exec_cmd(cmd=cmd)
+    print(res)
