@@ -915,7 +915,7 @@ def exec_cmd(cmd, raw_data=True):
             line = p.stdout.read()
             out_data += line
     except Exception as ex:
-        print("Execute cmd error {}".format(str(ex)))
+        logger.error("Execute cmd error {}".format(str(ex)))
 
     encoding = chardet.detect(out_data).get('encoding')
     encoding = encoding if encoding else 'utf-8'
