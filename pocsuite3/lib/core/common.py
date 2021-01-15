@@ -910,7 +910,7 @@ def exec_cmd(cmd, raw_data=True):
     out_data = b''
     try:
         p = subprocess.Popen(
-            cmd, shell=True, stdout=subprocess.PIPE,
+            cmd, shell=False, stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT)
         while p.poll() is None:
             line = p.stdout.read()
