@@ -906,6 +906,7 @@ def check_port(ip, port):
 
 def exec_cmd(cmd, raw_data=True):
     cmd = shlex.split(cmd)
+    print(cmd)
     out_data = b''
     try:
         p = subprocess.Popen(
