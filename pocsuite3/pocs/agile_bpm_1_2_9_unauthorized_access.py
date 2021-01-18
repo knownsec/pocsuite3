@@ -9,17 +9,17 @@ from pocsuite3.modules.listener import REVERSE_PAYLOAD
 
 
 class DemoPOC(POCBase):
-    vulID = '1571'                  # ssvid ID 如果是提交漏洞的同时提交 PoC,则写成 0
-    version = '1'                   # 默认为1
-    author = 'seebug'               # PoC作者的大名
-    vulDate = '2014-10-16'          # 漏洞公开的时间,不知道就写今天
-    createDate = '2014-10-16'       # 编写 PoC 的日期
-    updateDate = '2014-10-16'       # PoC 更新的时间,默认和编写时间一样
-    references = ['https://xxx.xx.com.cn']      # 漏洞地址来源,0day不用写
-    name = 'XXXX SQL注入漏洞 PoC'   # PoC 名称
-    appPowerLink = 'https://www.drupal.org/'    # 漏洞厂商主页地址
-    appName = 'Drupal'          # 漏洞应用名称
-    appVersion = '7.x'          # 漏洞影响版本
+    vulID = '0'                     # ssvid ID 如果是提交漏洞的同时提交 PoC,则写成 0
+    version = '1.2.9'               # 默认为1
+    author = 'metatron'             # PoC作者的大名
+    vulDate = '2021-01-18'          # 漏洞公开的时间,不知道就写今天
+    createDate = '2021-01-18'       # 编写 PoC 的日期
+    updateDate = '2021-01-18'       # PoC 更新的时间,默认和编写时间一样
+    references = ['']               # 漏洞地址来源,0day不用写
+    name = 'Agile-BPM_1.2.9 越权访问漏洞 PoC'                         # PoC 名称
+    appPowerLink = 'https://gitee.com/agile-bpm/agile-bpm-basic'    # 漏洞厂商主页地址
+    appName = 'Agile-BPM'                       # 漏洞应用名称
+    appVersion = '1.2.x'                        # 漏洞影响版本
     vulType = VUL_TYPE.UNAUTHORIZED_ACCESS      # 漏洞类型,类型参考见 漏洞类型规范表
     category = POC_CATEGORY.EXPLOITS.WEBAPP
     samples = []                # 测试样列,就是用 PoC 测试成功的网站
@@ -34,8 +34,8 @@ class DemoPOC(POCBase):
 
     def _options(self):
         opt = OrderedDict()     # value = self.get_option('key')
-        opt["string"] = OptString('', description='这个poc需要用户登录，请输入登录账号', require=True)
-        opt["integer"] = OptInteger('', description='这个poc需要用户密码，请输出用户密码', require=False)
+        opt["username"] = OptString('', description='这个poc需要用户登录，请输入登录账号', require=True)
+        opt["password"] = OptInteger('', description='这个poc需要用户密码，请输出用户密码', require=False)
         return opt
 
     def _verify(self):

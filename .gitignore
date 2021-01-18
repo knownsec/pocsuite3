@@ -64,3 +64,4 @@ dist/
 *.egg-info
 .eggs/
 pocsuite.ini
+pocsuite3/pocs/
