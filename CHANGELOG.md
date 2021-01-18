@@ -204,3 +204,8 @@ Cross-platform shell code generation
 * 修复html导出编码错误
 * 修复console模式下lport设置失败
 * shell模式可以使用select或use选择shell
+
+# version 1.7.0
+----------------- 
+* 修复`Python 3.9`兼容性问题
+* console模式，添加系统命令执行，添加pocuite3命令clear清除屏幕

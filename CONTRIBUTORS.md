@@ -17,7 +17,6 @@ longofo
 * for contributing http server module
 
 
-
 Ro0tk1t <https://github.com/Ro0tk1t>
 * for contributing multi-ip multi-poc execution features
 * fix some issues
@@ -42,3 +41,6 @@ Becivells <https://github.com/Becivells>
 
 hex0wn <https://github.com/hex0wn>
 * bugfix #139
+
+MrMetatron <https://github.com/MrMetatron>
+* console模式，添加系统命令执行，添加pocuite3命令clear清除屏幕功能
