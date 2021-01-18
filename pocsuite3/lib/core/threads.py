@@ -66,7 +66,7 @@ def run_threads(num_threads, thread_function, args: tuple = (), forward_exceptio
         while alive:
             alive = False
             for thread in threads:
-                if thread.isAlive():
+                if thread.is_alive():
                     alive = True
                     time.sleep(0.1)
 
