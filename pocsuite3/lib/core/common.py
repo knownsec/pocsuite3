@@ -909,13 +909,13 @@ def exec_cmd(cmd, raw_data=True):
     out_data = b''
     try:
         p = subprocess.Popen(
-            cmd, shell=True, stdout=subprocess.PIPE,
+            cmd, shell=False, stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT)
         while p.poll() is None:
             line = p.stdout.read()
             out_data += line
     except Exception as ex:
-        print("Execute cmd error {}".format(str(ex)))
+        logger.error("Execute cmd error {}".format(str(ex)))
 
     encoding = chardet.detect(out_data).get('encoding')
     encoding = encoding if encoding else 'utf-8'
@@ -968,3 +968,9 @@ def get_host_ipv6(with_nic=True):
         if not with_nic:
             ipv6 = ipv6.split('%')[0]
         return ipv6
+
+
+if __name__ == '__main__':
+    cmd = 'ping baidu.com'
+    res = exec_cmd(cmd=cmd)
+    print(res)

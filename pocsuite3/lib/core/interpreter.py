@@ -5,10 +5,11 @@
 # @File    : interpreter.py
 import os
 import re
+import chardet
 
 from pocsuite3.lib.controller.controller import start
 from pocsuite3.lib.core.common import banner, index_modules, data_to_stdout, humanize_path, module_required, \
-    get_poc_name, stop_after, get_local_ip, is_ipv6_address_format, rtrim, ltrim
+    get_poc_name, stop_after, get_local_ip, is_ipv6_address_format, rtrim, ltrim, exec_cmd
 from pocsuite3.lib.core.data import logger, paths, kb, conf
 from pocsuite3.lib.core.enums import POC_CATEGORY, AUTOCOMPLETE_TYPE
 from pocsuite3.lib.core.exception import PocsuiteBaseException, PocsuiteShellQuitException
@@ -28,6 +29,9 @@ class BaseInterpreter(object):
         self.setup()
         self.banner = ""
         self.complete = None
+        # Prepare to execute system commands
+        self.input_command = ''
+        self.input_args = ''
 
     def setup(self):
         """ Initialization of third-party libraries
@@ -62,7 +66,11 @@ class BaseInterpreter(object):
         try:
             command_handler = getattr(self, "command_{}".format(command))
         except AttributeError:
-            raise PocsuiteBaseException("Unknown command: '{}'".format(command))
+            cmd = self.input_command + ' ' + self.input_args
+            for line in exec_cmd(cmd=cmd):
+                if result_encoding := chardet.detect(line)['encoding']:
+                    print(line.decode(result_encoding))
+            raise PocsuiteBaseException("Pocsuite3 Unknown this command, and run it on system: '{}'".format(command))
 
         return command_handler
 
@@ -71,14 +79,14 @@ class BaseInterpreter(object):
 
         while True:
             try:
-                command, args = self.parse_line(input(self.prompt))
-                command = command.lower()
+                self.input_command, self.input_args = self.parse_line(input(self.prompt))
+                command = self.input_command.lower()
                 if not command:
                     continue
                 command_handler = self.get_command_handler(command)
-                command_handler(args)
-            except PocsuiteBaseException as err:
-                logger.error(err)
+                command_handler(self.input_args)
+            except PocsuiteBaseException as warn:
+                logger.warn(warn)
             except EOFError:
                 logger.info("Pocsuite stopped")
                 break
@@ -149,6 +157,7 @@ class PocsuiteInterpreter(BaseInterpreter):
     use <module>                Select a module for usage
     search <search term>        Search for appropriate module
     list|show all               Show all available pocs
+    clear                       clear the console screen
     exit                        Exit Pocsuite3"""
 
     module_help = """Module commands:
@@ -171,7 +180,7 @@ class PocsuiteInterpreter(BaseInterpreter):
         self.show_sub_commands = (
             "info", "options", "ip", "all")
 
-        self.global_commands = sorted(["use ", "help", "exit", "show ", "search "])
+        self.global_commands = sorted(["use ", "help", "exit", "show ", "search ", "clear"])
         self.module_commands = ["run", "back", "set ", "setg ", "check"]
         self.module_commands.extend(self.global_commands)
         self.module_commands.sort()
@@ -235,6 +244,12 @@ class PocsuiteInterpreter(BaseInterpreter):
 
     def command_exit(self, *args, **kwargs):
         raise EOFError
+
+    def command_clear(self, *args, **kwargs):
+        if IS_WIN:
+            os.system('cls')
+        else:
+            os.system('clear')
 
     def command_help(self, *args, **kwargs):
         data_to_stdout(self.global_help)

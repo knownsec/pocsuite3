@@ -8,11 +8,13 @@ import itertools
 import logging
 import queue
 import socket
+from collections import OrderedDict
 
 import paramiko
 
 from pocsuite3.api import POCBase, Output, register_poc, logger, POC_CATEGORY, VUL_TYPE
 from pocsuite3.lib.core.data import paths
+from pocsuite3.lib.core.interpreter_option import OptInteger
 from pocsuite3.lib.core.threads import run_threads
 
 
@@ -35,14 +37,20 @@ class DemoPOC(POCBase):
     category = POC_CATEGORY.TOOLS.CRACK
     protocol = POC_CATEGORY.PROTOCOL.SSH
 
+    def _options(self):
+        o = OrderedDict()
+        o["ssh_burst_threads"] = OptInteger(4, description='set ssh_burst_threads', require=False)
+        return o
+
     def _verify(self):
         result = {}
         host = self.getg_option("rhost")
         port = self.getg_option("rport") or 22
+        ssh_burst_threads = self.get_option("ssh_burst_threads")
 
         task_queue = queue.Queue()
         result_queue = queue.Queue()
-        ssh_burst(host, port, task_queue, result_queue)
+        ssh_burst(host, port, task_queue, result_queue, ssh_burst_threads)
         if not result_queue.empty():
             username, password = result_queue.get()
             result['VerifyInfo'] = {}
@@ -113,7 +121,7 @@ def task_thread(task_queue, result_queue):
             result_queue.put((username, password))
 
 
-def ssh_burst(host, port, task_queue, result_queue):
+def ssh_burst(host, port, task_queue, result_queue, ssh_burst_threads):
     log = paramiko.util.logging.getLogger()
     log.setLevel(logging.CRITICAL)
 
@@ -122,7 +130,7 @@ def ssh_burst(host, port, task_queue, result_queue):
         return
     try:
         task_init(host, port, task_queue, result_queue)
-        run_threads(4, task_thread, args=(task_queue, result_queue))
+        run_threads(ssh_burst_threads, task_thread, args=(task_queue, result_queue))
     except Exception:
         pass
 
