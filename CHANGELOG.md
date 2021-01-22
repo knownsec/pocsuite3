@@ -209,3 +209,7 @@ Cross-platform shell code generation
 ----------------- 
 * 修复`Python 3.9`兼容性问题
 * console模式，添加系统命令执行，添加pocuite3命令clear清除屏幕
+
+# version 1.7.2
+-----------------
+* 增加powershell bash反弹shell 以及编码函数

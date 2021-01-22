@@ -1,3 +1,4 @@
+import base64
 import hashlib
 import inspect
 import logging
@@ -942,10 +943,21 @@ def desensitization(s):
     """
     s = str(s)
     return (
-        s[:len(s) // 4 if len(s) < 30 else 8] +
-        '***' +
-        s[len(s) * 3 // 4:]
+            s[:len(s) // 4 if len(s) < 30 else 8] +
+            '***' +
+            s[len(s) * 3 // 4:]
     )
+
+
+def encoder_bash_payload(cmd: str) -> str:
+    ret = "bash -c '{echo,%s}|{base64,-d}|{bash,-i}'" % base64.b64encode(cmd.encode()).decode()
+    return ret
+
+
+def encoder_powershell_payload(powershell: str):
+    command = "powershell -NonI -W Hidden -NoP -Exec Bypass -Enc " + base64.b64encode(
+        '\x00'.join(list(powershell)).encode() + b'\x00').decode()
+    return command
 
 
 def get_host_ipv6(with_nic=True):
