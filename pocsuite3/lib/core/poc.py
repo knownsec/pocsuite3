@@ -166,7 +166,7 @@ class POCBase(object):
 
         return output
 
-    def execute(self, target, headers=None, params=None, mode='verify', verbose=True):
+    def execute(self, target, headers=None, params=None, mode='verify', verbose=True, ext_result=None):
         self.target = target
         self.url = parse_target_url(target) if self.current_protocol == POC_CATEGORY.PROTOCOL.HTTP else self.build_url()
         self.headers = headers
@@ -223,7 +223,7 @@ class POCBase(object):
             logger.error(str(traceback.format_exc()))
             # logger.exception(e)
             output = Output(self)
-
+        output.ext_result = ext_result
         return output
 
     # def _shell(self):
@@ -263,6 +263,7 @@ class Output(object):
     def __init__(self, poc=None):
         self.error_msg = tuple()
         self.result = {}
+        self.ext_result = {}
         self.status = OUTPUT_STATUS.FAILED
         if poc:
             self.url = poc.url
