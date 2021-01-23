@@ -188,7 +188,7 @@ class CEye(object):
 
 
 if __name__ == "__main__":
-    ce = CEye(username="34109680@qq.com", password="xT6iPB19tLB3shv2")
+    ce = CEye(token="111") # 填写token
     # http record
     # 辅助生成flag字符串
     flag = ce.build_request("HelloWorld3")
