@@ -166,11 +166,11 @@ class POCBase(object):
 
         return output
 
-    def execute(self, target, headers=None, params=None, mode='verify', verbose=True, ext_result=None):
+    def execute(self, target, headers=None, params=None, mode='verify', verbose=True):
         self.target = target
         self.url = parse_target_url(target) if self.current_protocol == POC_CATEGORY.PROTOCOL.HTTP else self.build_url()
         self.headers = headers
-        self.params = str_to_dict(params) if params else {}
+        self.params = params if isinstance(params, dict) else {}
         self.mode = mode
         self.verbose = verbose
         self.expt = (0, 'None')
@@ -223,7 +223,8 @@ class POCBase(object):
             logger.error(str(traceback.format_exc()))
             # logger.exception(e)
             output = Output(self)
-        output.ext_result = ext_result
+        if 'ext_result' in self.params:
+            output.ext_result = self.params['ext_result']
         return output
 
     # def _shell(self):
