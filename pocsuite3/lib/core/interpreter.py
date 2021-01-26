@@ -68,7 +68,8 @@ class BaseInterpreter(object):
         except AttributeError:
             cmd = self.input_command + ' ' + self.input_args
             for line in exec_cmd(cmd=cmd):
-                if result_encoding := chardet.detect(line)['encoding']:
+                result_encoding = chardet.detect(line)['encoding']
+                if result_encoding:
                     print(line.decode(result_encoding))
             raise PocsuiteBaseException("Pocsuite3 Unknown this command, and run it on system: '{}'".format(command))
 
