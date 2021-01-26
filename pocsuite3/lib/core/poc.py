@@ -170,7 +170,12 @@ class POCBase(object):
         self.target = target
         self.url = parse_target_url(target) if self.current_protocol == POC_CATEGORY.PROTOCOL.HTTP else self.build_url()
         self.headers = headers
-        self.params = params if isinstance(params, dict) else {}
+        if isinstance(params, dict):
+            self.params = params
+        elif isinstance(params, str):
+            self.params = str_to_dict(params)
+        else:
+            self.params = {}
         self.mode = mode
         self.verbose = verbose
         self.expt = (0, 'None')
