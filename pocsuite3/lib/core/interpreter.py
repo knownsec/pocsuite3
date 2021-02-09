@@ -527,8 +527,11 @@ class PocsuiteInterpreter(BaseInterpreter):
     def complete_use(self, text, *args, **kwargs):
 
         if text:
-            all_possible_matches = filter(lambda x: x.startswith(text), self.main_modules_dirs)
-
+            dirs = os.listdir()
+            all_possible_matches = list(filter(lambda x: x.startswith(text), self.main_modules_dirs))
+            if len(all_possible_matches) == 0:
+                all_possible_mathces = filter(lambda x: x.startswith(text), dirs)
+        
             matches = set()
             for match in all_possible_matches:
                 head, sep, tail = match[len(text):].partition('.')
