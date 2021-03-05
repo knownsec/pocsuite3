@@ -311,6 +311,9 @@ def _set_user_pocs_path():
     if conf.pocs_path:
         if check_path(conf.pocs_path):
             paths.USER_POCS_PATH = conf.pocs_path
+            for root, dirs, files in os.walk(paths.USER_POCS_PATH):
+                files = list(filter(lambda x: not x.startswith("__") and x.endswith(".py"), files))
+                conf.poc = [paths.USER_POCS_PATH + "\\" + f for f in files]
         else:
             warm_msg = "User defined pocs path {0} is invalid".format(conf.pocs_path)
             logger.warn(warm_msg)

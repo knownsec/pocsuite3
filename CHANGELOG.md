@@ -213,3 +213,8 @@ Cross-platform shell code generation
 # version 1.7.2
 -----------------
 * 增加powershell bash反弹shell 以及编码函数
+
+# version 1.7.2
+-----------------
+* 修复批量执行poc时因为报错导致扫描中断问题 fixes #149
+* 修复--pocs-path参数bug
