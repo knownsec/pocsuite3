@@ -46,7 +46,7 @@ It comes with a powerful proof-of-concept engine, many powerful features for the
 [![asciicast](https://asciinema.org/a/207350.png)](https://asciinema.org/a/207350)
 
 ### pocsuite3 load multi-target from ZoomEye
-[![asciicast](https://asciinema.org/a/207349.png)](https://asciinema.org/a/207349)
+[![asciicast](https://asciinema.org/a/133344.png)](https://asciinema.org/a/133344)
 
 ### pocsuite3 load multi-target from Shodan
 [![asciicast](https://asciinema.org/a/207349.png)](https://asciinema.org/a/207349)
