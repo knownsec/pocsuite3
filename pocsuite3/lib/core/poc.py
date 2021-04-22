@@ -43,14 +43,14 @@ class POCBase(object):
             self.global_options["proxy"] = OptString("", "Use a proxy to connect to the target URL")
             self.global_options["timeout"] = OptInteger(30, "Seconds to wait before timeout connection (default 30)")
         else:
-            self.global_options["rhost"] = OptString('', require=True)
+            self.global_options["rhost"] = OptIP('', require=True)
             self.global_options["rport"] = OptPort('', require=True)
             self.global_options["ssl"] = OptBool(default=False)
 
         # payload options for exploit
         self.payload_options = OrderedDict()
         if hasattr(self, "_shell"):
-            self.payload_options["lhost"] = OptString('', "Connect back ip", require=True)
+            self.payload_options["lhost"] = OptIP('', "Connect back ip", require=True)
             self.payload_options["lport"] = OptPort(10086, "Connect back port")
 
         self.options = OrderedDict()

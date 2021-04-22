@@ -12,6 +12,8 @@ from pocsuite3.lib.core.settings import CMD_PARSE_WHITELIST
 from pocsuite3.lib.core.threads import run_threads
 from pocsuite3.modules.listener import handle_listener_connection
 from pocsuite3.modules.listener.reverse_tcp import handle_listener_connection_for_console
+from pocsuite3.thirdparty.scapy.scapy_test import Sniffer
+from pocsuite3.thirdparty.scapy.utils import wrpcap
 from pocsuite3.thirdparty.prettytable.prettytable import PrettyTable
 
 
@@ -95,6 +97,22 @@ def task_run():
             poc_module = copy.deepcopy(kb.registered_pocs[poc_module])
         poc_name = poc_module.name
 
+        # for capture poc flow
+        if conf.pcap:
+            # add pcap test
+            import urllib
+            sniffer = Sniffer(urllib.parse.urlparse(target).hostname)
+
+            if sniffer.use_pcap:
+                if not sniffer.is_admin:
+                    logger.info("Please Use administer privilege, now pcap will not work")
+                    conf.pcap = False
+                else:
+                    logger.info("start capture...")
+                    sniffer.start()
+            else:
+                conf.pcap = False
+
         # for hide some infomations
         if conf.ppt:
             info_msg = "running poc:'{0}' target '{1}'".format(poc_name, desensitization(target))
@@ -172,7 +190,13 @@ def task_run():
         })
         result_plugins_handle(output)
         kb.results.append(output)
-
+        if conf.pcap:
+            #sleep 6 seconds to get the flow
+            time.sleep(6)
+            logger.info("[*] Stop sniffing")
+            sniffer.join(2)
+            import urllib
+            wrpcap(time.strftime("%I %M %S")+urllib.parse.urlparse(target).hostname+' sniffed.pcap', sniffer.pcap)
         # TODO
         # set task delay
 
