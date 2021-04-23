@@ -152,6 +152,7 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
     def run(self):
         try:
             while self.__running.is_set():
+                time.sleep(1)
                 self.__flag.wait()
                 if not self.server_started:
                     self.httpd = self.httpserver((self.bind_ip, self.bind_port), self.requestHandler)
