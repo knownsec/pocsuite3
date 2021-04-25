@@ -168,6 +168,7 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
                     thread.setDaemon(True)
                     thread.start()
                     self.server_started = True
+                    self.__flag.clear()
             self.httpd.shutdown()
             self.httpd.server_close()
             logger.info('Stop httpd server on {}://{}:{}'.format(self.scheme, self.bind_ip, self.bind_port))
