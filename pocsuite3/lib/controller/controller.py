@@ -103,13 +103,14 @@ def task_run():
             sniffer = Sniffer(urllib.parse.urlparse(target).hostname)
             if sniffer.use_pcap:
                 if not sniffer.is_admin:
-                    logger.warn("No libpcap is detected, and the poc will continue to execute without fetching the packet")
+                    logger.warn("Please use administrator privileges, and the poc will continue to execute without fetching the packet")
                     conf.pcap = False
                 else:
                     sniffer.start()
-                    #Let the bullet fly for a while
+                    #let scapy start for a while
                     time.sleep(1)
             else:
+                logger.warn("No libpcap is detected, and the poc will continue to execute without fetching the packet")
                 conf.pcap = False
 
         # for hide some infomations
