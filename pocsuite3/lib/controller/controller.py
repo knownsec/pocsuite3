@@ -97,19 +97,18 @@ def task_run():
             poc_module = copy.deepcopy(kb.registered_pocs[poc_module])
         poc_name = poc_module.name
 
-        # for capture poc flow
         if conf.pcap:
-            # add pcap test
+            # start capture flow
             import urllib
             sniffer = Sniffer(urllib.parse.urlparse(target).hostname)
-
             if sniffer.use_pcap:
                 if not sniffer.is_admin:
-                    logger.info("Please Use administer privilege, now pcap will not work")
+                    logger.warn("No libpcap is detected, and the poc will continue to execute without fetching the packet")
                     conf.pcap = False
                 else:
-                    logger.info("start capture...")
                     sniffer.start()
+                    #Let the bullet fly for a while
+                    time.sleep(1)
             else:
                 conf.pcap = False
 
@@ -191,12 +190,14 @@ def task_run():
         result_plugins_handle(output)
         kb.results.append(output)
         if conf.pcap:
-            #sleep 6 seconds to get the flow
-            time.sleep(6)
-            logger.info("[*] Stop sniffing")
-            sniffer.join(2)
+            sniffer.join(20)
             import urllib
-            wrpcap(time.strftime("%I %M %S")+urllib.parse.urlparse(target).hostname+' sniffed.pcap', sniffer.pcap)
+            if not sniffer.is_alive():
+                logger.info("save pcap data in :{}".format(poc_name + time.strftime(" %Y%m%d%H ") + urllib.parse.urlparse(target).hostname+'.pcap'))
+                wrpcap(poc_name + time.strftime(" %Y%m%d%H ") + urllib.parse.urlparse(target).hostname+'.pcap', sniffer.pcap)
+            else:
+                logger.error("Thread terminates timeout. Failed to save pcap")
+
         # TODO
         # set task delay
 

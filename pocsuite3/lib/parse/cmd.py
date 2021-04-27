@@ -99,6 +99,9 @@ def cmd_line_parser(argv=None):
         modules.add_argument("--comparison", dest="comparison", help="Compare popular web search engines",
                              action="store_true",
                              default=False)
+        modules.add_argument("--dork-b64", dest="dork_b64", help="CIf this parameter is set, the dork will be decoded first",
+                             action="store_true",
+                             default=False)
 
         # Optimization options
         optimization = parser.add_argument_group("Optimization", "Optimization options")
@@ -119,7 +122,11 @@ def cmd_line_parser(argv=None):
         optimization.add_argument("--pcap", dest="pcap", action="store_true", default=False,
                                   help="use scapy capture flow")
         optimization.add_argument("--rule", dest="rule", action="store_true", default=False,
-                                  help="export rules")
+                                  help="export rules, default export reqeust and response")
+        optimization.add_argument("--rule-req", dest="rule_req", action="store_true", default=False,
+                                  help="only export request rule")
+        optimization.add_argument("--rule-filename", dest="rule_filename", action="store", default=False,
+                                  help="Specify the name of the export rule file")
         # Diy options
         diy = parser.add_argument_group("Poc options", "definition options for PoC")
 

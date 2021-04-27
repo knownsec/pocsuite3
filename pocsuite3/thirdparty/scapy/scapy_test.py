@@ -42,6 +42,7 @@ class Sniffer(Thread):
         self.pcap = sniff(iface=self.interface, filter=self.filter, stop_filter=self.should_stop_sniffer)
 
     def join(self, timeout=None):
+        time.sleep(1)
         self.stop_sniffer.set()
         super().join(timeout)
 

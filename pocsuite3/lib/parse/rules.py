@@ -1,9 +1,10 @@
 import re
-
+from pocsuite3.lib.core.data import conf
 from pocsuite3.lib.core.data import logger
 
-
 def regex_rule(files):
+    if not conf.rule_filename:
+        conf.rule_filename = "rule.rule"
     for file_name in files:
         regx_rules = ["name = '(.*)'",
                       "suricata_request = '''([\s\S]*?)'''",
@@ -41,8 +42,9 @@ def regex_rule(files):
         if "、" in information_list["vulID"]:
             information_list["vulID"] = information_list["vulID"].split("、")[0]
         elif not information_list["vulID"]:
-            continue
-        if information_list["suricata_response"]:
+            information_list["vulID"] = 0
+        if information_list["suricata_response"] and not conf.rule_req:
+            # why 6220553？ Do you know how to convert a string into a number XD
             rule_to_server = '''alert http any any -> any any (msg:"{}";flow:established,to_server;{}classtype:web-application-attack;reference:url,{}; metadata:created_at {}, updated_at {};flowbits:set,{};flowbits:noalert;sid:{};rev:{};)'''.format(
                 information_list["name"], information_list["suricata_request"], information_list["references"],
                 information_list["createDate"], information_list["updateDate"], information_list["name"].replace(" ", "_"),
@@ -59,11 +61,10 @@ def regex_rule(files):
                 6220553 + int(float(information_list["vulID"])) * 2,
                 int(float(information_list["version"])))
             rule_to_client = ""
-        with open("rule.rule", "a", encoding="utf-8") as f:
+        with open(conf.rule_filename, "a", encoding="utf-8") as f:
             f.write(rule_to_server+"\n")
             f.write(rule_to_client+"\n")
         f.close()
         logger.info("{} rule is:".format(file_name[file_name.rfind("\\")+1:]))
-        logger.info(rule_to_server)
-        logger.info(rule_to_client)
-
+        print(rule_to_server)
+        print(rule_to_client)

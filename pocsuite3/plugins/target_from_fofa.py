@@ -24,6 +24,9 @@ class TargetFromFofa(PluginBase):
         if not dork:
             msg = "Need to set up dork (please --dork or --dork-fofa)"
             raise PocsuitePluginDorkException(msg)
+        if conf.dork_b64:
+            import base64
+            dork = str(base64.b64decode(dork),encoding = "utf-8")
 
         if kb.comparison:
             kb.comparison.add_dork("Fofa", dork)

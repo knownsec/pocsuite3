@@ -522,6 +522,7 @@ def _set_conf_attributes():
     conf.dork_shodan = None
     conf.dork_fofa = None
     conf.dork_censys = None
+    conf.dork_b64 = False
     conf.max_page = 1
     conf.search_type = 'host'
     conf.comparison = False
@@ -549,6 +550,8 @@ def _set_conf_attributes():
     conf.ppt = False
     conf.pcap = False
     conf.rule = False
+    conf.rule_req = False
+    conf.rule_filename = None
 
 
 def _set_kb_attributes(flush_all=True):
@@ -630,6 +633,7 @@ def init_options(input_options=AttribDict(), override_options=False):
     _merge_options(input_options, override_options)
     # export rules, dont run the poc in the default status
     if conf.rule:
+        logger.info("The rule export function is in use. The POC is not executed at this point")
         if conf.pocs_path:
             if check_path(conf.pocs_path):
                 paths.USER_POCS_PATH = conf.pocs_path
