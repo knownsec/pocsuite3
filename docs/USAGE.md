@@ -76,6 +76,7 @@ Modules:
   Modules(Seebug、Zoomeye、CEye、Fofa Listener) options
 
   --dork DORK           Zoomeye dork used for search.
+  --dork-b64            Whether dork is in base64 format
   --dork-zoomeye DORK_ZOOMEYE
                         Zoomeye dork used for search.
   --dork-shodan DORK_SHODAN
@@ -95,6 +96,7 @@ Modules:
   --lport CONNECT_BACK_PORT
                         Connect back port for target PoC in shell mode
   --comparison          Compare popular web search engines
+  --pcap                capture package in verify mode 
 
 Optimization:
   Optimization options

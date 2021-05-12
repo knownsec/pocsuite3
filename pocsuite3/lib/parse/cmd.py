@@ -99,7 +99,7 @@ def cmd_line_parser(argv=None):
         modules.add_argument("--comparison", dest="comparison", help="Compare popular web search engines",
                              action="store_true",
                              default=False)
-        modules.add_argument("--dork-b64", dest="dork_b64", help="CIf this parameter is set, the dork will be decoded first",
+        modules.add_argument("--dork-b64", dest="dork_b64", help="Whether dork is in base64 format",
                              action="store_true",
                              default=False)
 

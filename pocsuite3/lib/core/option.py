@@ -675,6 +675,7 @@ def init():
     based upon command line and configuration file options.
     """
     set_verbosity()
+    patch_all()
     _adjust_logging_formatter()
     _cleanup_options()
     _basic_option_validation()
@@ -702,5 +703,4 @@ def init():
     _set_network_timeout()
     _set_threads()
     _set_listener()
-    patch_all()
     remove_extra_log_message()

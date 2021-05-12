@@ -829,7 +829,8 @@ def wrpcap(filename, pkt, *args, **kargs):
     :param endianness: "<" or ">", force endianness
     :param sync: do not bufferize writes to the capture file
     """
-    with PcapWriter(filename, *args, **kargs) as fdesc:
+    fileName = re.sub('[\/:*?"<>|]', '-', filename)
+    with PcapWriter(fileName, *args, **kargs) as fdesc:
         fdesc.write(pkt)
 
 

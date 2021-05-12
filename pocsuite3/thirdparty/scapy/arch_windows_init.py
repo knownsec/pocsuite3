@@ -669,7 +669,7 @@ class NetworkInterfaceDict(UserDict):
                     'mac': '00:00:00:00:00:00',
                     'ipv4_metric': 0,
                     'ipv6_metric': 0,
-                    'ips': ips,
+                    'ips': list(set(ips)),
                     'flags': flags
                 }
             # No KeyError will happen here, as we get it from cache

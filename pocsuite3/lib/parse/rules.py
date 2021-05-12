@@ -34,7 +34,10 @@ def regex_rule(files):
                     if "name" in regx_rules[int(value)]:
                         information_list[key] = cve_list[0].replace("\n", "")
                     else:
-                        information_list[key] = cve_list[0].replace("\n", "").replace(" ", "")
+                        if "suricata_request" not in regx_rules[int(value)] and "suricata_response" not in regx_rules[int(value)]:
+                            information_list[key] = cve_list[0].replace("\n", "").replace(" ", "")
+                        else:
+                            information_list[key] = cve_list[0].replace("\n", "")
                 else:
                     information_list[key] = ""
         if not information_list["suricata_request"]:
@@ -55,7 +58,7 @@ def regex_rule(files):
                 information_list["createDate"], information_list["updateDate"], information_list["name"].replace(" ", "_"),
                 6220553 + int(float(information_list["vulID"])) * 2 + 1, int(float(information_list["version"])))
         else:
-            rule_to_server = '''alert http any any -> any any (msg:"{}";flow:established,to_client;{}classtype:web-application-attack;reference:url,{}; metadata:created_at {}, updated_at {};sid:{};rev:{};)'''.format(
+            rule_to_server = '''alert http any any -> any any (msg:"{}";flow:established,to_server;{}classtype:web-application-attack;reference:url,{}; metadata:created_at {}, updated_at {};sid:{};rev:{};)'''.format(
                 information_list["name"], information_list["suricata_request"], information_list["references"],
                 information_list["createDate"], information_list["updateDate"],
                 6220553 + int(float(information_list["vulID"])) * 2,

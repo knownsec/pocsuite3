@@ -12,8 +12,6 @@ from pocsuite3.lib.core.settings import CMD_PARSE_WHITELIST
 from pocsuite3.lib.core.threads import run_threads
 from pocsuite3.modules.listener import handle_listener_connection
 from pocsuite3.modules.listener.reverse_tcp import handle_listener_connection_for_console
-from pocsuite3.thirdparty.scapy.scapy_test import Sniffer
-from pocsuite3.thirdparty.scapy.utils import wrpcap
 from pocsuite3.thirdparty.prettytable.prettytable import PrettyTable
 
 
@@ -100,6 +98,8 @@ def task_run():
         if conf.pcap:
             # start capture flow
             import urllib
+            from pocsuite3.thirdparty.scapy.scapy_test import Sniffer
+            from pocsuite3.thirdparty.scapy.utils import wrpcap
             sniffer = Sniffer(urllib.parse.urlparse(target).hostname)
             if sniffer.use_pcap:
                 if not sniffer.is_admin:
@@ -195,7 +195,7 @@ def task_run():
             import urllib
             if not sniffer.is_alive():
                 logger.info("save pcap data in :{}".format(poc_name + time.strftime(" %Y%m%d%H ") + urllib.parse.urlparse(target).hostname+'.pcap'))
-                wrpcap(poc_name + time.strftime(" %Y%m%d%H ") + urllib.parse.urlparse(target).hostname+'.pcap', sniffer.pcap)
+                wrpcap(poc_name + time.strftime(" %Y%m%d%H ") + urllib.parse.urlparse(target).hostname+'.pcap', sniffer.pcap.results)
             else:
                 logger.error("Thread terminates timeout. Failed to save pcap")
 

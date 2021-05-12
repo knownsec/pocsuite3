@@ -145,6 +145,30 @@ def get_if_list():
     return interfaces
 
 
+def get_if_lists():
+    """Returns a list containing all network interfaces."""
+
+    # Get ifconfig output
+    subproc = subprocess.Popen(
+        [conf.prog.ifconfig],
+        close_fds=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    stdout, stderr = subproc.communicate()
+    if subproc.returncode:
+        raise Scapy_Exception("Failed to execute ifconfig: (%s)" %
+                              (plain_str(stderr)))
+
+    interfaces = []
+    ips = []
+    for line in plain_str(stdout).splitlines():
+        if ": flags" in line.lower():
+            interfaces.append(line[:line.find(':')])
+        elif "inet " in line.lower():
+            ips.append(line.split("inet")[1].split("netmask")[0].replace(" ", ''))
+
+    return interfaces,ips
+
+
 _IFNUM = re.compile(r"([0-9]*)([ab]?)$")
 
 
