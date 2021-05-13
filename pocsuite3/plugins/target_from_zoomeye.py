@@ -30,6 +30,9 @@ class TargetFromZoomeye(PluginBase):
         if not dork:
             msg = "Need to set up dork (please --dork or --dork-zoomeye)"
             raise PocsuitePluginDorkException(msg)
+        if conf.dork_b64:
+            import base64
+            dork = str(base64.b64decode(dork),encoding = "utf-8")
 
         info_msg = "[PLUGIN] try fetch targets from zoomeye with dork: {0}".format(dork)
         logger.info(info_msg)

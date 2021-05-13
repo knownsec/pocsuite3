@@ -99,6 +99,9 @@ def cmd_line_parser(argv=None):
         modules.add_argument("--comparison", dest="comparison", help="Compare popular web search engines",
                              action="store_true",
                              default=False)
+        modules.add_argument("--dork-b64", dest="dork_b64", help="Whether dork is in base64 format",
+                             action="store_true",
+                             default=False)
 
         # Optimization options
         optimization = parser.add_argument_group("Optimization", "Optimization options")
@@ -116,7 +119,14 @@ def cmd_line_parser(argv=None):
                                   help="Activate quiet mode, working without logger.")
         optimization.add_argument("--ppt", dest="ppt", action="store_true", default=False,
                                   help="Hiden sensitive information when published to the network")
-
+        optimization.add_argument("--pcap", dest="pcap", action="store_true", default=False,
+                                  help="use scapy capture flow")
+        optimization.add_argument("--rule", dest="rule", action="store_true", default=False,
+                                  help="export rules, default export reqeust and response")
+        optimization.add_argument("--rule-req", dest="rule_req", action="store_true", default=False,
+                                  help="only export request rule")
+        optimization.add_argument("--rule-filename", dest="rule_filename", action="store", default=False,
+                                  help="Specify the name of the export rule file")
         # Diy options
         diy = parser.add_argument_group("Poc options", "definition options for PoC")
 
@@ -127,7 +137,7 @@ def cmd_line_parser(argv=None):
 
         args = parser.parse_args()
         if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork, args.dork_shodan, args.dork_fofa,
-                    args.dork_censys, args.dork_zoomeye, args.configFile, args.show_version)):
+                    args.dork_censys, args.dork_zoomeye, args.configFile, args.show_version)) and not args.rule and not args.rule_req:
             err_msg = "missing a mandatory option (-u, --url-file, --update). "
             err_msg += "Use -h for basic and -hh for advanced help\n"
             parser.error(err_msg)

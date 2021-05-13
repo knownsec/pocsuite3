@@ -95,6 +95,24 @@ def task_run():
             poc_module = copy.deepcopy(kb.registered_pocs[poc_module])
         poc_name = poc_module.name
 
+        if conf.pcap:
+            # start capture flow
+            import urllib
+            from pocsuite3.thirdparty.scapy.scapy_test import Sniffer
+            from pocsuite3.thirdparty.scapy.utils import wrpcap
+            sniffer = Sniffer(urllib.parse.urlparse(target).hostname)
+            if sniffer.use_pcap:
+                if not sniffer.is_admin:
+                    logger.warn("Please use administrator privileges, and the poc will continue to execute without fetching the packet")
+                    conf.pcap = False
+                else:
+                    sniffer.start()
+                    #let scapy start for a while
+                    time.sleep(1)
+            else:
+                logger.warn("No libpcap is detected, and the poc will continue to execute without fetching the packet")
+                conf.pcap = False
+
         # for hide some infomations
         if conf.ppt:
             info_msg = "running poc:'{0}' target '{1}'".format(poc_name, desensitization(target))
@@ -172,6 +190,14 @@ def task_run():
         })
         result_plugins_handle(output)
         kb.results.append(output)
+        if conf.pcap:
+            sniffer.join(20)
+            import urllib
+            if not sniffer.is_alive():
+                logger.info("save pcap data in :{}".format(poc_name + time.strftime(" %Y%m%d%H ") + urllib.parse.urlparse(target).hostname+'.pcap'))
+                wrpcap(poc_name + time.strftime(" %Y%m%d%H ") + urllib.parse.urlparse(target).hostname+'.pcap', sniffer.pcap.results)
+            else:
+                logger.error("Thread terminates timeout. Failed to save pcap")
 
         # TODO
         # set task delay

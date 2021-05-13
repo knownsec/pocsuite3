@@ -29,6 +29,7 @@ from pocsuite3.lib.core.statistics_comparison import StatisticsComparison
 from pocsuite3.lib.core.update import update
 from pocsuite3.lib.parse.cmd import DIY_OPTIONS
 from pocsuite3.lib.parse.configfile import config_file_parser
+from pocsuite3.lib.parse.rules import regex_rule
 from pocsuite3.lib.request.patch import patch_all
 from pocsuite3.modules.listener import start_listener
 from pocsuite3.thirdparty.oset.orderedset import OrderedSet
@@ -521,6 +522,7 @@ def _set_conf_attributes():
     conf.dork_shodan = None
     conf.dork_fofa = None
     conf.dork_censys = None
+    conf.dork_b64 = False
     conf.max_page = 1
     conf.search_type = 'host'
     conf.comparison = False
@@ -546,6 +548,10 @@ def _set_conf_attributes():
     conf.show_version = False
     conf.api = False  # api for zipoc
     conf.ppt = False
+    conf.pcap = False
+    conf.rule = False
+    conf.rule_req = False
+    conf.rule_filename = None
 
 
 def _set_kb_attributes(flush_all=True):
@@ -625,6 +631,19 @@ def init_options(input_options=AttribDict(), override_options=False):
     _set_poc_options(input_options)
     _set_kb_attributes()
     _merge_options(input_options, override_options)
+    # export rules, dont run the poc in the default status
+    if conf.rule or conf.rule_req:
+        logger.info("The rule export function is in use. The POC is not executed at this point")
+        if conf.pocs_path:
+            if check_path(conf.pocs_path):
+                paths.USER_POCS_PATH = conf.pocs_path
+                for root, dirs, files in os.walk(paths.USER_POCS_PATH):
+                    files = list(filter(lambda x: not x.startswith("__") and x.endswith(".py"), files))
+                regex_rule(list(paths.USER_POCS_PATH + i for i in files))
+
+        if conf.poc:
+            regex_rule(conf.poc)
+        exit()
     # if check version
     if conf.show_version:
         exit()
@@ -656,6 +675,7 @@ def init():
     based upon command line and configuration file options.
     """
     set_verbosity()
+    patch_all()
     _adjust_logging_formatter()
     _cleanup_options()
     _basic_option_validation()
@@ -683,5 +703,4 @@ def init():
     _set_network_timeout()
     _set_threads()
     _set_listener()
-    patch_all()
     remove_extra_log_message()
