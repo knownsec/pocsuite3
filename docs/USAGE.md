@@ -108,6 +108,9 @@ Optimization:
   --batch BATCH         Automatically choose defaut choice without asking.
   --requires            Check install_requires
   --quiet               Activate quiet mode, working without logger.
+  --rule                Export rules, default export reqeust and response.
+  --rule-req            Only export request rule.
+  --rule-filename       Specify the name of the export rule file.
   --ppt                 Hiden sensitive information when published to the
                         network
 
@@ -197,6 +200,31 @@ $ python cli.py --dork 'port:6379' --vul-keyword 'redis' --max-page 2
  ```
  $ python3 cli.py -r pocs/check_http_status.py --dork-fofa 'body="thinkphp"' --search-type web  --thread 10
  ```
+
+**--dork-b64**
+
+ In order to solve the problem of escaping, use --dork-b64 to tell the program that you are passing in base64 encoded dork.
+ 
+
+```
+$ python cli.py --dork 'cG9ydDo2Mzc5' --vul-keyword 'redis' --max-page 2 --dork-b64
+```
+
+**--rule**
+ Export suricate rules, default export reqeust and response and The poc directory is /pocs/.
+ 
+ Use the --pocs-path parameter to set the directory where the poc needs to be ruled
+ 
+```
+$ python cli.py --rule
+```
+
+**--rule-req**
+ In some cases, we may only need the request rule, --rule-req only export request rule.
+
+```
+$ python cli.py --rule-req
+```
 
 If you have good ideas, please show them on your way.
 

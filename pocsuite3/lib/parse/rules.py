@@ -47,7 +47,7 @@ def regex_rule(files):
         elif not information_list["vulID"]:
             information_list["vulID"] = 0
         if information_list["suricata_response"] and not conf.rule_req:
-            # why 6220553？ Do you know how to convert a string into a number XD
+            # 6220553==seebug.(　ˇωˇ)
             rule_to_server = '''alert http any any -> any any (msg:"{}";flow:established,to_server;{}classtype:web-application-attack;reference:url,{}; metadata:created_at {}, updated_at {};flowbits:set,{};flowbits:noalert;sid:{};rev:{};)'''.format(
                 information_list["name"], information_list["suricata_request"], information_list["references"],
                 information_list["createDate"], information_list["updateDate"], information_list["name"].replace(" ", "_"),

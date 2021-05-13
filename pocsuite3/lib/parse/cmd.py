@@ -137,7 +137,7 @@ def cmd_line_parser(argv=None):
 
         args = parser.parse_args()
         if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork, args.dork_shodan, args.dork_fofa,
-                    args.dork_censys, args.dork_zoomeye, args.configFile, args.show_version)) and not args.rule:
+                    args.dork_censys, args.dork_zoomeye, args.configFile, args.show_version)) and not args.rule and not args.rule_req:
             err_msg = "missing a mandatory option (-u, --url-file, --update). "
             err_msg += "Use -h for basic and -hh for advanced help\n"
             parser.error(err_msg)

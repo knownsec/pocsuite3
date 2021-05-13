@@ -632,7 +632,7 @@ def init_options(input_options=AttribDict(), override_options=False):
     _set_kb_attributes()
     _merge_options(input_options, override_options)
     # export rules, dont run the poc in the default status
-    if conf.rule:
+    if conf.rule or conf.rule_req:
         logger.info("The rule export function is in use. The POC is not executed at this point")
         if conf.pocs_path:
             if check_path(conf.pocs_path):
