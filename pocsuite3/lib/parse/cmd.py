@@ -70,10 +70,11 @@ def cmd_line_parser(argv=None):
         group.add_argument("--shodan-token", dest="shodan_token", help="Shodan token")
         group.add_argument("--fofa-user", dest="fofa_user", help="fofa user")
         group.add_argument("--fofa-token", dest="fofa_token", help="fofa token")
+        group.add_argument("--quake-token", dest="quake_token", help="quake token")
         group.add_argument("--censys-uid", dest="censys_uid", help="Censys uid")
         group.add_argument("--censys-secret", dest="censys_secret", help="Censys secret")
         # Modules options
-        modules = parser.add_argument_group("Modules", "Modules(Seebug、Zoomeye、CEye、Fofa Listener) options")
+        modules = parser.add_argument_group("Modules", "Modules(Seebug、Zoomeye、CEye、Fofa、Quake Listener) options")
         modules.add_argument("--dork", dest="dork", action="store", default=None,
                              help="Zoomeye dork used for search.")
         modules.add_argument("--dork-zoomeye", dest="dork_zoomeye", action="store", default=None,
@@ -84,6 +85,8 @@ def cmd_line_parser(argv=None):
                              help="Censys dork used for search.")
         modules.add_argument("--dork-fofa", dest="dork_fofa", action="store", default=None,
                              help="Fofa dork used for search.")
+        modules.add_argument("--dork-quake", dest="dork_quake", action="store", default=None,
+                             help="Quake dork used for search.")
         modules.add_argument("--max-page", dest="max_page", type=int, default=1,
                              help="Max page used in ZoomEye API(10 targets/Page).")
         modules.add_argument("--search-type", dest="search_type", action="store", default='host',
@@ -136,7 +139,7 @@ def cmd_line_parser(argv=None):
                     diy.add_argument(line)
 
         args = parser.parse_args()
-        if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork, args.dork_shodan, args.dork_fofa,
+        if not any((args.url, args.url_file, args.update_all, args.plugins, args.dork, args.dork_shodan, args.dork_fofa, args.dork_quake,
                     args.dork_censys, args.dork_zoomeye, args.configFile, args.show_version)) and not args.rule and not args.rule_req:
             err_msg = "missing a mandatory option (-u, --url-file, --update). "
             err_msg += "Use -h for basic and -hh for advanced help\n"
