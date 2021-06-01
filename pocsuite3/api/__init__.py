@@ -17,6 +17,7 @@ from pocsuite3.lib.request import requests
 from pocsuite3.lib.utils import get_middle_text, generate_shellcode_list, random_str
 from pocsuite3.modules.ceye import CEye
 from pocsuite3.modules.listener import REVERSE_PAYLOAD
+from pocsuite3.modules.quake import Quake
 from pocsuite3.modules.seebug import Seebug
 from pocsuite3.modules.zoomeye import ZoomEye
 from pocsuite3.modules.shodan import Shodan

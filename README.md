@@ -69,6 +69,8 @@ Or click [here](https://github.com/knownsec/pocsuite3/archive/master.zip) to dow
 ``` bash
 $ wget https://github.com/knownsec/pocsuite3/archive/master.zip
 $ unzip master.zip
+$ cd pocsuite3-master
+$ pip3 install -r requirements.txt
 ```
 
 

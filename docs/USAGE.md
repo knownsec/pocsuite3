@@ -218,7 +218,7 @@ $ python cli.py --dork 'port:6379' --vul-keyword 'redis' --max-page 2
  
 
 ```
-$ python cli.py --dork 'cG9ydDo2Mzc5' --vul-keyword 'redis' --max-page 2 --dork-b64
+$ python cli.py --dork cG9ydDo2Mzc5 --vul-keyword 'redis' --max-page 2 --dork-b64
 ```
 
 **--rule**
