@@ -69,7 +69,7 @@ class Fofa():
         if resource == 'host':
             resource = 'ip,port'
         else:
-            resource="web"
+            resource = 'host'
         search_result = set()
         try:
             for page in range(1, pages + 1):
