@@ -201,6 +201,17 @@ $ python cli.py --dork 'port:6379' --vul-keyword 'redis' --max-page 2
  $ python3 cli.py -r pocs/check_http_status.py --dork-fofa 'body="thinkphp"' --search-type web  --thread 10
  ```
 
+**--dork-quake DORK**
+
+ If you are a [**Quake**](quake) user, The API is a cool and hackable interface. ex:
+
+ Search web server thinkphp with  `app:"ThinkPHP"` keyword.
+
+
+ ```
+ $ python3 cli.py -r pocs/check_http_status.py --dork-quake 'app:"ThinkPHP"' --thread 10
+ ```
+
 **--dork-b64**
 
  In order to solve the problem of escaping, use --dork-b64 to tell the program that you are passing in base64 encoded dork.
