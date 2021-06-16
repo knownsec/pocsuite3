@@ -59,15 +59,14 @@ class Shodan():
             logger.error(str(ex))
 
     def get_resource_info(self):
-        if self.check_token():
-            try:
-                resp = requests.get('https://api.shodan.io/account/profile?key={0}'.format(self.token))
-                if resp and resp.status_code == 200 and 'credits' in resp.json():
-                    content = resp.json()
-                    self.credits = content['credits']
-                    return True
-            except Exception as ex:
-                logger.error(str(ex))
+        try:
+            resp = requests.get('https://api.shodan.io/account/profile?key={0}'.format(self.token))
+            if resp and resp.status_code == 200 and 'credits' in resp.json():
+                content = resp.json()
+                self.credits = content['credits']
+                return True
+        except Exception as ex:
+            logger.error(str(ex))
         return False
 
     def search(self, dork, pages=1, resource='host'):
