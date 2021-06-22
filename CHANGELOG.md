@@ -223,3 +223,7 @@ Cross-platform shell code generation
 -----------------
 * 添加录包功能和dork字段支持base64编码 fixes #169 #173
 * 修复target插件requests参数无效bug fix #183
+
+# version 1.7.6
+-----------------
+* fixes #192
