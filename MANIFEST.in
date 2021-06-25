@@ -4,3 +4,5 @@ include README.md
 include CHANGELOG.md
 include CONTRIBUTORS.md
 recursive-include pocsuite3 *
+recursive-exclude pocsuite3 __pycache__
+recursive-exclude pocsuite3 *.py[co]

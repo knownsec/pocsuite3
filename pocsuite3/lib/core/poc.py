@@ -1,4 +1,5 @@
 import re
+import traceback
 from collections import OrderedDict
 from urllib.parse import urlparse
 
@@ -42,14 +43,14 @@ class POCBase(object):
             self.global_options["proxy"] = OptString("", "Use a proxy to connect to the target URL")
             self.global_options["timeout"] = OptInteger(30, "Seconds to wait before timeout connection (default 30)")
         else:
-            self.global_options["rhost"] = OptIP('', require=True)
+            self.global_options["rhost"] = OptString('', require=True)
             self.global_options["rport"] = OptPort('', require=True)
             self.global_options["ssl"] = OptBool(default=False)
 
         # payload options for exploit
         self.payload_options = OrderedDict()
         if hasattr(self, "_shell"):
-            self.payload_options["lhost"] = OptIP('', "Connect back ip", require=True)
+            self.payload_options["lhost"] = OptString('', "Connect back ip", require=True)
             self.payload_options["lport"] = OptPort(10086, "Connect back port")
 
         self.options = OrderedDict()
@@ -169,7 +170,10 @@ class POCBase(object):
         self.target = target
         self.url = parse_target_url(target) if self.current_protocol == POC_CATEGORY.PROTOCOL.HTTP else self.build_url()
         self.headers = headers
-        self.params = str_to_dict(params) if params else {}
+        if isinstance(params, dict) or isinstance(params, str):
+            self.params = params
+        else:
+            self.params = {}
         self.mode = mode
         self.verbose = verbose
         self.expt = (0, 'None')
@@ -219,10 +223,10 @@ class POCBase(object):
         except BaseException as e:
             self.expt = (ERROR_TYPE_ID.OTHER, e)
             logger.error("PoC has raised a exception")
-            logger.error(str(e))
+            logger.error(str(traceback.format_exc()))
             # logger.exception(e)
             output = Output(self)
-
+        output.params = self.params
         return output
 
     # def _shell(self):
@@ -262,6 +266,7 @@ class Output(object):
     def __init__(self, poc=None):
         self.error_msg = tuple()
         self.result = {}
+        self.params = {}
         self.status = OUTPUT_STATUS.FAILED
         if poc:
             self.url = poc.url

@@ -67,7 +67,10 @@ class PocLoader(Loader):
         poc_code = self.get_data(filename)
         self.check_requires(poc_code)
         obj = compile(poc_code, filename, 'exec', dont_inherit=True, optimize=-1)
-        exec(obj, module.__dict__)
+        try:
+            exec(obj, module.__dict__)
+        except Exception as err:
+            logger.error("Poc: '{}' exec arise error: {} ".format(filename,err))
 
 
 def load_file_to_module(file_path, module_name=None):

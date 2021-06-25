@@ -76,6 +76,7 @@ Modules:
   Modules(Seebug、Zoomeye、CEye、Fofa Listener) options
 
   --dork DORK           Zoomeye dork used for search.
+  --dork-b64            Whether dork is in base64 format
   --dork-zoomeye DORK_ZOOMEYE
                         Zoomeye dork used for search.
   --dork-shodan DORK_SHODAN
@@ -95,6 +96,7 @@ Modules:
   --lport CONNECT_BACK_PORT
                         Connect back port for target PoC in shell mode
   --comparison          Compare popular web search engines
+  --pcap                capture package in verify mode 
 
 Optimization:
   Optimization options
@@ -106,6 +108,9 @@ Optimization:
   --batch BATCH         Automatically choose defaut choice without asking.
   --requires            Check install_requires
   --quiet               Activate quiet mode, working without logger.
+  --rule                Export rules, default export reqeust and response.
+  --rule-req            Only export request rule.
+  --rule-filename       Specify the name of the export rule file.
   --ppt                 Hiden sensitive information when published to the
                         network
 
@@ -196,4 +201,55 @@ $ python cli.py --dork 'port:6379' --vul-keyword 'redis' --max-page 2
  $ python3 cli.py -r pocs/check_http_status.py --dork-fofa 'body="thinkphp"' --search-type web  --thread 10
  ```
 
+**--dork-quake DORK**
+
+ If you are a [**Quake**](quake) user, The API is a cool and hackable interface. ex:
+
+ Search web server thinkphp with  `app:"ThinkPHP"` keyword.
+
+
+ ```
+ $ python3 cli.py -r pocs/check_http_status.py --dork-quake 'app:"ThinkPHP"' --thread 10
+ ```
+
+**--dork-b64**
+
+ In order to solve the problem of escaping, use --dork-b64 to tell the program that you are passing in base64 encoded dork.
+ 
+
+```
+$ python cli.py --dork cG9ydDo2Mzc5 --vul-keyword 'redis' --max-page 2 --dork-b64
+```
+
+**--rule**
+ Export suricate rules, default export reqeust and response and The poc directory is /pocs/.
+ 
+ Use the --pocs-path parameter to set the directory where the poc needs to be ruled
+ 
+```
+$ python cli.py --rule
+```
+
+**--rule-req**
+ In some cases, we may only need the request rule, --rule-req only export request rule.
+
+```
+$ python cli.py --rule-req
+```
+
 If you have good ideas, please show them on your way.
+
+## 常用命令
+	- pocsuite -u http://example.com -r example.py -v 2 # 基础用法 v2开启详细信息
+
+	- pocsuite -u http://example.com -r example.py -v 2 --shell # shell反连模式，基础用法 v2开启详细信息
+
+	- pocsuite -r redis.py --dork service:redis --threads 20 # 从zoomeye搜索redis目标批量检测，线程设置为20
+
+	- pocsuite -u http://example.com --plugins poc_from_pocs,html_report # 加载poc目录下所有poc,并将结果保存为html
+
+	- pocsuite -f batch.txt --plugins poc_from_pocs,html_report # 从文件中加载目标，并使用poc目录下poc批量扫描
+
+	- pocsuite -u 10.0.0.0/24 -r example.py --plugins target_from_cidr # 加载CIDR目标
+
+	- pocsuite -u http://example.com -r ecshop_rce.py --attack --command "whoami" # ecshop poc中实现了自定义命令`command`,可以从外部参数传递。

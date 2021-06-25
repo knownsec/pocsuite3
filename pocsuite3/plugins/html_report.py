@@ -148,7 +148,7 @@ class HtmlExport:
         self.html.main.close()
         self._writer_footer()
 
-        with open(self.filename, 'w') as f:
+        with open(self.filename, 'w', encoding='utf-8') as f:
             for x in self.html.content:
                 try:
                     f.write("{0}\n".format(x))

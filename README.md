@@ -46,7 +46,7 @@ It comes with a powerful proof-of-concept engine, many powerful features for the
 [![asciicast](https://asciinema.org/a/207350.png)](https://asciinema.org/a/207350)
 
 ### pocsuite3 load multi-target from ZoomEye
-[![asciicast](https://asciinema.org/a/207349.png)](https://asciinema.org/a/207349)
+[![asciicast](https://asciinema.org/a/133344.png)](https://asciinema.org/a/133344)
 
 ### pocsuite3 load multi-target from Shodan
 [![asciicast](https://asciinema.org/a/207349.png)](https://asciinema.org/a/207349)
@@ -69,6 +69,8 @@ Or click [here](https://github.com/knownsec/pocsuite3/archive/master.zip) to dow
 ``` bash
 $ wget https://github.com/knownsec/pocsuite3/archive/master.zip
 $ unzip master.zip
+$ cd pocsuite3-master
+$ pip3 install -r requirements.txt
 ```
 
 
@@ -78,6 +80,26 @@ The latest version of this software is available from: http://pocsuite.org
 
 Documentation is available in the [```docs```](./docs) directory.
 
+## 常用命令
+```
+命令行模式下
+	pocsuite -u http://example.com -r example.py -v 2 # 基础用法 v2开启详细信息
+
+	pocsuite -u http://example.com -r example.py -v 2 --shell # shell反连模式，基础用法 v2开启详细信息
+
+	pocsuite -r redis.py --dork service:redis --threads 20 # 从zoomeye搜索redis目标批量检测，线程设置为20
+
+	pocsuite -u http://example.com --plugins poc_from_pocs,html_report # 加载poc目录下所有poc,并将结果保存为html
+
+	pocsuite -f batch.txt --plugins poc_from_pocs,html_report # 从文件中加载目标，并使用poc目录下poc批量扫描
+
+	pocsuite -u 10.0.0.0/24 -r example.py --plugins target_from_cidr # 加载CIDR目标
+
+	pocsuite -u http://example.com -r ecshop_rce.py --attack --command "whoami" # ecshop poc中实现了自定义命令`command`,可以从外部参数传递。
+
+console模式 
+    poc-console
+```
 
 ## How to Contribute
 

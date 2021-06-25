@@ -90,7 +90,8 @@ OS_ARCH = machine()
 # Cmd line parse whitelist
 CMD_PARSE_WHITELIST = ['version', 'update', 'url', 'file', 'verify', 'attack', 'shell', 'cookie', 'host', 'referer',
                        'user-agent', 'random-agent', 'proxy', 'proxy-cred', 'timeout', 'retry', 'delay', 'headers',
-                       'login-user', 'login-pass', 'dork', 'dork-shodan', 'dork-censys', 'dork-zoomeye', 'dork-fofa',
-                       'max-page', 'search-type', 'shodan-token', 'fofa-user', 'fofa-token', 'vul-keyword', 'ssv-id',
+                       'login-user', 'login-pass', 'dork', 'dork-shodan', 'dork-censys', 'dork-zoomeye', 'dork-fofa','dork-quake',
+                       'max-page', 'search-type', 'shodan-token', 'fofa-user', 'fofa-token', 'quake-token','vul-keyword', 'ssv-id',
                        'lhost', 'lport', 'plugins', 'pocs-path', 'threads', 'batch', 'requires', 'quiet', 'poc',
-                       'verbose', 'mode', 'api', 'connect_back_host', 'connect_back_port', 'ppt']
+                       'verbose', 'mode', 'api', 'connect_back_host', 'connect_back_port', 'ppt', 'help', 'pcap',
+                       'rule','rule-req','rule-filename','dork-b64']

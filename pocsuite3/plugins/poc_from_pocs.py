@@ -19,9 +19,9 @@ class PocFromPocs(PluginBase):
         for f in _pocs:
 
             if self.add_poc_from_file(f):
-                info_msg = "[PLUGIN] load PoC script '{0}' from seebug success".format(f)
+                info_msg = "[PLUGIN] load PoC script '{0}' from pocs directories success".format(f)
             else:
-                info_msg = "[PLUGIN] load PoC script '{0}' from seebug failed".format(f)
+                info_msg = "[PLUGIN] load PoC script '{0}' from pocs directories failed".format(f)
             logger.info(info_msg)
 
 

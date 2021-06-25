@@ -23,7 +23,7 @@ def config_file_parser(configFile):
         raise PocsuiteFilePathException("file '{}' don't exist".format(configFile))
 
     config = ConfigParser()
-    config.read(configFile)
+    config.read(configFile, encoding='utf-8')
 
     if not config.has_section("Target"):
         errMsg = "missing a mandatory section 'Target' in the configuration file"

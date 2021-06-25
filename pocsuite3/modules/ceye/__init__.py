@@ -1,5 +1,6 @@
 import getpass
 import json
+import os
 import time
 import re
 from configparser import ConfigParser
@@ -137,9 +138,9 @@ class CEye(object):
                     data = json.loads(resp.text)
                     for item in data["data"]:
                         name = item.get("name", '')
-                        pro = "/" + flag
+                        pro = flag
                         suffix = flag
-                        t = get_middle_text(name, pro, suffix, 7 + len(flag))
+                        t = get_middle_text(name, pro, suffix, 0)
                         if t:
                             return t
                     break
@@ -187,14 +188,31 @@ class CEye(object):
 
 
 if __name__ == "__main__":
-    ce = CEye(token="aaa")
+    ce = CEye(token="111") # 填写token
+    # http record
     # 辅助生成flag字符串
-    flag = ce.build_request("HelloWorld!")
+    flag = ce.build_request("HelloWorld3")
     print(flag)
     # 用requests模拟请求
-    r = requests.get(flag["url"])
+    try:
+        r = requests.get(flag["url"])
+    except:
+        pass
     time.sleep(1)
     print("request over")
     # 获取请求的数据
-    info = ce.exact_request(flag["flag"])
+    info = ce.exact_request(flag["flag"], )
+    print(info)
+
+    # dns record
+    # 辅助生成flag字符串
+    flag = ce.build_request("HelloWor1d", type='dns')
+    print(flag)
+    # 用requests模拟请求
+    # r = requests.get(flag["url"])
+    os.system("ping " + flag["url"])
+    time.sleep(1)
+    print("ping over")
+    # 获取请求的数据
+    info = ce.exact_request(flag["flag"], type="dns")
     print(info)

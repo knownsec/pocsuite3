@@ -1,5 +1,6 @@
 from pocsuite3.lib.controller.controller import start
-from pocsuite3.lib.core.common import single_time_warn_message
+from pocsuite3.lib.core.common import single_time_warn_message, encoder_bash_payload, encoder_powershell_payload, \
+    get_host_ipv6
 from pocsuite3.lib.core.data import conf, kb, logger, paths
 from pocsuite3.lib.core.datatype import AttribDict
 from pocsuite3.lib.core.enums import PLUGIN_TYPE, POC_CATEGORY, VUL_TYPE
@@ -16,6 +17,7 @@ from pocsuite3.lib.request import requests
 from pocsuite3.lib.utils import get_middle_text, generate_shellcode_list, random_str
 from pocsuite3.modules.ceye import CEye
 from pocsuite3.modules.listener import REVERSE_PAYLOAD
+from pocsuite3.modules.quake import Quake
 from pocsuite3.modules.seebug import Seebug
 from pocsuite3.modules.zoomeye import ZoomEye
 from pocsuite3.modules.shodan import Shodan
@@ -32,10 +34,11 @@ __all__ = (
     'PLUGIN_TYPE', 'POCBase', 'Output', 'AttribDict', 'POC_CATEGORY', 'VUL_TYPE',
     'register_poc', 'conf', 'kb', 'logger', 'paths', 'DEFAULT_LISTENER_PORT', 'load_file_to_module',
     'load_string_to_module', 'single_time_warn_message', 'CEye', 'Seebug',
-    'ZoomEye', 'Shodan','Fofa','Censys', 'PHTTPServer', 'REVERSE_PAYLOAD', 'get_listener_ip', 'get_listener_port',
+    'ZoomEye', 'Shodan', 'Fofa', 'Quake', 'Censys', 'PHTTPServer', 'REVERSE_PAYLOAD', 'get_listener_ip', 'get_listener_port','get_listener_port',
     'get_results', 'init_pocsuite', 'start_pocsuite', 'get_poc_options', 'crawl',
     'OSShellcodes', 'WebShell', 'OptDict', 'OptIP', 'OptPort', 'OptBool', 'OptInteger', 'OptFloat', 'OptString',
-    'OptItems', 'OptDict', 'get_middle_text', 'generate_shellcode_list', 'random_str')
+    'OptItems', 'OptDict', 'get_middle_text', 'generate_shellcode_list', 'random_str', 'encoder_bash_payload',
+    'encoder_powershell_payload', 'get_host_ipv6')
 
 
 def get_listener_ip():
@@ -59,7 +62,7 @@ def get_results():
     return kb.results
 
 
-def init_pocsuite(options):
+def init_pocsuite(options={}):
     init_options(options)
     init()
 

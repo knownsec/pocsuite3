@@ -184,3 +184,46 @@ Cross-platform shell code generation
 ---------------
 * 增加了poc类型的枚举类型 #95
 * 修改了样例poc
+
+# version 1.6.0~1.6.3
+---------------
+* 添加随机UA头选项
+* 重构--ppt隐藏信息选项
+* 当poc有语法错误时，显示详细信息
+* 添加InMemoryWar
+* 修复urllib3的`chunk_length`错误
+* 加入打tag自动构建发布到pypi
+
+# version 1.6.4
+----------------
+* 测试Github Action自动发布pypi
+
+# version 1.6.5
+----------------
+* 修复http请求头不能删除
+* 修复html导出编码错误
+* 修复console模式下lport设置失败
+* shell模式可以使用select或use选择shell
+
+# version 1.7.0
+----------------- 
+* 修复`Python 3.9`兼容性问题
+* console模式，添加系统命令执行，添加pocuite3命令clear清除屏幕
+
+# version 1.7.2
+-----------------
+* 增加powershell bash反弹shell 以及编码函数
+
+# version 1.7.4
+-----------------
+* 修复批量执行poc时因为报错导致扫描中断问题 fixes #149
+* 修复--pocs-path参数bug
+
+# version 1.7.5
+-----------------
+* 添加录包功能和dork字段支持base64编码 fixes #169 #173
+* 修复target插件requests参数无效bug fix #183
+
+# version 1.7.6
+-----------------
+* fixes #192
