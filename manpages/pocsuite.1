@@ -1,0 +1,268 @@
+.TH POCSUITE "1" "June 2021" "Manual page for pocsuite"
+.\"
+.\" 22st June 2021
+.\" Man page author:
+.\"   Tian Qiao <abcnsxyz@gmail.com>
+.\"
+.SH NAME
+.I pocsuite
+\- open-sourced remote vulnerability testing framework.
+.SH Legal Disclaimer
+Usage of pocsuite for attacking targets without prior mutual consent is illegal.
+pocsuite is for security testing purposes only.
+.SH SYNOPSIS
+.B pocsuite
+\-h[elp]
+.br
+.B pocsuite
+[options]
+.br
+.SH DESCRIPTION
+.I pocsuite
+is an open-sourced remote vulnerability testing and proof-of-concept
+development framework developed by the Knownsec 404 Team. It comes with a
+powerful proof-of-concept engine, many nice features for the ultimate
+penetration testers and security researchers.
+.SH OPTIONS
+.SS "optional arguments:"
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+show this help message and exit
+.TP
+\fB\-\-version\fR
+Show program's version number and exit
+.TP
+\fB\-\-update\fR
+Update Pocsuite
+.TP
+\fB\-v\fR {0,1,2,3,4,5,6}
+Verbosity level: 0\-6 (default 1)
+.SS "Target:"
+.IP
+At least one of these options has to be provided to define the target(s)
+.TP
+\fB\-u\fR URL [URL ...], \fB\-\-url\fR URL [URL ...]
+Target URL (e.g. "http://www.site.com/vuln.php?id=1")
+.TP
+\fB\-f\fR URL_FILE, \fB\-\-file\fR URL_FILE
+Scan multiple targets given in a textual file
+.TP
+\fB\-r\fR POC [POC ...]
+Load POC file from local or remote from seebug website
+.TP
+\fB\-c\fR CONFIGFILE
+Load options from a configuration INI file
+.SS "Mode:"
+.IP
+Pocsuite running mode options
+.TP
+\fB\-\-verify\fR
+Run poc with verify mode
+.TP
+\fB\-\-attack\fR
+Run poc with attack mode
+.TP
+\fB\-\-shell\fR
+Run poc with shell mode
+.SS "Request:"
+.IP
+Network request options
+.TP
+\fB\-\-cookie\fR COOKIE
+HTTP Cookie header value
+.TP
+\fB\-\-host\fR HOST
+HTTP Host header value
+.TP
+\fB\-\-referer\fR REFERER
+HTTP Referer header value
+.TP
+\fB\-\-user\-agent\fR AGENT
+HTTP User\-Agent header value
+.TP
+\fB\-\-random\-agent\fR
+Use randomly selected HTTP User\-Agent header value
+.TP
+\fB\-\-proxy\fR PROXY
+Use a proxy to connect to the target URL
+.TP
+\fB\-\-proxy\-cred\fR PROXY_CRED
+Proxy authentication credentials (name:password)
+.TP
+\fB\-\-timeout\fR TIMEOUT
+Seconds to wait before timeout connection (default 30)
+.TP
+\fB\-\-retry\fR RETRY
+Time out retrials times.
+.TP
+\fB\-\-delay\fR DELAY
+Delay between two request of one thread
+.TP
+\fB\-\-headers\fR HEADERS
+Extra headers (e.g. "key1: value1\enkey2: value2")
+.SS "Account:"
+.IP
+Telnet404, Shodan, CEye, Fofa account options
+.TP
+\fB\-\-login\-user\fR LOGIN_USER
+Telnet404 login user
+.TP
+\fB\-\-login\-pass\fR LOGIN_PASS
+Telnet404 login password
+.TP
+\fB\-\-shodan\-token\fR SHODAN_TOKEN
+Shodan token
+.TP
+\fB\-\-fofa\-user\fR FOFA_USER
+fofa user
+.TP
+\fB\-\-fofa\-token\fR FOFA_TOKEN
+fofa token
+.TP
+\fB\-\-censys\-uid\fR CENSYS_UID
+Censys uid
+.TP
+\fB\-\-censys\-secret\fR CENSYS_SECRET
+Censys secret
+.SS "Modules:"
+.IP
+Modules (Seebug, Zoomeye, CEye, Fofa, Listener) options
+.TP
+\fB\-\-dork\fR DORK
+Zoomeye dork used for search.
+.TP
+\fB\-\-dork\-zoomeye\fR DORK_ZOOMEYE
+Zoomeye dork used for search.
+.TP
+\fB\-\-dork\-shodan\fR DORK_SHODAN
+Shodan dork used for search.
+.TP
+\fB\-\-dork\-censys\fR DORK_CENSYS
+Censys dork used for search.
+.TP
+\fB\-\-dork\-fofa\fR DORK_FOFA
+Fofa dork used for search.
+.TP
+\fB\-\-max\-page\fR MAX_PAGE
+Max page used in ZoomEye API(10 targets/Page).
+.TP
+\fB\-\-search\-type\fR SEARCH_TYPE
+search type used in ZoomEye API, web or host
+.TP
+\fB\-\-vul\-keyword\fR VUL_KEYWORD
+Seebug keyword used for search.
+.TP
+\fB\-\-ssv\-id\fR SSVID
+Seebug SSVID number for target PoC.
+.TP
+\fB\-\-lhost\fR CONNECT_BACK_HOST
+Connect back host for target PoC in shell mode
+.TP
+\fB\-\-lport\fR CONNECT_BACK_PORT
+Connect back port for target PoC in shell mode
+.TP
+\fB\-\-comparison\fR
+Compare popular web search engines
+.TP
+\fB\-\-dork\-b64\fR
+Whether dork is in base64 format
+.SS "Optimization:"
+.IP
+Optimization options
+.TP
+\fB\-\-plugins\fR PLUGINS
+Load plugins to execute
+.TP
+\fB\-\-pocs\-path\fR POCS_PATH
+User defined poc scripts path
+.TP
+\fB\-\-threads\fR THREADS
+Max number of concurrent network requests (default 1)
+.TP
+\fB\-\-batch\fR BATCH
+Automatically choose defalut choice without asking.
+.TP
+\fB\-\-requires\fR
+Check install_requires
+.TP
+\fB\-\-quiet\fR
+Activate quiet mode, working without logger.
+.TP
+\fB\-\-ppt\fR
+Hiden sensitive information when published to the
+network
+.TP
+\fB\-\-pcap\fR
+use scapy capture flow
+.TP
+\fB\-\-rule\fR
+export rules, default export request and response
+.TP
+\fB\-\-rule\-req\fR
+only export request rule
+.TP
+\fB\-\-rule\-filename\fR RULE_FILENAME
+Specify the name of the export rule file
+.SS "Poc options:"
+.IP
+definition options for PoC
+.SH EXAMPLES
+.PP
+.br
+Run poc with verify mode, poc will be only used for vulnerability scanning.
+.PP
+.br
+\fI% pocsuite -r poc_example.py -u http://example.com/ --verify\fR
+.PP
+.br
+Run poc with attack mode, and it may allow hackers/researchers break into labs.
+.PP
+.br
+\fI% pocsuite -r poc_example.py -u http://example.com/ --attack\fR
+.PP
+.br
+Run poc with shell mode, if executed successfully, pocsuite will drop into interactive shell.
+.PP
+.br
+\fI% pocsuite -r poc_example.py -u http://example.com/ --shell\fR
+.PP
+.br
+Using multiple threads, the default number of threads is 1.
+.PP
+.br
+\fI% pocsuite -r poc_example.py -u http://example.com/ --verify --threads 20\fR
+.PP
+.br
+Scan multiple targets given in a textual file.
+.PP
+.br
+\fI% pocsuite -r poc_example.py -f url.txt --verify\fR
+.PP
+.br
+.SH "SEE ALSO"
+The full documentation for
+.B pocsuite
+is maintained at:
+.br
+.I https://github.com/knownsec/pocsuite3/blob/master/docs/USAGE.md
+.PP
+.SH VERSION
+This manual page documents pocsuite version 1.7.6
+.SH AUTHOR
+.br
+(c) 2014-2021 by Knownsec 404 Team
+.br
+<404-team@knownsec.com>
+.LP
+This program is free software; you may redistribute and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation; Version 2 (or later) with the clarifications and
+exceptions described below. This guarantees your right to use, modify, and
+redistribute this software under certain conditions. If you wish to embed
+pocsuite technology into proprietary software, we sell alternative licenses
+(contact 404-team@knownsec.com).
+.PP
+Manual page started by Tian Qiao
+<abcnsxyz@gmail.com>
+.PP
+
