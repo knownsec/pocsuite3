@@ -6,6 +6,7 @@
 import os
 import re
 import chardet
+import prettytable
 from termcolor import colored
 
 from pocsuite3.lib.controller.controller import start
@@ -19,7 +20,6 @@ from pocsuite3.lib.core.option import _set_listener, _set_http_referer, _set_htt
 from pocsuite3.lib.core.register import load_file_to_module
 from pocsuite3.lib.core.settings import IS_WIN
 from pocsuite3.lib.core.shell import auto_completion, readline
-from pocsuite3.thirdparty.prettytable import prettytable
 
 
 class BaseInterpreter(object):

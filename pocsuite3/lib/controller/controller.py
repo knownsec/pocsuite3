@@ -1,5 +1,6 @@
 import copy
 import time
+from prettytable import PrettyTable
 
 from pocsuite3.lib.core.common import data_to_stdout, desensitization
 from pocsuite3.lib.core.data import conf, cmd_line_options
@@ -12,7 +13,6 @@ from pocsuite3.lib.core.settings import CMD_PARSE_WHITELIST
 from pocsuite3.lib.core.threads import run_threads
 from pocsuite3.modules.listener import handle_listener_connection
 from pocsuite3.modules.listener.reverse_tcp import handle_listener_connection_for_console
-from pocsuite3.thirdparty.prettytable.prettytable import PrettyTable
 
 
 def runtime_check():
