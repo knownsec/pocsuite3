@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import socket
+import socks
 from queue import Queue
 from urllib.parse import urlsplit
 
@@ -33,7 +34,6 @@ from pocsuite3.lib.parse.rules import regex_rule
 from pocsuite3.lib.request.patch import patch_all
 from pocsuite3.modules.listener import start_listener
 from pocsuite3.thirdparty.oset.orderedset import OrderedSet
-from pocsuite3.thirdparty.pysocks import socks
 
 
 def _resolve_cross_references():
