@@ -6,6 +6,7 @@
 import os
 import re
 import chardet
+from termcolor import colored
 
 from pocsuite3.lib.controller.controller import start
 from pocsuite3.lib.core.common import banner, index_modules, data_to_stdout, humanize_path, module_required, \
@@ -19,7 +20,6 @@ from pocsuite3.lib.core.register import load_file_to_module
 from pocsuite3.lib.core.settings import IS_WIN
 from pocsuite3.lib.core.shell import auto_completion, readline
 from pocsuite3.thirdparty.prettytable import prettytable
-from pocsuite3.thirdparty.termcolor.termcolor import colored
 
 
 class BaseInterpreter(object):

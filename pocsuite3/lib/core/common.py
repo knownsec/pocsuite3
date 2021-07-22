@@ -16,6 +16,7 @@ from functools import wraps
 from ipaddress import ip_address, ip_network
 from platform import machine
 from subprocess import call, Popen, PIPE
+from termcolor import colored
 
 import chardet
 import requests
@@ -42,7 +43,6 @@ from pocsuite3.lib.core.settings import UNICODE_ENCODING
 from pocsuite3.lib.core.settings import URL_ADDRESS_REGEX
 from pocsuite3.thirdparty.colorama.initialise import init as coloramainit
 from pocsuite3.thirdparty.ifcfg import ifcfg
-from pocsuite3.thirdparty.termcolor.termcolor import colored
 
 
 def read_binary(filename):
