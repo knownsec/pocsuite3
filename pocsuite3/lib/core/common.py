@@ -16,6 +16,7 @@ from functools import wraps
 from ipaddress import ip_address, ip_network
 from platform import machine
 from subprocess import call, Popen, PIPE
+from colorama.initialise import init as coloramainit
 from termcolor import colored
 
 import chardet
@@ -41,7 +42,6 @@ from pocsuite3.lib.core.settings import POC_NAME_REGEX
 from pocsuite3.lib.core.settings import POC_REQUIRES_REGEX
 from pocsuite3.lib.core.settings import UNICODE_ENCODING
 from pocsuite3.lib.core.settings import URL_ADDRESS_REGEX
-from pocsuite3.thirdparty.colorama.initialise import init as coloramainit
 from pocsuite3.thirdparty.ifcfg import ifcfg
 
 
