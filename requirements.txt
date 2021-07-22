@@ -6,3 +6,4 @@ setuptools~=51.1.2
 chardet~=3.0.4
 termcolor~=1.1.0
 colorama~=0.4.4
+prettytable~=2.1.0
