@@ -14,6 +14,7 @@ from pocsuite3.lib.core.common import boldify_message, check_file, get_file_item
 from pocsuite3.lib.core.common import check_path, extract_cookies
 from pocsuite3.lib.core.common import get_local_ip, desensitization
 from pocsuite3.lib.core.common import single_time_warn_message
+from pocsuite3.lib.core.common import OrderedSet
 from pocsuite3.lib.core.convert import stdout_encode
 from pocsuite3.lib.core.data import conf, cmd_line_options
 from pocsuite3.lib.core.data import kb
@@ -33,7 +34,6 @@ from pocsuite3.lib.parse.configfile import config_file_parser
 from pocsuite3.lib.parse.rules import regex_rule
 from pocsuite3.lib.request.patch import patch_all
 from pocsuite3.modules.listener import start_listener
-from pocsuite3.thirdparty.oset.orderedset import OrderedSet
 
 
 def _resolve_cross_references():

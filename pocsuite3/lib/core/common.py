@@ -11,6 +11,7 @@ import struct
 import subprocess
 import sys
 import time
+import collections
 from collections import OrderedDict
 from functools import wraps
 from ipaddress import ip_address, ip_network
@@ -959,6 +960,33 @@ def get_host_ipv6():
     except socket.error:
         return None
     return s.getsockname()[0]
+
+
+class OrderedSet(collections.OrderedDict, collections.MutableSet):
+
+    def add(self, e):
+        self[e] = None
+
+    def discard(self, e):
+        self.pop(e, None)
+
+    def __le__(self, other):
+        return all(e in other for e in self)
+
+    def __lt__(self, other):
+        return self <= other and self != other
+
+    def __ge__(self, other):
+        return all(e in self for e in other)
+
+    def __gt__(self, other):
+        return self >= other and self != other
+
+    def __repr__(self):
+        return 'OrderedSet([%s])' % (', '.join(map(repr, self.keys())))
+
+    def __str__(self):
+        return '{%s}' % (', '.join(map(repr, self.keys())))
 
 
 if __name__ == '__main__':
