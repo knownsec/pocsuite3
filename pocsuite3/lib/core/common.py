@@ -42,7 +42,6 @@ from pocsuite3.lib.core.settings import POC_NAME_REGEX
 from pocsuite3.lib.core.settings import POC_REQUIRES_REGEX
 from pocsuite3.lib.core.settings import UNICODE_ENCODING
 from pocsuite3.lib.core.settings import URL_ADDRESS_REGEX
-from pocsuite3.thirdparty.ifcfg import ifcfg
 
 
 def read_binary(filename):
@@ -931,13 +930,6 @@ def exec_cmd(cmd, raw_data=True):
     return out_data
 
 
-def get_all_nic_info():
-    nic_info = dict()
-    for name, info in ifcfg.interfaces().items():
-        nic_info[name] = info
-    return nic_info
-
-
 def desensitization(s):
     """ Hide sensitive information.
     """
@@ -960,26 +952,13 @@ def encoder_powershell_payload(powershell: str):
     return command
 
 
-def get_host_ipv6(with_nic=True):
-    nic_info = get_all_nic_info()
-    ipv4 = get_host_ip()
-    ipv6 = None
-    for nic, info in nic_info.items():
-        ip4 = info['inet4']
-        ip6 = info['inet6']
-        if not all([ip4, ip6]):
-            continue
-        ip4, ip6 = ip4.pop(), ip6.pop()
-        if ip4 == ipv4:
-            ipv6 = ip6 if ip6 else None
-            if ipv6 and '%' not in ipv6:
-                ipv6 = ipv6 + '%' + nic
-            break
-
-    if ipv6:
-        if not with_nic:
-            ipv6 = ipv6.split('%')[0]
-        return ipv6
+def get_host_ipv6():
+    s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+    try:
+        s.connect(('2001:db8::', 1027))
+    except socket.error:
+        return None
+    return s.getsockname()[0]
 
 
 if __name__ == '__main__':
