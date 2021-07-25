@@ -9,20 +9,23 @@ logging.addLevelName(CUSTOM_LOGGING.ERROR, "-")
 logging.addLevelName(CUSTOM_LOGGING.WARNING, "!")
 
 LOGGER = logging.getLogger("pocsuite")
-
 LOGGER_HANDLER = logging.StreamHandler(sys.stdout)
+PRIMARY_FMT = (
+    "%(cyan)s[%(asctime)s] %(log_color)s[%(levelname)s]%(reset)s %(message)s"
+)
+CUSTOM_FMT = "%(log_color)s[%(asctime)s] [%(levelname)s] %(message)s"
 
 FORMATTER = colorlog.LevelFormatter(
     fmt={
-        "DEBUG": "%(cyan)s[%(asctime)s] %(log_color)s[%(levelname)s]%(reset)s %(message)s",
-        "INFO": "%(cyan)s[%(asctime)s] %(log_color)s[%(levelname)s]%(reset)s %(message)s",
-        "WARNING": "%(cyan)s[%(asctime)s] %(log_color)s[%(levelname)s]%(reset)s %(message)s",
-        "ERROR": "%(cyan)s[%(asctime)s] %(log_color)s[%(levelname)s]%(reset)s %(message)s",
-        "CRITICAL": "%(cyan)s[%(asctime)s] %(log_color)s[%(levelname)s]%(reset)s %(message)s",
-        "*": "%(log_color)s[%(asctime)s] [%(levelname)s] %(message)s",
-        "+": "%(log_color)s[%(asctime)s] [%(levelname)s] %(message)s",
-        "-": "%(log_color)s[%(asctime)s] [%(levelname)s] %(message)s",
-        "!": "%(log_color)s[%(asctime)s] [%(levelname)s] %(message)s"
+        "DEBUG": PRIMARY_FMT,
+        "INFO": PRIMARY_FMT,
+        "WARNING": PRIMARY_FMT,
+        "ERROR": PRIMARY_FMT,
+        "CRITICAL": PRIMARY_FMT,
+        "*": CUSTOM_FMT,
+        "+": CUSTOM_FMT,
+        "-": CUSTOM_FMT,
+        "!": CUSTOM_FMT
     },
     datefmt="%H:%M:%S",
     log_colors={
@@ -43,7 +46,7 @@ FORMATTER = colorlog.LevelFormatter(
 disableColor = "disable-col" in ' '.join(sys.argv)
 if disableColor:
     FORMATTER = logging.Formatter(
-        "\r[%(asctime)s] [%(levelname)s] %(message)s", "%H:%M:%S")
+        "[%(asctime)s] [%(levelname)s] %(message)s", "%H:%M:%S")
 
 
 LOGGER_HANDLER.setFormatter(FORMATTER)
