@@ -1,0 +1,54 @@
+import os
+from pocsuite3.lib.core.common import data_to_stdout
+from pocsuite3.lib.core.data import logger
+from scapy.all import (
+    WINDOWS,
+    get_if_list,
+    get_if_addr,
+    AsyncSniffer
+)
+from threading import Thread, Event
+
+
+class Sniffer(Thread):
+    def __init__(self, filter):
+        super().__init__()
+        self.filter = "host %s" % filter
+        self.daemon = True
+        self.socket = None
+        self.use_pcap = True
+        self.is_admin = False
+        if WINDOWS:
+            import ctypes
+            if ctypes.windll.shell32.IsUserAnAdmin():
+                self.is_admin = True
+        else:
+            if os.getuid() == 0:
+                self.is_admin = True
+
+        logger.info(
+            'Local network adapter information, choose a network you want to '
+            'capture.'
+        )
+        message = '----- Local IP Address -----\n'
+        ifaces = get_if_list()
+        for i, iface in enumerate(ifaces):
+            ip = get_if_addr(iface)
+            message += "{0}   {1}    {2}\n".format(i, iface, ip)
+        data_to_stdout(message)
+        choose = input('Choose>: ').strip()
+        self.interface = ifaces[int(choose)]
+        self.use_pcap = True
+        self.stop_sniffer = Event()
+        self.pcap = None
+
+    def run(self):
+        self.pcap = AsyncSniffer()
+        # In order to ensure that all packets can be captured,
+        # a adapter must be specified. If it is all adapters,
+        # it will lost the data package
+        self.pcap._run(iface=self.interface, filter=self.filter)
+
+    def join(self, timeout=None):
+        self.pcap.continue_sniff = False
+        super().join(timeout)
