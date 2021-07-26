@@ -48,5 +48,6 @@ Pocsuite is an open-sourced remote vulnerability testing and proof-of-concept de
         "colorama >= 0.4.4",
         "prettytable >= 0.7.2",
         "colorlog >= 4.7.2",
+        "scapy >= 2.4.4"
     ],
 )
