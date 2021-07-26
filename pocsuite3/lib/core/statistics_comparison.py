@@ -1,5 +1,5 @@
 from pocsuite3.lib.core.common import data_to_stdout
-from pocsuite3.thirdparty.prettytable.prettytable import PrettyTable
+from prettytable import PrettyTable
 
 
 class StatisticsComparison(object):

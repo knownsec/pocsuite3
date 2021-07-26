@@ -1,6 +1,6 @@
 import sys
 import logging
-
+import colorlog
 from pocsuite3.lib.core.enums import CUSTOM_LOGGING
 
 logging.addLevelName(CUSTOM_LOGGING.SYSINFO, "*")
@@ -9,30 +9,45 @@ logging.addLevelName(CUSTOM_LOGGING.ERROR, "-")
 logging.addLevelName(CUSTOM_LOGGING.WARNING, "!")
 
 LOGGER = logging.getLogger("pocsuite")
+LOGGER_HANDLER = logging.StreamHandler(sys.stdout)
+PRIMARY_FMT = (
+    "%(cyan)s[%(asctime)s] %(log_color)s[%(levelname)s]%(reset)s %(message)s"
+)
+CUSTOM_FMT = "%(log_color)s[%(asctime)s] [%(levelname)s] %(message)s"
 
-LOGGER_HANDLER = None
-try:
-    from pocsuite3.thirdparty.ansistrm.ansistrm import ColorizingStreamHandler
+FORMATTER = colorlog.LevelFormatter(
+    fmt={
+        "DEBUG": PRIMARY_FMT,
+        "INFO": PRIMARY_FMT,
+        "WARNING": PRIMARY_FMT,
+        "ERROR": PRIMARY_FMT,
+        "CRITICAL": PRIMARY_FMT,
+        "*": CUSTOM_FMT,
+        "+": CUSTOM_FMT,
+        "-": CUSTOM_FMT,
+        "!": CUSTOM_FMT
+    },
+    datefmt="%H:%M:%S",
+    log_colors={
+        '*': 'cyan',
+        '+': 'green',
+        '-': 'red',
+        '!': 'yellow',
+        'DEBUG': 'blue',
+        'INFO': 'green',
+        'WARNING': 'yellow',
+        'ERROR': 'red',
+        'CRITICAL': 'bg_red,white'
+    },
+    secondary_log_colors={},
+    style='%'
+)
 
-    disableColor = False
+disableColor = "disable-col" in ' '.join(sys.argv)
+if disableColor:
+    FORMATTER = logging.Formatter(
+        "[%(asctime)s] [%(levelname)s] %(message)s", "%H:%M:%S")
 
-    for argument in sys.argv:
-        if "disable-col" in argument:
-            disableColor = True
-            break
-
-    if disableColor:
-        LOGGER_HANDLER = logging.StreamHandler(sys.stdout)
-    else:
-        LOGGER_HANDLER = ColorizingStreamHandler(sys.stdout)
-        LOGGER_HANDLER.level_map[logging.getLevelName("*")] = (None, "cyan", False)
-        LOGGER_HANDLER.level_map[logging.getLevelName("+")] = (None, "green", False)
-        LOGGER_HANDLER.level_map[logging.getLevelName("-")] = (None, "red", False)
-        LOGGER_HANDLER.level_map[logging.getLevelName("!")] = (None, "yellow", False)
-except ImportError:
-    LOGGER_HANDLER = logging.StreamHandler(sys.stdout)
-
-FORMATTER = logging.Formatter("\r[%(asctime)s] [%(levelname)s] %(message)s", "%H:%M:%S")
 
 LOGGER_HANDLER.setFormatter(FORMATTER)
 LOGGER.addHandler(LOGGER_HANDLER)
