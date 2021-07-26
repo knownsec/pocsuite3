@@ -9,7 +9,7 @@ from pocsuite3.api import conf
 from pocsuite3.api import paths
 from pocsuite3.api import get_results
 from pocsuite3.api import register_plugin
-from pocsuite3.thirdparty.markup.markup import page
+from pocsuite3.lib.utils.markup import page
 
 
 class HtmlExport:
