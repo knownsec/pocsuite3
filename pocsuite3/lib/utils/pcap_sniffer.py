@@ -18,23 +18,29 @@ class Sniffer(Thread):
         self.socket = None
         self.use_pcap = True
         self.is_admin = False
-        if WINDOWS:
-            import ctypes
-            if ctypes.windll.shell32.IsUserAnAdmin():
-                self.is_admin = True
-        else:
-            if os.getuid() == 0:
-                self.is_admin = True
-
         logger.info(
             'Local network adapter information, choose a network you want to '
             'capture.'
         )
         message = '----- Local IP Address -----\n'
-        ifaces = get_if_list()
-        for i, iface in enumerate(ifaces):
-            ip = get_if_addr(iface)
-            message += "{0}   {1}    {2}\n".format(i, iface, ip)
+        ifaces = []
+        if WINDOWS:
+            import ctypes
+            from scapy.all import IFACES
+            if ctypes.windll.shell32.IsUserAnAdmin():
+                self.is_admin = True
+            for i, iface in enumerate(sorted(IFACES)):
+                dev = IFACES[iface]
+                ifaces.append(dev.description)
+                message += "{0}   {1}    {2}\n".format(
+                    i, dev.description, dev.ip)
+        else:
+            if os.getuid() == 0:
+                self.is_admin = True
+            ifaces = get_if_list()
+            for i, iface in enumerate(ifaces):
+                ip = get_if_addr(iface)
+                message += "{0}   {1}    {2}\n".format(i, iface, ip)
         data_to_stdout(message)
         choose = input('Choose>: ').strip()
         self.interface = ifaces[int(choose)]
