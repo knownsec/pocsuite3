@@ -1,9 +1,9 @@
-#!usr/bin/env python  
+#!usr/bin/env python
 # -*- coding:utf-8 -*-
-""" 
+"""
 @author: longofo
 @file: __init__.py
-@time: 2019/03/23 
+@time: 2019/03/23
 """
 import os
 import random
@@ -12,7 +12,7 @@ import ssl
 import threading
 import time
 from http.server import SimpleHTTPRequestHandler, HTTPServer
-
+from pocsuite3.lib.utils import gen_cert
 from pocsuite3.lib.core.common import check_port
 from pocsuite3.lib.core.common import get_host_ip, get_host_ipv6
 from pocsuite3.lib.core.data import logger, paths
@@ -92,6 +92,8 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
     def __init__(self, bind_ip='0.0.0.0', bind_port=666, is_ipv6=False, use_https=False,
                  certfile=os.path.join(paths.POCSUITE_DATA_PATH, 'cacert.pem'),
                  requestHandler=BaseRequestHandler):
+        if not os.path.exists(certfile):
+            gen_cert(filepath=certfile)
         threading.Thread.__init__(self)
         self.bind_ip = bind_ip
         self.bind_port = int(bind_port)

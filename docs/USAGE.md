@@ -239,17 +239,32 @@ $ python cli.py --rule-req
 
 If you have good ideas, please show them on your way.
 
-## 常用命令
-	- pocsuite -u http://example.com -r example.py -v 2 # 基础用法 v2开启详细信息
+## Example
 
-	- pocsuite -u http://example.com -r example.py -v 2 --shell # shell反连模式，基础用法 v2开启详细信息
+```
+cli mode
 
-	- pocsuite -r redis.py --dork service:redis --threads 20 # 从zoomeye搜索redis目标批量检测，线程设置为20
+	# basic usage, use -v to set the log level
+	pocsuite -u http://example.com -r example.py -v 2
 
-	- pocsuite -u http://example.com --plugins poc_from_pocs,html_report # 加载poc目录下所有poc,并将结果保存为html
+	# run poc with shell mode
+	pocsuite -u http://example.com -r example.py -v 2 --shell
 
-	- pocsuite -f batch.txt --plugins poc_from_pocs,html_report # 从文件中加载目标，并使用poc目录下poc批量扫描
+	# search for the target of redis service from ZoomEye and perform batch detection of vulnerabilities. The thread is set to 20
+	pocsuite -r redis.py --dork service:redis --threads 20
 
-	- pocsuite -u 10.0.0.0/24 -r example.py --plugins target_from_cidr # 加载CIDR目标
+	# load all poc in the poc directory and save the result as html
+	pocsuite -u http://example.com --plugins poc_from_pocs,html_report
 
-	- pocsuite -u http://example.com -r ecshop_rce.py --attack --command "whoami" # ecshop poc中实现了自定义命令`command`,可以从外部参数传递。
+	# load the target from the file, and use the poc under the poc directory to scan
+	pocsuite -f batch.txt --plugins poc_from_pocs,html_report
+
+	# load CIDR target
+	pocsuite -u 10.0.0.0/24 -r example.py --plugins target_from_cidr
+
+	# the custom parameters `command` is implemented in ecshop poc, which can be set from command line options
+	pocsuite -u http://example.com -r ecshop_rce.py --attack --command "whoami"
+
+console mode
+    poc-console
+```

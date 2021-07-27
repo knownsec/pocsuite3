@@ -226,7 +226,8 @@ class POCBase(object):
             logger.error(str(traceback.format_exc()))
             # logger.exception(e)
             output = Output(self)
-        output.params = self.params
+        if output:
+            output.params = self.params
         return output
 
     # def _shell(self):

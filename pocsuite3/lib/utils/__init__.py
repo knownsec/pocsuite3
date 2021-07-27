@@ -6,12 +6,13 @@ import string
 import random
 from socket import gethostbyname
 from urllib.parse import urlparse
-
+from OpenSSL import crypto
 from pocsuite3.lib.core.data import logger, paths
-from pocsuite3.lib.core.enums import CUSTOM_LOGGING, OS, OS_ARCH, SHELLCODE_CONNECTION
+from pocsuite3.lib.core.enums import (
+    CUSTOM_LOGGING, OS, OS_ARCH, SHELLCODE_CONNECTION
+)
 # for pocsuite 2.x
 from pocsuite3.lib.core.exception import PocsuiteGenericException
-from pocsuite3.lib.core.register import register_poc as register
 from pocsuite3.shellcodes import OSShellcodes
 
 
@@ -145,3 +146,40 @@ def generate_shellcode_list(listener_ip, listener_port, os_target=OS.WINDOWS, os
         cmd.append(profix + filename)
 
     return cmd
+
+
+def gen_cert(emailAddress="s1@seebug.org",
+             commonName="Cyberspace",
+             countryName="CN",
+             localityName="Cyberspace",
+             stateOrProvinceName="Cyberspace",
+             organizationName="Seebug",
+             organizationUnitName="pocsuite.org",
+             serialNumber=0,
+             validityStartInSeconds=0,
+             validityEndInSeconds=10*365*24*60*60,
+             filepath="cacert.pem"):
+
+    # create a key pair
+    k = crypto.PKey()
+    k.generate_key(crypto.TYPE_RSA, 4096)
+
+    # create a self-signed cert
+    cert = crypto.X509()
+    cert.get_subject().C = countryName
+    cert.get_subject().ST = stateOrProvinceName
+    cert.get_subject().L = localityName
+    cert.get_subject().O = organizationName
+    cert.get_subject().OU = organizationUnitName
+    cert.get_subject().CN = commonName
+    cert.get_subject().emailAddress = emailAddress
+    cert.set_serial_number(serialNumber)
+    cert.gmtime_adj_notBefore(0)
+    cert.gmtime_adj_notAfter(validityEndInSeconds)
+    cert.set_issuer(cert.get_subject())
+    cert.set_pubkey(k)
+    cert.sign(k, 'sha512')
+    with open(filepath, "wb+") as f:
+        f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+    with open(filepath, "ab+") as f:
+        f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, k))
