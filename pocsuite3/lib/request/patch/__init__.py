@@ -20,7 +20,7 @@ def patch_all():
 def _update_chunk_length(self):
     # First, we'll figure out length of a chunk and then
     # we'll try to read it from socket.
-    # 修复一些urllib3不承认的chunked错误
+    # Fix some chunked errors that urllib3 does not recognize
     if self.chunk_left is not None:
         return
     line = self._fp.fp.readline()

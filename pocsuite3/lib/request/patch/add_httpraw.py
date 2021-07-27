@@ -6,13 +6,15 @@ from requests.structures import CaseInsensitiveDict
 
 
 def extract_dict(text, sep, sep2="="):
-    """根据分割方式将字符串分割为字典
+    """Split the string into a dictionary according to the split method
 
-    :param text: 分割的文本
-    :param sep: 分割的第一个字符 一般为'\n'
-    :param sep2: 分割的第二个字符，默认为'='
-    :return: 返回一个dict类型，key为sep2的第0个位置，value为sep2的第一个位置
-        只能将文本转换为字典，若text为其他类型则会出错
+    :param text: Split text
+    :param sep: The first character of the split, usually'\n'
+    :param sep2: The second character of the split, the default is '='
+    :return: Return a dict type, the key is the 0th position of sep2,
+     and the value is the first position of sep2.
+     Only the text can be converted into a dictionary,
+     if the text is of other types, an error will occur
     """
     _dict = CaseInsensitiveDict([l.split(sep2, 1) for l in text.split(sep)])
     return _dict
@@ -20,11 +22,12 @@ def extract_dict(text, sep, sep2="="):
 
 def httpraw(raw: str, ssl: bool = False, **kwargs):
     """
-    发送原始HTTP封包请求,如果你在参数中设置了例如headers参数，将会发送你设置的参数
+    Send the original HTTP packet request, if you set the parameters such as headers in the parameters, the parameters
+    you set will be sent
 
-    :param raw:原始封包文本
-    :param ssl:是否是HTTPS
-    :param kwargs:支持对requests中的参数进行设置
+    :param raw: Original packet text
+    :param ssl: whether is HTTPS
+    :param kwargs: Support setting of parameters in requests
     :return:requests.Response
     """
     raw = raw.strip()

@@ -96,10 +96,10 @@ class CEye(object):
 
     def verify_request(self, flag, type="request"):
         """
-        校验ceye接口是否有数据
+        Check whether the ceye interface has data
 
-        :param flag: 输入的flag
-        :param type: 请求类型(dns|request),默认是request
+        :param flag: Input flag
+        :param type: Request type (dns|request), the default is request
         :return: Boolean
         """
         ret_val = False
@@ -121,11 +121,11 @@ class CEye(object):
 
     def exact_request(self, flag, type="request"):
         """
-        通过访问ceye接口获取相关数据
+        Obtain relevant data by accessing the ceye interface
 
-        :param flag: 输入的flag
-        :param type: 请求类型(dns|request),默认是request
-        :return:返回获取的数据
+        :param flag: Input flag
+        :param type: Request type (dns|request), the default is request
+        :return: Return the acquired data
         """
         counts = 3
         url = "http://api.ceye.io/v1/records?token={token}&type={type}&filter={flag}".format(token=self.token,
@@ -152,11 +152,11 @@ class CEye(object):
 
     def build_request(self, value, type="request"):
         """
-        生成发送的字符串
+        Generate the sent string
 
-        :param value: 输入的要发送的信息
-        :param type: 请求类型(dns|request),默认是request
-        :return: dict { url:返回接收的域名,flag:返回随机的flag }
+        :param value: Enter the message to be sent
+        :param type: Request type (dns|request), the default is request
+        :return: dict { url: Return the received domain name,flag: Return a random flag }
         Example:
           {
             'url': 'http://htCb.jwm77k.ceye.io/htCbpingaaahtCb',
@@ -175,8 +175,8 @@ class CEye(object):
 
     def getsubdomain(self):
         """
-        通过ceye token获取子域名
-        :return:返回获取的域名
+        Obtain subdomains through ceye token
+        :return: Return the obtained domain name
         """
         r = requests.get("http://api.ceye.io/v1/identify", headers=self.headers).json()
         suffix = ".ceye.io"
@@ -188,31 +188,31 @@ class CEye(object):
 
 
 if __name__ == "__main__":
-    ce = CEye(token="111") # 填写token
+    ce = CEye(token="111") # Fill in the token
     # http record
-    # 辅助生成flag字符串
+    # Auxiliary generation of flag string
     flag = ce.build_request("HelloWorld3")
     print(flag)
-    # 用requests模拟请求
+    # Simulate requests with requests
     try:
         r = requests.get(flag["url"])
     except:
         pass
     time.sleep(1)
     print("request over")
-    # 获取请求的数据
+    # Get the requested data
     info = ce.exact_request(flag["flag"], )
     print(info)
 
     # dns record
-    # 辅助生成flag字符串
+    # Auxiliary generation of flag string
     flag = ce.build_request("HelloWor1d", type='dns')
     print(flag)
-    # 用requests模拟请求
+    # Simulate request with requests
     # r = requests.get(flag["url"])
     os.system("ping " + flag["url"])
     time.sleep(1)
     print("ping over")
-    # 获取请求的数据
+    # Get the requested data
     info = ce.exact_request(flag["flag"], type="dns")
     print(info)

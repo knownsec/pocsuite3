@@ -45,12 +45,12 @@ def random_str(length=10, chars=string.ascii_letters + string.digits):
 
 def get_middle_text(text, prefix, suffix, index=0):
     """
-    获取中间文本的简单实现
+    Simple implementation of obtaining intermediate text
 
-    :param text:要获取的全文本
-    :param prefix:要获取文本的前部分
-    :param suffix:要获取文本的后半部分
-    :param index:从哪个位置获取
+    :param text:Full text to get
+    :param prefix:To get the first part of the text
+    :param suffix: To get the second half of the text
+    :param index: Where to get it from
     :return:
     """
     try:
@@ -65,15 +65,18 @@ def get_middle_text(text, prefix, suffix, index=0):
 def generate_shellcode_list(listener_ip, listener_port, os_target=OS.WINDOWS, os_target_arch=OS_ARCH.X86,
                             chunked_num=50, profix=None, write_path=None):
     """
-    生成可执行的shellcode，用于Windows/Linux下shell反弹，编写带有命令执行的POC时，执行此命令返回的列表即可。
+    Generate executable shellcode for shell rebound under Windows/Linux. When writing a POC with command execution,
+    execute the list returned by this command.
 
-    :param listener_ip: 监听IP
-    :param listener_port: 监听端口
-    :param os_target: 系统类型，默认为Windows
-    :param os_target_arch: 系统架构，默认是x86
-    :param chunked_num: 指定多大数量为一块，默认50
-    :param profix: 选择命令执行的前缀，默认None 自动根据操作系统选择
-    :param write_path: 写入的文件目录，默认为None时，Windows将写入到%TEMP%目录，Linux将写入到/tmp目录下，文件名随机
+    :param listener_ip: Listening IP
+    :param listener_port: Listening port
+    :param os_target: System type, default is Windows
+    :param os_target_arch: System architecture, the default is x86
+    :param chunked_num: Specify how much quantity is one piece, the default is 50
+    :param profix: Select the prefix of the command execution, the default is None. Automatically select according to
+            the operating system
+    :param write_path: The written file directory, when the default is None, Windows will write to the %TEMP% directory,
+            Linux will write to the /tmp directory, the file name is random
     :return: list of command
     """
 

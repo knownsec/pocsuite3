@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# @Time    : 2018/12/25 上午10:49
+# @Time    : 2018/12/25 morning 10:49
 # @Author  : chenghs
 # @File    : console.py
 import os

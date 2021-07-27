@@ -511,7 +511,7 @@ def _set_conf_attributes():
     conf.retry = 0
     conf.delay = 0
     conf.http_headers = {}
-    conf.agents = [DEFAULT_USER_AGENT]  # 数据源从插件加载的时候无默认值需要处理
+    conf.agents = [DEFAULT_USER_AGENT]  # When loading from the plug-in, if the data source has no default value, it needs to be processed
     conf.login_user = None
     conf.login_pass = None
     conf.shodan_token = None
@@ -688,7 +688,7 @@ def init():
     update()
     _set_multiple_targets()
     _set_user_pocs_path()
-    _set_pocs_modules()  # poc module模块要在插件模块前，poc选项中某些参数调用了插件
+    _set_pocs_modules()  # The poc module module must be in front of the plug-in module, and some parameters in the poc option call the plug-in
     _set_plugins()
     _init_targets_plugins()
     _init_pocs_plugins()

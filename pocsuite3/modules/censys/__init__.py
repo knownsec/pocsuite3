@@ -71,7 +71,7 @@ class Censys():
             for page in range(1, pages + 1):
                 url = "https://censys.io/api/v1/search/{}".format(resource)
                 data = {
-                    "query": dork,  # 搜索的关键字,
+                    "query": dork,  # Search keywords,
                     "fields": ["ip"],
                     "page": page
                 }
