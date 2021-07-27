@@ -65,3 +65,4 @@ dist/
 .eggs/
 pocsuite.ini
 pocsuite3/pocs/
+pocsuite3/data/cacert.pem
