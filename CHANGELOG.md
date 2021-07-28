@@ -227,3 +227,8 @@ Cross-platform shell code generation
 # version 1.7.6
 -----------------
 * fixes #192
+
+# version 1.7.7
+-----------------
+* 添加--dork自动用poc中的dork字段扫描功能
+* 适配Debian源格式需求
