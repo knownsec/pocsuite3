@@ -5,6 +5,7 @@ import os
 import re
 import socket
 import socks
+import importlib
 from queue import Queue
 from urllib.parse import urlsplit
 
@@ -673,6 +674,28 @@ def _init_kb_comparison():
         kb.comparison = StatisticsComparison()
 
 
+def _init_target_from_poc_dork():
+    if len(kb.targets) > 0:
+        return
+
+    for poc_module, poc_class in kb.registered_pocs.items():
+        if not hasattr(poc_class, 'dork'):
+            continue
+        # find a available target source
+        target_source = ''
+        for i in ["zoomeye", "fofa", "shodan", "quake", "censys"]:
+            if i in poc_class.dork.keys():
+                target_source = i
+                break
+        # fetch target from target source, add it to kb.targets
+        conf.dork = poc_class.dork[target_source]
+        plugin_name = f'target_from_{target_source}'
+        importlib.import_module(f'pocsuite3.plugins.{plugin_name}')
+        for _, plugin in kb.plugins.targets.items():
+            if target_source in plugin.__class__.__name__.lower():
+                plugin.init()
+
+
 def init():
     """
     Set attributes into both configuration and knowledge base singletons
@@ -692,6 +715,7 @@ def init():
     _set_plugins()
     _init_targets_plugins()
     _init_pocs_plugins()
+    _init_target_from_poc_dork()
     _set_task_queue()
     _init_results_plugins()
 
