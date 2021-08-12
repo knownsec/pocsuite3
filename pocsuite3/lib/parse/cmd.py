@@ -130,6 +130,8 @@ def cmd_line_parser(argv=None):
                                   help="only export request rule")
         optimization.add_argument("--rule-filename", dest="rule_filename", action="store", default=False,
                                   help="Specify the name of the export rule file")
+        optimization.add_argument("--options", dest="show_options", action="store_true", default=False,
+                                  help="Show definition options for PoC")
         # Diy options
         diy = parser.add_argument_group("Poc options", "definition options for PoC")
 

@@ -6,6 +6,8 @@ import re
 import socket
 import socks
 import importlib
+import prettytable
+from termcolor import colored
 from queue import Queue
 from urllib.parse import urlsplit
 
@@ -557,6 +559,7 @@ def _set_conf_attributes():
     conf.rule = False
     conf.rule_req = False
     conf.rule_filename = None
+    conf.show_options = False
 
 
 def _set_kb_attributes(flush_all=True):
@@ -696,6 +699,25 @@ def _init_target_from_poc_dork():
                 plugin.init()
 
 
+def _show_pocs_modules_options():
+    if not conf.show_options:
+        return
+    for module_name, poc_class in kb.registered_pocs.items():
+        module_options = poc_class.options
+        tb = prettytable.PrettyTable(
+            ['Name', 'Current settings', 'Type', 'Description'])
+        # add target option
+        for name, opt in module_options.items():
+            value = opt.value
+            if opt.require and value == '':
+                value = colored('*require*', 'red')
+            tb.add_row([name, value, opt.type, opt.description])
+        data_to_stdout(f'\nModule ({module_name}) options:\n')
+        data_to_stdout(tb.get_string())
+        data_to_stdout('\n')
+    exit()
+
+
 def init():
     """
     Set attributes into both configuration and knowledge base singletons
@@ -715,6 +737,7 @@ def init():
     _set_plugins()
     _init_targets_plugins()
     _init_pocs_plugins()
+    _show_pocs_modules_options()
     _init_target_from_poc_dork()
     _set_task_queue()
     _init_results_plugins()
