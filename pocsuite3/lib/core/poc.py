@@ -1,5 +1,6 @@
 import re
 import traceback
+import inspect
 from collections import OrderedDict
 from urllib.parse import urlparse
 
@@ -277,6 +278,10 @@ class Output(object):
             self.app_name = poc.appName
             self.app_version = poc.appVersion
             self.error_msg = poc.expt
+            self.poc_attrs = {}
+            for i in inspect.getmembers(poc):
+                if not i[0].startswith('_') and type(i[1]) in [str, list, dict]:
+                    self.poc_attrs[i[0]] = i[1]
 
     def is_success(self):
         return bool(True and self.status)
