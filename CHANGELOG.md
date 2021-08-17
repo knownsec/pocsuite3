@@ -232,3 +232,10 @@ Cross-platform shell code generation
 -----------------
 * 添加--dork自动用poc中的dork字段扫描功能
 * 适配Debian源格式需求
+
+# version 1.7.8
+-----------------
+* add option to display extra parameters of poc
+* add more poc attribute to result dict
+* allow custom module path in console mode
+* fix some compatibility problems
