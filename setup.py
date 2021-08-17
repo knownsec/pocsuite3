@@ -7,14 +7,14 @@ except ImportError:
 
     def find_packages(where='.'):
         # os.walk -> list[(dirname, list[subdirs], list[files])]
-        return [folder.replace("/", ".").lstrip(".")
-                for (folder, _, fils) in os.walk(where)
-                if "__init__.py" in fils]
+        return [folder.replace(os.sep, ".").strip(".")
+                for (folder, _, files) in os.walk(where)
+                if "__init__.py" in files]
 
 
 setup(
     name='pocsuite3',
-    version='1.7.7',
+    version='1.7.8',
     url='http://pocsuite.org',
     description='Pocsuite is an open-sourced remote vulnerability testing framework developed by the Knownsec Security Team.',
     long_description="""\

