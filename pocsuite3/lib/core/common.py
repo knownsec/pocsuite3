@@ -821,7 +821,7 @@ def humanize_path(path: str) -> str:
     :return str: humanized path
     """
 
-    return path.replace(".", "/")
+    return path.replace(".", os.sep)
 
 
 def pythonize_path(path: str) -> str:
@@ -833,7 +833,7 @@ def pythonize_path(path: str) -> str:
     :return str: pythonized path
     """
 
-    return path.replace("/", ".")
+    return path.replace(os.sep, ".")
 
 
 def module_required(fn):

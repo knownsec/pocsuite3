@@ -188,7 +188,7 @@ class PocsuiteInterpreter(BaseInterpreter):
 
         self.modules = index_modules(module_directory)
         self.module_parent_directory = os.sep.join(
-            module_directory.rstrip(os.sep).split(os.sep)[0:-1]) + '/'
+            module_directory.rstrip(os.sep).split(os.sep)[0:-1]) + os.sep
         self.modules_count = len(self.modules)
         # init
         conf.console_mode = True

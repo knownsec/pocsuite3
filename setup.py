@@ -7,9 +7,9 @@ except ImportError:
 
     def find_packages(where='.'):
         # os.walk -> list[(dirname, list[subdirs], list[files])]
-        return [folder.replace("/", ".").lstrip(".")
-                for (folder, _, fils) in os.walk(where)
-                if "__init__.py" in fils]
+        return [folder.replace(os.sep, ".").strip(".")
+                for (folder, _, files) in os.walk(where)
+                if "__init__.py" in files]
 
 
 setup(
