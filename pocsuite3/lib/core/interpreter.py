@@ -171,7 +171,7 @@ class PocsuiteInterpreter(BaseInterpreter):
     attack                              Attack target and return target vulnerable infomation
     exploit                             Get a shell from remote target"""
 
-    def __init__(self):
+    def __init__(self, module_directory=paths.POCSUITE_POCS_PATH):
         super(PocsuiteInterpreter, self).__init__()
 
         self.current_module = None
@@ -186,7 +186,9 @@ class PocsuiteInterpreter(BaseInterpreter):
         self.module_commands.extend(self.global_commands)
         self.module_commands.sort()
 
-        self.modules = index_modules()
+        self.modules = index_modules(module_directory)
+        self.module_parent_directory = os.sep.join(
+            module_directory.rstrip(os.sep).split(os.sep)[0:-1]) + '/'
         self.modules_count = len(self.modules)
         # init
         conf.console_mode = True
@@ -198,10 +200,8 @@ class PocsuiteInterpreter(BaseInterpreter):
         self.main_modules_dirs = []
         for module in self.modules:
             temp_module = module
-            if IS_WIN:
-                temp_module = temp_module.replace("/", "\\")
-                temp_module = temp_module.replace(paths.POCSUITE_ROOT_PATH, "").lstrip("\\")
-            temp_module = temp_module.replace(paths.POCSUITE_ROOT_PATH, "").lstrip("/")
+            temp_module = temp_module.replace(
+                self.module_parent_directory, '').lstrip(os.sep)
             self.main_modules_dirs.append(temp_module)
 
         self.__parse_prompt()
@@ -315,7 +315,7 @@ class PocsuiteInterpreter(BaseInterpreter):
         if not module_path.endswith(".py"):
             module_path = module_path + ".py"
         if not os.path.exists(module_path):
-            module_path = os.path.join(paths.POCSUITE_ROOT_PATH, module_path)
+            module_path = os.path.join(self.module_parent_directory, module_path)
             if not os.path.exists(module_path):
                 errMsg = "No such file: '{0}'".format(module_path)
                 logger.error(errMsg)
@@ -323,8 +323,8 @@ class PocsuiteInterpreter(BaseInterpreter):
         try:
             load_file_to_module(module_path)
             self.current_module = kb.current_poc
-            self.current_module.pocsuite3_module_path = ltrim(rtrim(module_path, ".py"),
-                                                              os.path.join(paths.POCSUITE_ROOT_PATH, ""))
+            self.current_module.pocsuite3_module_path = ltrim(
+                rtrim(module_path, ".py"), self.module_parent_directory)
         except Exception as err:
             logger.error(str(err))
 
@@ -447,7 +447,7 @@ class PocsuiteInterpreter(BaseInterpreter):
         tb = prettytable.PrettyTable(["Index", "Path", "Name"])
         index = 0
         for tmp_module in self.main_modules_dirs:
-            found = os.path.join(paths.POCSUITE_ROOT_PATH, tmp_module + ".py")
+            found = os.path.join(self.module_parent_directory, tmp_module + ".py")
             with open(found, encoding='utf-8') as f:
                 code = f.read()
             name = get_poc_name(code)

@@ -797,7 +797,7 @@ def ltrim(text, char):
     return text
 
 
-def index_modules() -> list:
+def index_modules(modules_directory):
     """ Returns list of all exploits modules
 
     :param str modules_directory: path to modules directory
@@ -805,8 +805,7 @@ def index_modules() -> list:
     """
 
     modules = []
-    for root, dirs, files in os.walk(paths.POCSUITE_POCS_PATH):
-        _, package, root = root.rpartition("pocsuite3/pocs/".replace("/", os.sep))
+    for root, _, files in os.walk(modules_directory):
         files = filter(lambda x: not x.startswith("__") and x.endswith(".py"), files)
         modules.extend(map(lambda x: os.sep.join((root, os.path.splitext(x)[0])), files))
 
