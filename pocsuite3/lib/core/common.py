@@ -807,7 +807,7 @@ def index_modules(modules_directory):
     modules = []
     for root, _, files in os.walk(modules_directory):
         files = filter(lambda x: not x.startswith("__") and x.endswith(".py"), files)
-        modules.extend(map(lambda x: os.sep.join((root, os.path.splitext(x)[0])), files))
+        modules.extend(map(lambda x: os.path.join(root, os.path.splitext(x)[0]), files))
 
     return modules
 

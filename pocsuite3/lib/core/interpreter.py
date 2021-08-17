@@ -200,8 +200,7 @@ class PocsuiteInterpreter(BaseInterpreter):
         self.main_modules_dirs = []
         for module in self.modules:
             temp_module = module
-            temp_module = temp_module.replace(
-                self.module_parent_directory, '').lstrip(os.sep)
+            temp_module = ltrim(temp_module, self.module_parent_directory).lstrip(os.sep)
             self.main_modules_dirs.append(temp_module)
 
         self.__parse_prompt()
