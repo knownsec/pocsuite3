@@ -15,7 +15,7 @@ from pocsuite3.lib.core.clear import remove_extra_log_message
 from pocsuite3.lib.core.common import boldify_message, check_file, get_file_items, parse_target, \
     get_public_type_members, data_to_stdout
 from pocsuite3.lib.core.common import check_path, extract_cookies
-from pocsuite3.lib.core.common import get_local_ip, desensitization
+from pocsuite3.lib.core.common import get_local_ip, desensitization, get_host_ip
 from pocsuite3.lib.core.common import single_time_warn_message
 from pocsuite3.lib.core.common import OrderedSet
 from pocsuite3.lib.core.convert import stdout_encode
@@ -283,6 +283,7 @@ def _set_threads():
 
 
 def _set_connect_back():
+    wan_ipv4 = get_host_ip()
     ips = get_local_ip(all=True)
     if ips:
         kb.data.local_ips = ips
@@ -290,7 +291,12 @@ def _set_connect_back():
         data_to_stdout("[i] pocsusite is running in shell mode, you need to set connect back host:\n")
         message = '----- Local IP Address -----\n'
         for i, ip in enumerate(kb.data.local_ips):
-            message += "{0}    {1}\n".format(i, desensitization(ip) if conf.ppt else ip)
+            v = ip
+            if conf.ppt:
+                v = desensitization(v)
+            if ip == wan_ipv4:
+                v = colored(f'{v}    *wan*', 'green')
+            message += "{0}    {1}\n".format(i, v)
         data_to_stdout(message)
         while True:
             choose = None

@@ -140,10 +140,10 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
         self.setDaemon(daemon)
         threading.Thread.start(self)
         # Detect http server is started or not
+        logger.info('Detect {} server is runing or not...'.format(self.scheme))
         detect_count = 10
         while detect_count:
             try:
-                logger.info('Detect {} server is runing or not...'.format(self.scheme))
                 if check_port(self.host_ip, self.bind_port):
                     break
             except Exception as ex:

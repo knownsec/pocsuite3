@@ -12,6 +12,8 @@ import subprocess
 import sys
 import time
 import collections
+import chardet
+import requests
 from collections import OrderedDict
 from functools import wraps
 from ipaddress import ip_address, ip_network
@@ -19,9 +21,11 @@ from platform import machine
 from subprocess import call, Popen, PIPE
 from colorama.initialise import init as coloramainit
 from termcolor import colored
-
-import chardet
-import requests
+from scapy.all import (
+    WINDOWS,
+    get_if_list,
+    get_if_addr
+)
 
 from pocsuite3.lib.core.convert import stdout_encode
 from pocsuite3.lib.core.data import conf
@@ -448,25 +452,46 @@ def is_local_ip(ip_string):
     return ret
 
 
-def get_local_ip(all=False):
-    ips = list()
-    ips.append(get_host_ip())
-    try:
-        for interface in socket.getaddrinfo(socket.gethostname(), None):
-            ip = interface[4][0]
-            ips.append(ip)
-    except Exception:
-        pass
+def get_local_ip(all=True):
+    """Fetches all the local network address
+    """
+    ips = OrderedSet()
+    wan_ipv4 = get_host_ip()
+    ips.add(wan_ipv4)
+    if not all:
+        return list(ips)
 
-    ips = list(set(ips))
+    wan_ipv6 = get_host_ipv6()
+    if wan_ipv6:
+        ips.add(wan_ipv6)
 
-    return ips if all else ips.pop(0)
+    if WINDOWS:
+        from scapy.all import IFACES
+        for iface in sorted(IFACES):
+            dev = IFACES[iface]
+            ips.add(dev.ip)
+    else:
+        for iface in get_if_list():
+            ipv4 = get_if_addr(iface)
+            if ipv4 != '0.0.0.0':
+                ips.add(ipv4)
+
+    return list(ips)
 
 
-def get_host_ip():
+def get_host_ip(dst='8.8.8.8'):
+    """ Fetches source ipv4 address when connect to dst
+
+    Args:
+        dst <str>: target ip or domain
+
+    Returns:
+        <str>:  source ip address
+    """
+
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('8.8.8.8', 80))
+        s.connect((dst, 80))
         ip = s.getsockname()[0]
     except Exception:
         ip = '127.0.0.1'
@@ -952,10 +977,19 @@ def encoder_powershell_payload(powershell: str):
     return command
 
 
-def get_host_ipv6():
+def get_host_ipv6(dst='2001:db8::'):
+    """ Fetches source ipv6 address when connect to dst
+
+    Args:
+        dst <str>: target ip or domain
+
+    Returns:
+        <str>:  source ipv6 address
+    """
+
     s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
     try:
-        s.connect(('2001:db8::', 1027))
+        s.connect((dst, 1027))
     except socket.error:
         return None
     return s.getsockname()[0]
