@@ -239,3 +239,8 @@ Cross-platform shell code generation
 * add more poc attribute to result dict
 * allow custom module path in console mode
 * fix some compatibility problems
+
+# version 1.8.0
+-----------------
+* fix the timeout problem in shell mode leads to confusing results
+* made some improvements with network address related issues
