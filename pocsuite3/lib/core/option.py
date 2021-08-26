@@ -697,6 +697,8 @@ def _init_target_from_poc_dork():
                 target_source = i
                 break
         # fetch target from target source, add it to kb.targets
+        if not target_source:
+            continue
         conf.dork = poc_class.dork[target_source]
         plugin_name = f'target_from_{target_source}'
         importlib.import_module(f'pocsuite3.plugins.{plugin_name}')
