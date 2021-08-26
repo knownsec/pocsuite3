@@ -372,10 +372,10 @@ from pocsuite3.api import OptString, OptDict, OptIP, OptPort, OptBool, OptIntege
         result['VerifyInfo']['URL'] = self.url+payload
 ```
 
-8.	任意文件如果需要知道网站路径才能读取文件的话，可以读取系统文件进行验证，要写 Windows 版和 Linux 版两个版本。
-9.	检测模式下，上传的文件一定要删掉。
-10.	程序可以通过某些方法获取表前缀，just do it；若不行，保持默认表前缀。
-11.	PoC 编写好后，务必进行测试，测试规则为：5 个不受漏洞的网站，确保 PoC 攻击不成功；5个受漏洞影响的网站，确保 PoC 攻击成功
+8. 任意文件如果需要知道网站路径才能读取文件的话，可以读取系统文件进行验证，要写 Windows 版和 Linux 版两个版本。
+9. 检测模式下，上传的文件一定要删掉。
+10. 程序可以通过某些方法获取表前缀，just do it；若不行，保持默认表前缀。
+11. PoC 编写好后，务必进行测试，测试规则为：5 个不受漏洞的网站，确保 PoC 攻击不成功；5 个受漏洞影响的网站，确保 PoC 攻击成功
 
 #### Pocsuite3 远程调用文件列表<div id="inclue_files"></div>
 部分 PoC 需要采用包含远程文件的形式，要求基于 Pocsuite3 的 PoC 统一调用统一文件(如需引用未在以下文件列表内文件，请联系 s1@seebug.org 或者直接提交 issue)。
