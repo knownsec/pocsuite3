@@ -7,8 +7,8 @@ Usage of pocsuite for attacking targets without prior mutual consent is illegal.
 pocsuite is for security testing purposes only
 
 ## 法律免责声明
-未经事先双方同意，使用pocsuite攻击目标是非法的。  
-pocsuite仅用于安全测试目的
+未经事先双方同意，使用 pocsuite 攻击目标是非法的。
+pocsuite 仅用于安全测试目的
 
 ## Overview
 
@@ -18,8 +18,8 @@ It comes with a powerful proof-of-concept engine, many powerful features for the
 ## Features
 * PoC scripts can running with `attack`,`verify`, `shell` mode in different way
 * Plugin ecosystem
-* Dynamic loading PoC script from any where (local file, redis , database, Seebug ...)
-* Load multi-target from any where (CIDR, local file, redis , database, Zoomeye, Shodan ...)
+* Dynamic loading PoC script from any where (local file, redis, database, Seebug ...)
+* Load multi-target from any where (CIDR, local file, redis, database, Zoomeye, Shodan ...)
 * Results can be easily exported
 * Dynamic patch and hook requests 
 * Both command line tool and python package import to use
@@ -74,7 +74,7 @@ $ pip3 install -r requirements.txt
 ```
 
 
-The latest version of this software is available from: http://pocsuite.org
+The latest version of this software is available at: http://pocsuite.org
 
 ## Documentation
 
