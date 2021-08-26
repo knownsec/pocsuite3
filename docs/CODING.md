@@ -188,7 +188,7 @@ def _attack(self):
 
 和验证模式一样，攻击成功后需要把攻击得到结果赋值给 result 变量
 
-**注意:如果该 PoC 没有攻击模式，可以在 \_attack() 函数下加入一句 return self.\_verify() 这样你就无需再写 \_attack 函数了。**
+**注意：如果该 PoC 没有攻击模式，可以在 \_attack() 函数下加入一句 return self.\_verify() 这样你就无需再写 \_attack 函数了。**
 
 6. 编写shell模式 [**new**]
 
@@ -321,14 +321,14 @@ from pocsuite3.api import OptString, OptDict, OptIP, OptPort, OptBool, OptIntege
 
 | 字段类型   | 字段描述                                                     | 参数解释                                                     | 相关例子 |
 | ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ | -------- |
-| OptString  | 接收字符串类型数据                                           | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptDict    | 接收一个字典类型参数，在选择上如果选择key，调用时会调用对应的value | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptIP      | 接收IP类型的字符串                                           | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptPort    | 接收端口类型参数                                             | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptBool    | 接收布尔类型参数                                             | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptInteger | 接收整数类型参数                                             | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptFloat   | 接收浮点数类型参数                                           | default:传入一个默认值<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
-| OptItems   | 接收list类型参数                                             | default:传入一个默认值<br />selectd:默认选择<br />descript:字段描述，默认为空<br />require:是否必须，默认False |          |
+| OptString  | 接收字符串类型数据                                           | default: 传入一个默认值<br />descript: 字段描述，默认为空<br />require: 是否必须，默认False |          |
+| OptDict    | 接收一个字典类型参数，在选择上如果选择key，调用时会调用对应的value | default: 传入一个默认值<br />descript: 字段描述，默认为空<br />require: 是否必须，默认False |          |
+| OptIP      | 接收IP类型的字符串                                           | default: 传入一个默认值<br />descript: 字段描述，默认为空<br />require: 是否必须，默认False |          |
+| OptPort    | 接收端口类型参数                                             | default: 传入一个默认值<br />descript: 字段描述，默认为空<br />require: 是否必须，默认False |          |
+| OptBool    | 接收布尔类型参数                                             | default: 传入一个默认值<br />descript: 字段描述，默认为空<br />require: 是否必须，默认False |          |
+| OptInteger | 接收整数类型参数                                             | default: 传入一个默认值<br />descript: 字段描述，默认为空<br />require: 是否必须，默认False |          |
+| OptFloat   | 接收浮点数类型参数                                           | default: 传入一个默认值<br />descript: 字段描述，默认为空<br />require: 是否必须，默认False |          |
+| OptItems   | 接收list类型参数                                             | default: 传入一个默认值<br />selectd: 默认选择<br />descript: 字段描述，默认为空<br />require: 是否必须，默认False |          |
 
 需要注意的是，`console` 模式支持所有的参数类型，`cli` 模式除了`OptDict`、`OptBool`、`OptItems` 类型外都支持。
 
@@ -693,7 +693,7 @@ install_requires = ['pycryptodome:Crypto']
 
 #### PoC 结果返回规范<div id="resultstandard"></div>
 
-result 为 PoC 返回的结果数据类型，result 返回值要求返回完整的一项，暂不符合 result 字段的情况，放入 extra 字段中，此步骤必须尽可能的保证运行者能够根据信息 复现/理解 漏洞，若果步骤复杂，在取证信息中说明。例如:
+result 为 PoC 返回的结果数据类型，result 返回值要求返回完整的一项，暂不符合 result 字段的情况，放入 extra 字段中，此步骤必须尽可能的保证运行者能够根据信息 复现/理解 漏洞，若果步骤复杂，在取证信息中说明。例如：
 
 ```python
   # 返回数据库管理员密码

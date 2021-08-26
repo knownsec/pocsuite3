@@ -49,7 +49,7 @@ class PocLoader(Loader):
                 for r in requires:
                     r = r.replace(' ', '')
                     install_name, import_name = (r.split(':') + [''])[0:2]
-                    t = re.split('>|<|=', install_name)
+                    t = re.split('>|<|=|~', install_name)
                     if len(t) > 1:
                         install_name = t[0]
                     if not import_name:

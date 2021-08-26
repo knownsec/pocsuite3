@@ -244,3 +244,8 @@ Cross-platform shell code generation
 -----------------
 * fix the timeout problem in shell mode leads to confusing results
 * made some improvements with network address related issues
+
+# version 1.8.1
+-----------------
+* fix check_requires() can not handle dependent version correctly # 208
+* update docs
