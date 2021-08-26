@@ -1,16 +1,16 @@
 # Usage
 
-- **pocsuite**: a cool and hackable commane line program
+- **pocsuite**: a cool and hackable command line program
 
 ## pocsuite
 
-Enter into `pocsuite` directory, execute `python cli.py`. It supports double mode:
+It supports three modes:
 
  - ```verify```
  - ```attack```
  - ```shell```
 
-You can also use ```python cli.py -h``` for more details.
+You can also use ```pocsuite -h``` for more details.
 
 ```
 usage: pocsuite [options]
@@ -67,16 +67,17 @@ Account:
                         fofa user
   --fofa-token FOFA_TOKEN
                         fofa token
+  --quake-token QUAKE_TOKEN
+                        quake token
   --censys-uid CENSYS_UID
                         Censys uid
   --censys-secret CENSYS_SECRET
                         Censys secret
 
 Modules:
-  Modules(Seebug、Zoomeye、CEye、Fofa Listener) options
+  Modules(Seebug、Zoomeye、CEye、Fofa、Quake Listener) options
 
   --dork DORK           Zoomeye dork used for search.
-  --dork-b64            Whether dork is in base64 format
   --dork-zoomeye DORK_ZOOMEYE
                         Zoomeye dork used for search.
   --dork-shodan DORK_SHODAN
@@ -85,6 +86,8 @@ Modules:
                         Censys dork used for search.
   --dork-fofa DORK_FOFA
                         Fofa dork used for search.
+  --dork-quake DORK_QUAKE
+                        Quake dork used for search.
   --max-page MAX_PAGE   Max page used in ZoomEye API(10 targets/Page).
   --search-type SEARCH_TYPE
                         search type used in ZoomEye API, web or host
@@ -96,7 +99,7 @@ Modules:
   --lport CONNECT_BACK_PORT
                         Connect back port for target PoC in shell mode
   --comparison          Compare popular web search engines
-  --pcap                capture package in verify mode 
+  --dork-b64            Whether dork is in base64 format
 
 Optimization:
   Optimization options
@@ -108,14 +111,19 @@ Optimization:
   --batch BATCH         Automatically choose defaut choice without asking.
   --requires            Check install_requires
   --quiet               Activate quiet mode, working without logger.
-  --rule                Export rules, default export reqeust and response.
-  --rule-req            Only export request rule.
-  --rule-filename       Specify the name of the export rule file.
   --ppt                 Hiden sensitive information when published to the
                         network
+  --pcap                use scapy capture flow
+  --rule                export rules, default export reqeust and response
+  --rule-req            only export request rule
+  --rule-filename RULE_FILENAME
+                        Specify the name of the export rule file
 
 Poc options:
   definition options for PoC
+
+  --options             Show all definition options
+
 ```
 
 **-f, --file URLFILE**
@@ -123,10 +131,10 @@ Poc options:
 Scan multiple targets given in a textual file
 
 ```
-$ python cli.py -r tests/poc_example.py -f url.txt --verify
+$ pocsuite -r pocs/poc_example.py -f url.txt --verify
 ```
 
-> Attack batch processing mode only need to replace the ```--verify``` as ``` --attack```.
+> Attack batch processing mode only need to replace the ```--verify``` to ``` --attack```.
 
 **-r POCFILE**
 
@@ -134,7 +142,7 @@ POCFILE can be a file or Seebug SSVID. pocsuite plugin can load poc codes from a
 
 
 ```
-$ python cli.py -r ssvid-97343 -u http://www.example.com --shell
+$ pocsuite -r ssvid-97343 -u http://www.example.com --shell
 ```
 
 **--verify**
@@ -142,7 +150,7 @@ $ python cli.py -r ssvid-97343 -u http://www.example.com --shell
 Run poc with verify mode. PoC(s) will be only used for a vulnerability scanning.
 
 ```
-$ python cli.py -r pocs/poc_example.py -u http://www.example.com/ --verify
+$ pocsuite -r pocs/poc_example.py -u http://www.example.com/ --verify
 ```
 
 **--attack**
@@ -150,7 +158,7 @@ $ python cli.py -r pocs/poc_example.py -u http://www.example.com/ --verify
 Run poc with attack mode, PoC(s) will be exploitable, and it may allow hackers/researchers break into labs.
 
 ```
-$ python cli.py -r pocs/poc_example.py -u http://www.example.com/ --attack
+$ pocsuite -r pocs/poc_example.py -u http://www.example.com/ --attack
 ```
 
 **--shell**
@@ -158,7 +166,7 @@ $ python cli.py -r pocs/poc_example.py -u http://www.example.com/ --attack
 Run poc with shell mode, PoC will be exploitable, when PoC shellcode successfully executed, pocsuite3 will drop into interactive shell.
 
 ```
-$ python cli.py -r pocs/poc_example.py -u http://www.example.com/ --shell
+$ pocsuite -r pocs/poc_example.py -u http://www.example.com/ --shell
 ```
 
 **--threads THREADS**
@@ -166,7 +174,7 @@ $ python cli.py -r pocs/poc_example.py -u http://www.example.com/ --shell
 Using multiple threads, the default number of threads is 1
 
 ```
-$ python cli.py -r tests/ -f url.txt --verify --threads 10
+$ pocsuite -r pocs/poc_example.py -f url.txt --verify --threads 10
 ```
 
 **--dork DORK**
@@ -177,7 +185,7 @@ Search redis server with ```port:6379``` and ```redis``` keyword.
 
 
 ```
-$ python cli.py --dork 'port:6379' --vul-keyword 'redis' --max-page 2
+$ pocsuite --dork 'port:6379' --vul-keyword 'redis' --max-page 2
 
 ```
 **--dork-shodan DORK**
@@ -187,7 +195,7 @@ $ python cli.py --dork 'port:6379' --vul-keyword 'redis' --max-page 2
  Search libssh server  with  `libssh` keyword.
 
  ```
- python3 cli.py -r pocs/libssh_auth_bypass.py --dork-shodan libssh --thread 10
+ pocsuite -r pocs/libssh_auth_bypass.py --dork-shodan libssh --thread 10
  ```
 
 **--dork-fofa DORK**
@@ -198,7 +206,7 @@ $ python cli.py --dork 'port:6379' --vul-keyword 'redis' --max-page 2
 
 
  ```
- $ python3 cli.py -r pocs/check_http_status.py --dork-fofa 'body="thinkphp"' --search-type web  --thread 10
+ $ pocsuite -r pocs/check_http_status.py --dork-fofa 'body="thinkphp"' --search-type web --thread 10
  ```
 
 **--dork-quake DORK**
@@ -209,7 +217,7 @@ $ python cli.py --dork 'port:6379' --vul-keyword 'redis' --max-page 2
 
 
  ```
- $ python3 cli.py -r pocs/check_http_status.py --dork-quake 'app:"ThinkPHP"' --thread 10
+ $ pocsuite -r pocs/check_http_status.py --dork-quake 'app:"ThinkPHP"' --thread 10
  ```
 
 **--dork-b64**
@@ -218,7 +226,7 @@ $ python cli.py --dork 'port:6379' --vul-keyword 'redis' --max-page 2
  
 
 ```
-$ python cli.py --dork cG9ydDo2Mzc5 --vul-keyword 'redis' --max-page 2 --dork-b64
+$ pocsuite --dork cG9ydDo2Mzc5 --vul-keyword 'redis' --max-page 2 --dork-b64
 ```
 
 **--rule**
@@ -227,14 +235,14 @@ $ python cli.py --dork cG9ydDo2Mzc5 --vul-keyword 'redis' --max-page 2 --dork-b6
  Use the --pocs-path parameter to set the directory where the poc needs to be ruled
  
 ```
-$ python cli.py --rule
+$ pocsuite --rule
 ```
 
 **--rule-req**
  In some cases, we may only need the request rule, --rule-req only export request rule.
 
 ```
-$ python cli.py --rule-req
+$ pocsuite --rule-req
 ```
 
 If you have good ideas, please show them on your way.

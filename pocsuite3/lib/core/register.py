@@ -1,7 +1,7 @@
+import re
 import importlib.machinery
 import importlib.util
 from importlib.abc import Loader
-
 from pocsuite3.lib.core.common import (
     multiple_replace, get_filename, get_md5,
     is_pocsuite3_poc, get_poc_requires, get_poc_name)
@@ -43,22 +43,21 @@ class PocLoader(Loader):
         requires = [i.strip().strip('"').strip("'") for i in requires.split(',')] if requires else ['']
         if requires[0]:
             poc_name = get_poc_name(data)
-            info_msg = 'PoC script "{0}" requires "{1}" to be installed'.format(poc_name, ','.join(requires))
+            info_msg = 'PoC script "{0}" requires "{1}" to be installed'.format(poc_name, ', '.join(requires))
             logger.info(info_msg)
             try:
                 for r in requires:
-                    if ":" in r:
-                        rows = r.split(":")
-                        if len(rows) == 2:
-                            r, module = rows
-                        else:
-                            module = rows[-1]
-                            r = ''.join(rows[:-1])
-                        __import__(module)
-                    else:
-                        __import__(r)
+                    r = r.replace(' ', '')
+                    install_name, import_name = (r.split(':') + [''])[0:2]
+                    t = re.split('>|<|=|~', install_name)
+                    if len(t) > 1:
+                        install_name = t[0]
+                    if not import_name:
+                        import_name = install_name
+                    m = __import__(import_name)
+                    logger.info(f'{install_name}=={m.__version__} has been installed')
             except ImportError:
-                err_msg = 'try install with "python -m pip install {0}"'.format(r)
+                err_msg = f'{install_name} not found, try install with "python -m pip install {install_name}"'
                 logger.error(err_msg)
                 raise SystemExit
 
@@ -70,7 +69,7 @@ class PocLoader(Loader):
         try:
             exec(obj, module.__dict__)
         except Exception as err:
-            logger.error("Poc: '{}' exec arise error: {} ".format(filename,err))
+            logger.error("Poc: '{}' exec arise error: {} ".format(filename, err))
 
 
 def load_file_to_module(file_path, module_name=None):
