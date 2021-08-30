@@ -1,4 +1,5 @@
 import re
+import pkg_resources
 import importlib.machinery
 import importlib.util
 from importlib.abc import Loader
@@ -54,8 +55,9 @@ class PocLoader(Loader):
                         install_name = t[0]
                     if not import_name:
                         import_name = install_name
-                    m = __import__(import_name)
-                    logger.info(f'{install_name}=={m.__version__} has been installed')
+                    __import__(import_name)
+                    ver = pkg_resources.get_distribution(import_name).version
+                    logger.info(f'{install_name}=={ver} has been installed')
             except ImportError:
                 err_msg = f'{install_name} not found, try install with "python -m pip install {install_name}"'
                 logger.error(err_msg)

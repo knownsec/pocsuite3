@@ -247,5 +247,9 @@ Cross-platform shell code generation
 
 # version 1.8.1
 -----------------
-* fix check_requires() can not handle dependent version correctly # 208
+* fix check_requires() can not handle dependent version correctly #208
 * update docs
+
+# version 1.8.2
+-----------------
+* fix finding a python module version gives error
