@@ -21,12 +21,6 @@ from platform import machine
 from subprocess import call, Popen, PIPE
 from colorama.initialise import init as coloramainit
 from termcolor import colored
-from scapy.all import (
-    WINDOWS,
-    get_if_list,
-    get_if_addr
-)
-
 from pocsuite3.lib.core.convert import stdout_encode
 from pocsuite3.lib.core.data import conf
 from pocsuite3.lib.core.data import kb
@@ -47,6 +41,13 @@ from pocsuite3.lib.core.settings import POC_NAME_REGEX
 from pocsuite3.lib.core.settings import POC_REQUIRES_REGEX
 from pocsuite3.lib.core.settings import UNICODE_ENCODING
 from pocsuite3.lib.core.settings import URL_ADDRESS_REGEX
+
+logging.getLogger("scapy").setLevel(logging.ERROR)
+from scapy.all import (
+    WINDOWS,
+    get_if_list,
+    get_if_addr
+)
 
 
 def read_binary(filename):

@@ -97,6 +97,8 @@ def task_run():
         if conf.pcap:
             # start capture flow
             import urllib
+            import logging
+            logging.getLogger("scapy").setLevel(logging.ERROR)
             from pocsuite3.lib.utils.pcap_sniffer import Sniffer
             from scapy.utils import wrpcap
             sniffer = Sniffer(urllib.parse.urlparse(target).hostname)
