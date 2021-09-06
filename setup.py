@@ -14,7 +14,7 @@ except ImportError:
 
 setup(
     name='pocsuite3',
-    version='1.8.2',
+    version='1.8.3',
     url='http://pocsuite.org',
     description='Pocsuite is an open-sourced remote vulnerability testing framework developed by the Knownsec Security Team.',
     long_description="""\
@@ -28,7 +28,7 @@ Pocsuite is an open-sourced remote vulnerability testing and proof-of-concept de
     zip_safe=False,
     packages=find_packages(),
     include_package_data=True,
-    python_requires='>=3.4',
+    python_requires='>=3.6',
     entry_points={
         "console_scripts": [
             "pocsuite = pocsuite3.cli:main",
@@ -36,17 +36,20 @@ Pocsuite is an open-sourced remote vulnerability testing and proof-of-concept de
         ]
     },
     install_requires=[
-        "requests >= 2.22.0",
-        "PySocks >= 1.7.1",
-        "requests-toolbelt >= 0.9.1",
-        "urllib3 >= 1.25.6",
-        "setuptools >= 51.1.2",
-        "chardet >= 3.0.4",
-        "termcolor >= 1.1.0",
-        "colorama >= 0.4.4",
-        "prettytable >= 0.7.2",
-        "colorlog >= 4.7.2",
-        "scapy >= 2.4.4",
-        "pyOpenSSL >= 20.0.0"
+        "requests",
+        "requests-toolbelt",
+        "PySocks",
+        "urllib3",
+        "chardet",
+        "termcolor",
+        "colorama",
+        "prettytable",
+        "colorlog",
+        "scapy"
     ],
+    extras_require={
+        'complete': [
+            'pyOpenSSL'
+        ],
+    }
 )

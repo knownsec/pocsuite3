@@ -21,12 +21,6 @@ from platform import machine
 from subprocess import call, Popen, PIPE
 from colorama.initialise import init as coloramainit
 from termcolor import colored
-from scapy.all import (
-    WINDOWS,
-    get_if_list,
-    get_if_addr
-)
-
 from pocsuite3.lib.core.convert import stdout_encode
 from pocsuite3.lib.core.data import conf
 from pocsuite3.lib.core.data import kb
@@ -464,6 +458,14 @@ def get_local_ip(all=True):
     wan_ipv6 = get_host_ipv6()
     if wan_ipv6:
         ips.add(wan_ipv6)
+
+    # fix https://github.com/BVLC/caffe/issues/861
+    os.environ["MPLBACKEND"] = "Agg"
+
+    # fix https://github.com/secdev/scapy/issues/3216
+    logging.getLogger("scapy").setLevel(logging.ERROR)
+
+    from scapy.all import WINDOWS, get_if_list, get_if_addr
 
     if WINDOWS:
         from scapy.all import IFACES
