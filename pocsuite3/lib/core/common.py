@@ -42,13 +42,6 @@ from pocsuite3.lib.core.settings import POC_REQUIRES_REGEX
 from pocsuite3.lib.core.settings import UNICODE_ENCODING
 from pocsuite3.lib.core.settings import URL_ADDRESS_REGEX
 
-logging.getLogger("scapy").setLevel(logging.ERROR)
-from scapy.all import (
-    WINDOWS,
-    get_if_list,
-    get_if_addr
-)
-
 
 def read_binary(filename):
     content = ''
@@ -465,6 +458,9 @@ def get_local_ip(all=True):
     wan_ipv6 = get_host_ipv6()
     if wan_ipv6:
         ips.add(wan_ipv6)
+
+    logging.getLogger("scapy").setLevel(logging.ERROR)
+    from scapy.all import WINDOWS, get_if_list, get_if_addr
 
     if WINDOWS:
         from scapy.all import IFACES
