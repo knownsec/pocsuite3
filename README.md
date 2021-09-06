@@ -53,7 +53,7 @@ It comes with a powerful proof-of-concept engine, many powerful features for the
 
 ## Requirements
 
-- Python 3.4+
+- Python 3.6+
 - Works on Linux, Windows, Mac OSX, BSD
 
 ## Installation
