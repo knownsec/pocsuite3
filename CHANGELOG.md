@@ -253,3 +253,7 @@ Cross-platform shell code generation
 # version 1.8.2
 -----------------
 * fix finding a python module version gives error
+
+# version 1.8.3
+-----------------
+* some improvements related to dependent

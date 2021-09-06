@@ -14,7 +14,7 @@ except ImportError:
 
 setup(
     name='pocsuite3',
-    version='1.8.2',
+    version='1.8.3',
     url='http://pocsuite.org',
     description='Pocsuite is an open-sourced remote vulnerability testing framework developed by the Knownsec Security Team.',
     long_description="""\
