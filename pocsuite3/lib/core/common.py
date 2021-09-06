@@ -459,7 +459,12 @@ def get_local_ip(all=True):
     if wan_ipv6:
         ips.add(wan_ipv6)
 
+    # fix https://github.com/BVLC/caffe/issues/861
+    os.environ["MPLBACKEND"] = "Agg"
+
+    # fix https://github.com/secdev/scapy/issues/3216
     logging.getLogger("scapy").setLevel(logging.ERROR)
+
     from scapy.all import WINDOWS, get_if_list, get_if_addr
 
     if WINDOWS:

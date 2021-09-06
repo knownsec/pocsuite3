@@ -283,11 +283,9 @@ def _set_threads():
 
 
 def _set_connect_back():
-    wan_ipv4 = get_host_ip()
-    ips = get_local_ip(all=True)
-    if ips:
-        kb.data.local_ips = ips
     if conf.mode == "shell" and conf.connect_back_host is None:
+        wan_ipv4 = get_host_ip()
+        kb.data.local_ips = get_local_ip(all=True)
         data_to_stdout("[i] pocsusite is running in shell mode, you need to set connect back host:\n")
         message = '----- Local IP Address -----\n'
         for i, ip in enumerate(kb.data.local_ips):

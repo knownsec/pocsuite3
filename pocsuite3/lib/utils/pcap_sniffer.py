@@ -4,6 +4,7 @@ from pocsuite3.lib.core.common import data_to_stdout
 from pocsuite3.lib.core.data import logger
 
 import logging
+os.environ["MPLBACKEND"] = "Agg"
 logging.getLogger("scapy").setLevel(logging.ERROR)
 from scapy.all import (
     WINDOWS,
