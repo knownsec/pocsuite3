@@ -56,7 +56,10 @@ class PocLoader(Loader):
                     if not import_name:
                         import_name = install_name
                     __import__(import_name)
-                    ver = pkg_resources.get_distribution(import_name).version
+                    try:
+                        ver = pkg_resources.get_distribution(install_name).version
+                    except Exception:
+                        ver = 'unknown'
                     logger.info(f'{install_name}=={ver} has been installed')
             except ImportError:
                 err_msg = f'{install_name} not found, try install with "python -m pip install {install_name}"'
