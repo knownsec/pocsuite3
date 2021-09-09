@@ -257,3 +257,8 @@ Cross-platform shell code generation
 # version 1.8.3
 -----------------
 * some improvements related to dependent
+
+# version 1.8.4
+-----------------
+* update docs
+* fix typo
