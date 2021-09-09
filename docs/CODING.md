@@ -350,16 +350,18 @@ from pocsuite3.api import OptString, OptDict, OptIP, OptPort, OptBool, OptIntege
 
     if hashlib.new('md5', token).hexdigest() in content:
         result['VerifyInfo'] = {}
-        result['VerifyInfo']['URL'] = self.url + payload
+        result['VerifyInfo']['URL'] = self.url
 
 检测 XSS 漏洞时：
+    # 可参考 https://paper.seebug.org/1119/
+
     token = random_str()
     payload = 'alert("%s")' % token
     ...
 
-    if hashlib.new('md5', token).hexdigest() in content:
+    if payload in content:
         result['VerifyInfo'] = {}
-        result['VerifyInfo']['URL'] = self.url + payload
+        result['VerifyInfo']['URL'] = self.url
 
 检测 PHP 文件上传是否成功：
 
@@ -369,7 +371,7 @@ from pocsuite3.api import OptString, OptDict, OptIP, OptPort, OptBool, OptIntege
 
     if hashlib.new('md5', token).hexdigest() in content:
         result['VerifyInfo'] = {}
-        result['VerifyInfo']['URL'] = self.url+payload
+        result['VerifyInfo']['URL'] = self.url
 ```
 
 8. 任意文件如果需要知道网站路径才能读取文件的话，可以读取系统文件进行验证，要写 Windows 版和 Linux 版两个版本。
