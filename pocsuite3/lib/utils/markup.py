@@ -25,7 +25,7 @@ Installation: drop markup.py somewhere into your Python path.
 try:
     basestring
     import string
-except:
+except NameError:
     # python 3
     basestring = str
     string = str
