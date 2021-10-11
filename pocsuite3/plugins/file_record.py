@@ -1,6 +1,6 @@
 import os
 import time
-
+import json
 from pocsuite3.api import PLUGIN_TYPE
 from pocsuite3.api import PluginBase
 from pocsuite3.api import logger
@@ -26,8 +26,8 @@ class FileRecord(PluginBase):
             poc_name = output.get("poc_name")
             target = output.get("target")
             created = output.get("created")
-            msg = "{} {} {}".format(target, poc_name, created)
-            self.file.write(msg + '\n')
+            msg = {"target": target, "poc_name": poc_name, "created_time": created}
+            self.file.write(json.dumps(msg) + '\n')
 
     def start(self):
         self.file.close()
