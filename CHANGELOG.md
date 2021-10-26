@@ -262,3 +262,8 @@ Cross-platform shell code generation
 -----------------
 * update docs
 * fix typo
+
+# version 1.8.5
+-----------------
+* support bind shell in shell mode
+* fix #221

@@ -201,6 +201,16 @@ def _shell(self):
 
 shell 模式下，只能运行单个 PoC 脚本，控制台会进入 shell 交互模式执行命令及输出
 
+从 ***1.8.5*** 版本开始，pocsuite3 支持 bind shell。shell 模式和原来的操作方式一致，也需要指定监听 ip 和端口，监听 ip 可以是本地任意 ip，也可以是远程 vps ip。
+
+bind shell 的实现位于 `./pocsuite3/modules/listener/bind_tcp.py`，原理是实现了一个中间层，一端连接漏洞目标的 bind shell（如 telnet 服务、nc 启动的 shell、php 一句话等），另一端连接用户指定的监听 ip 和端口，如此一来，shell 模式可以不受网络环境限制，支持在内网使用。
+
+目前支持三种 bind shell，分别为 `bind_shell()`、`bind_tcp_shell()`、`bind_telnet_shell()`，使用场景如下：
+
+1. bind_shell：通用方法，在 shell 模式中直接调用 `return bind_shell(self, rce_func)` 即可，非常便捷。针对有回显的漏洞，在 PoC 中实现一个 rce（函数名可自定义）方法，函数参数为命令输入，输出为命令输出。如果漏洞无回显，也可以通过写一句话转为有回显的。值得一提的是，用户也可以在 rce 方法中实现流量的加解密以逃避 IDS检测。
+2. bind_tcp_shell：对 tcp 绑定型 shell 的原生支持，在 shell 模式中 `return bind_tcp_shell(bind_shell_ip, bind_shell_port)`
+3. bind_telnet_shell：对 telnet 服务的原生支持，在 shell 模式中 `return bind_telnet_shell(ip, port, username, password)`
+
 7. 结果返回
 
 不管是验证模式或者攻击模式，返回结果 result 中的 key 值必须按照下面的规范来写，result 各字段意义请参见[《PoC 结果返回规范》](#resultstandard)

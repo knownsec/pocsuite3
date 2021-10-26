@@ -3,7 +3,7 @@ import socket
 import select
 import telnetlib
 import threading
-from pocsuite3.api import POCBase
+from pocsuite3.lib.core.poc import POCBase
 from pocsuite3.lib.utils import random_str
 from pocsuite3.lib.core.common import check_port
 from pocsuite3.lib.core.data import conf, logger
@@ -37,7 +37,8 @@ def read_results(conn, inputs):
             if results.count(flag) >= 2:
                 # remove the Telnet input echo
                 results = results.split(inputs.strip())[-1]
-                results = os.linesep.encode().join(results.split(flag)[0].splitlines()[0:-1])
+                results = os.linesep.encode().join(
+                    results.split(flag)[0].splitlines()[0:-1])
                 return results.strip() + b'\n'
     elif callable(conn):
         results = conn(inputs.decode())
@@ -61,7 +62,8 @@ def read_results(conn, inputs):
             if results.count(flag) >= 2:
                 break
         results = results.split(inputs.strip())[-1]
-        results = os.linesep.encode().join(results.split(flag)[0].splitlines()[0:-1])
+        results = os.linesep.encode().join(
+            results.split(flag)[0].splitlines()[0:-1])
         return results.strip() + b'\n'
     return b'\n'
 
@@ -76,14 +78,16 @@ def flow_redirect(conn):
 
 
 def start_listener(conn):
-    t = threading.Thread(
-        target=flow_redirect, name="bind-listener-thread", args=[conn])
+    t = threading.Thread(target=flow_redirect,
+                         name="bind-listener-thread",
+                         args=[conn])
     t.setDaemon(True)
     t.start()
 
 
 def bind_shell(obj, rce_func='_rce', check=True):
-    if not (isinstance(obj, POCBase) and hasattr(obj, rce_func) and callable(getattr(obj, rce_func))):
+    if not (isinstance(obj, POCBase) and hasattr(obj, rce_func)
+            and callable(getattr(obj, rce_func))):
         return False
     conn = getattr(obj, rce_func)
     if check:
