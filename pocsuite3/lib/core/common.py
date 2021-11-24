@@ -43,6 +43,12 @@ from pocsuite3.lib.core.settings import UNICODE_ENCODING
 from pocsuite3.lib.core.settings import URL_ADDRESS_REGEX
 
 
+try:
+    collectionsAbc = collections.abc
+except AttributeError:
+    collectionsAbc = collections
+
+
 def read_binary(filename):
     content = ''
     with open(filename, 'rb') as f:
@@ -997,7 +1003,7 @@ def get_host_ipv6(dst='2001:db8::'):
     return s.getsockname()[0]
 
 
-class OrderedSet(collections.OrderedDict, collections.MutableSet):
+class OrderedSet(collections.OrderedDict, collectionsAbc.MutableSet):
 
     def add(self, e):
         self[e] = None
