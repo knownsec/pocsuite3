@@ -267,3 +267,8 @@ Cross-platform shell code generation
 -----------------
 * support bind shell in shell mode
 * fix #221
+
+# version 1.8.6
+-----------------
+* support encrypted shell (TLS) in shell mode
+* fix #228

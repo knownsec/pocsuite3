@@ -64,7 +64,7 @@ def cmd_line_parser(argv=None):
         request.add_argument("--delay", dest="delay", help="Delay between two request of one thread")
         request.add_argument("--headers", dest="headers", help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
         # Account options
-        group = parser.add_argument_group("Account", "Telnet404、Shodan、CEye、Fofa account options")
+        group = parser.add_argument_group("Account", "Telnet404, Shodan, CEye, Fofa account options")
         group.add_argument("--login-user", dest="login_user", help="Telnet404 login user")
         group.add_argument("--login-pass", dest="login_pass", help="Telnet404 login password")
         group.add_argument("--shodan-token", dest="shodan_token", help="Shodan token")
@@ -74,7 +74,7 @@ def cmd_line_parser(argv=None):
         group.add_argument("--censys-uid", dest="censys_uid", help="Censys uid")
         group.add_argument("--censys-secret", dest="censys_secret", help="Censys secret")
         # Modules options
-        modules = parser.add_argument_group("Modules", "Modules(Seebug、Zoomeye、CEye、Fofa、Quake Listener) options")
+        modules = parser.add_argument_group("Modules", "Modules(Seebug, Zoomeye, CEye, Fofa, Quake, Listener) options")
         modules.add_argument("--dork", dest="dork", action="store", default=None,
                              help="Zoomeye dork used for search.")
         modules.add_argument("--dork-zoomeye", dest="dork_zoomeye", action="store", default=None,
@@ -99,6 +99,8 @@ def cmd_line_parser(argv=None):
                              help="Connect back host for target PoC in shell mode")
         modules.add_argument("--lport", dest="connect_back_port", action="store", default=None,
                              help="Connect back port for target PoC in shell mode")
+        modules.add_argument("--tls", dest="enable_tls_listener", action="store_true", default=False,
+                             help="Enable TLS listener in shell mode")
         modules.add_argument("--comparison", dest="comparison", help="Compare popular web search engines",
                              action="store_true",
                              default=False)
@@ -133,7 +135,7 @@ def cmd_line_parser(argv=None):
         # Diy options
         diy = parser.add_argument_group("Poc options", "definition options for PoC")
         diy.add_argument("--options", dest="show_options", action="store_true", default=False,
-                                  help="Show all definition options")
+                         help="Show all definition options")
 
         for line in argv:
             if line.startswith("--"):

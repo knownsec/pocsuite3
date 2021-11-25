@@ -9,3 +9,4 @@ prettytable >= 0.7.2
 colorlog >= 4.7.2
 scapy >= 2.4.4
 pyOpenSSL >= 20.0.0
+Faker >= 0.7.7

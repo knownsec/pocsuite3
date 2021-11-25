@@ -564,6 +564,7 @@ def _set_conf_attributes():
     conf.rule_req = False
     conf.rule_filename = None
     conf.show_options = False
+    conf.enable_tls_listener = False
 
 
 def _set_kb_attributes(flush_all=True):
