@@ -213,6 +213,8 @@ bind shell 的实现位于 `./pocsuite3/modules/listener/bind_tcp.py`，原理�
 
 `bind_telnet_shell`：对 telnet 服务的原生支持，在 shell 模式中 `return bind_telnet_shell(ip, port, username, password)`
 
+从 ***1.8.6*** 版本开始，pocsuite3 支持加密的 shell。PoC 中使用 openssl 的反弹命令（也可以用代码反弹），并且在运行时指定 `--tls` 选项。
+
 7. 结果返回
 
 不管是验证模式或者攻击模式，返回结果 result 中的 key 值必须按照下面的规范来写，result 各字段意义请参见[《PoC 结果返回规范》](#resultstandard)

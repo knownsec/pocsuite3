@@ -4,6 +4,7 @@ import binascii
 import os
 import string
 import random
+from faker import Faker
 from socket import gethostbyname
 from urllib.parse import urlparse
 from pocsuite3.lib.core.data import logger, paths
@@ -150,39 +151,47 @@ def generate_shellcode_list(listener_ip, listener_port, os_target=OS.WINDOWS, os
     return cmd
 
 
-def gen_cert(emailAddress="s1@seebug.org",
-             commonName="Cyberspace",
-             countryName="CN",
-             localityName="Cyberspace",
-             stateOrProvinceName="Cyberspace",
-             organizationName="Seebug",
-             organizationUnitName="pocsuite.org",
+def gen_cert(countryName='',
+             stateOrProvinceName='',
+             localityName='',
+             organizationName='',
+             organizationUnitName='',
+             commonName='',
+             emailAddress='',
              serialNumber=0,
              validityStartInSeconds=0,
-             validityEndInSeconds=10*365*24*60*60,
+             validityEndInSeconds=0,
              filepath="cacert.pem"):
 
     # openssl library dependencies is too heavy, so we move it to extras_require
     try:
         from OpenSSL import crypto
+        fake = Faker()
+        domain_name = fake.domain_name()
+        yr = 24 * 3600 * 365
+        vf = -1 * random.randint(0, yr * 3) - yr
+        vt = vf + random.randint(5, 9) * yr
         # create a key pair
         k = crypto.PKey()
-        k.generate_key(crypto.TYPE_RSA, 4096)
+        k.generate_key(crypto.TYPE_RSA, 2048)
         # create a self-signed cert
         cert = crypto.X509()
-        cert.get_subject().C = countryName
-        cert.get_subject().ST = stateOrProvinceName
-        cert.get_subject().L = localityName
-        cert.get_subject().O = organizationName
-        cert.get_subject().OU = organizationUnitName
-        cert.get_subject().CN = commonName
-        cert.get_subject().emailAddress = emailAddress
+        cert.get_subject().C = countryName or 'US'
+        cert.get_subject().ST = stateOrProvinceName or fake.state_abbr()
+        cert.get_subject().L = localityName or fake.city()
+        cert.get_subject().O = organizationName or fake.company()
+        cert.get_subject().OU = organizationUnitName or fake.bs().split()[-1]
+        cert.get_subject().CN = commonName or domain_name
+        cert.get_subject().emailAddress = emailAddress or fake.email().split('@')[0] + '@' + domain_name
+        serialNumber = serialNumber or (random.randint(0, 0xffffffff - 1) << 32) + random.randint(0, 0xffffffff - 1)
         cert.set_serial_number(serialNumber)
-        cert.gmtime_adj_notBefore(0)
-        cert.gmtime_adj_notAfter(validityEndInSeconds)
+        cert.gmtime_adj_notBefore(validityStartInSeconds or vf)
+        cert.gmtime_adj_notAfter(validityEndInSeconds or vt)
         cert.set_issuer(cert.get_subject())
+        cert.set_version(2)
         cert.set_pubkey(k)
-        cert.sign(k, 'sha512')
+        cert.sign(k, 'sha256')
+        logger.info("Successfully generated a self-signed certificate")
         with open(filepath, "wb+") as fw:
             fw.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
             fw.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, k))
@@ -190,116 +199,60 @@ def gen_cert(emailAddress="s1@seebug.org",
         logger.warning('pyOpenSSL not installed, use hard-code certificate instead')
         # base64 encoding to avoid cert leak warning
         hard_coded_cert_base64 = (
-            b'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUZtakNDQTRJQ0FRQXdEUVlK'
-            b'S29aSWh2Y05BUUVOQlFBd2daSXhDekFKQmdOVkJBWVRBa05PTVJNd0VRWUQKVlFR'
-            b'SURBcERlV0psY25Od1lXTmxNUk13RVFZRFZRUUhEQXBEZVdKbGNuTndZV05sTVE4'
-            b'd0RRWURWUVFLREFaVApaV1ZpZFdjeEZUQVRCZ05WQkFzTURIQnZZM04xYVhSbExt'
-            b'OXlaekVUTUJFR0ExVUVBd3dLUTNsaVpYSnpjR0ZqClpURWNNQm9HQ1NxR1NJYjNE'
-            b'UUVKQVJZTmN6RkFjMlZsWW5WbkxtOXlaekFlRncweU1UQTNNamN3T0RFNU5EUmEK'
-            b'Rncwek1UQTNNalV3T0RFNU5EUmFNSUdTTVFzd0NRWURWUVFHRXdKRFRqRVRNQkVH'
-            b'QTFVRUNBd0tRM2xpWlhKegpjR0ZqWlRFVE1CRUdBMVVFQnd3S1EzbGlaWEp6Y0dG'
-            b'alpURVBNQTBHQTFVRUNnd0dVMlZsWW5Wbk1SVXdFd1lEClZRUUxEQXh3YjJOemRX'
-            b'bDBaUzV2Y21jeEV6QVJCZ05WQkFNTUNrTjVZbVZ5YzNCaFkyVXhIREFhQmdrcWhr'
-            b'aUcKOXcwQkNRRVdEWE14UUhObFpXSjFaeTV2Y21jd2dnSWlNQTBHQ1NxR1NJYjNE'
-            b'UUVCQVFVQUE0SUNEd0F3Z2dJSwpBb0lDQVFEYlRpRXNjRkR4QjBMUUZOaTNmN29u'
-            b'MS8wYk5tbUpYRXZLYzY1UFAvNXlSazJpc3VMU3hvMUc2Sk1SCkVJR0tGT1FPZlA3'
-            b'N2lwRDdRU3JjdDRSVEtsSTZORDFkSlB5SWJkSlIwL1RXc2xVNWxwQkpReW56d2x0'
-            b'RnJRYVUKalRlSDJwMUk2MTNVLzZERXQxbGdhNGxpeXRQb2E4QzM4TUQyZ2xHWktN'
-            b'S2libUlLNHgvQTdrTndtcXIrNWVtawprd2ErWjhpZzA0QU5DdkpkOWNacW1iNUp2'
-            b'anN1Y3pHNVFuRzZrYUFOaGw5cGZSSk8zSy9sQmVtekZ3S2hFTWlECldaWnJFbGwz'
-            b'NjlIcnhiQjRuaEpGU0MwTW92MzRZZFJid21NMENkdmFJUFlpZm5uKzBHUnRLRTZt'
-            b'cDZPVEEvOHMKdS9IYm1OU1RHZG5MQ3lhVk4zSzFhWUw5dkVRMUpPcTB4MjRYK0J2'
-            b'NG9YcjBMWGRXR3NNUUwzeHNXM3NoenBYYgppZXBXamNwVGNKdHhVSHMyQUZlOVlo'
-            b'aW94anZjWjdFU29YUVV4RURkajBhaWdLVndEUTdZdzZvd09obWdxK2pBCnYwTThX'
-            b'c0tVQzZNb2RDTVArTnZieEVybTBoK3UzUkRtZmdZd1kxM0ZjTFBMTlQzQkVyQy9k'
-            b'UHljUkFQZjlhUXQKSWVXSjlpUVZHUndGTVN5dFNUNWJNekQzM3FtU1hlVVBvMzdU'
-            b'Y0VsQkhCM1c1Z1IxdmVVaThqU1ZSbjBzYitWdgp4UWtlQTVqZHFBUG9yTHMwZ3RT'
-            b'ZHZ3NFhUTHlZZVZaUUYvTVROaVBuV0ZGWGtlb0YrYUJ5cjlFM2wxT2RCNVZzCnRi'
-            b'N3JvU1hRK0E3bTArdFNPOWVJWmNoTXdBdHBPN0FZUC81cmQxbUFMMGY4RFRzNWRR'
-            b'SURBUUFCTUEwR0NTcUcKU0liM0RRRUJEUVVBQTRJQ0FRQXF3b2RwY3hhbnJ4RHYr'
-            b'anBBbm1rM2NFaENOcXVhNnk1VVJ5cGpNM2EyTzlGTgpDY3dZamVjNG1Hdi9SVnh1'
-            b'Y0tXTmRRQVVhellYMVBpdUFzMUpnVVBRaGdnZTVhTkI4M1lQNjlndlhmWlF6U052'
-            b'CmFXTHJObXdLeE9ZdUZzaWV4aUtzcTRaTXBwWldNcURRYnpTOE5aRGVsVEJZVjll'
-            b'eWM2enRSZXU4LzRHc3FXNWcKVUEyZzhKcXBmbStWOUIvTjhsRjY5Ykw0bC8rSytj'
-            b'RzNxWXl3WVQzN3JlMmVmdDhhcWtZblJVeVBPeWw5cGttZQpqZEJ2bjY1cDBqNUZ5'
-            b'THJSS01oZjJZWUZVQldXeXlCd3RubG50OFVqOFlmbnp3VGhBb0pwemlONTZGRjda'
-            b'eGZ3CnlLb1JXY2NueXl4MnFxU3B2Q05NVlE1dkd3RUVvZUp3SklLYnBpazRhaDho'
-            b'WlZ4ZG5jN3pGRU9DbzJIeTUrNjUKWnhGbS8vbjZjTnI2eG9uUTZWVFp3ZXRYT1Fa'
-            b'aC9ybkN5emUwaVZ3OEo0RytsM0tvRk5YM092em9oL1dNQXc2TwovTzQxLzI0OFhH'
-            b'UW15S210aDRMRDB5NFcwQTErUFNpV24rb0NheDVRblNUMTNKMTNtT05ZV1p4RG42'
-            b'b0RkSjQ2CmhpN3NiZnFab3QyMWxIV0hFOUIwWlV2SUJrWkJRVktjR3Q5dFBXeDBL'
-            b'VWxPSTlWb01IeGdwNWhkSExidTg2cG4KQitrdll0bnh3N2F5em4yL3Jtd1NYeDRl'
-            b'OTFjcXVmVy9UMXIvamlVN3BCTHE1b0RJTWl3MmgxbnIwYmp1ZTNUZgpVaWhKTEhH'
-            b'Z2dnSHRFRkdxenFxbU8zak9DTSt5czhhVDY0Q3VNcDVIZ1ptZjFGZVBYV3A3bTla'
-            b'WUNpS0htdz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0KLS0tLS1CRUdJTiBQ'
-            b'UklWQVRFIEtFWS0tLS0tCk1JSUpSQUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVND'
-            b'Q1M0d2dna3FBZ0VBQW9JQ0FRRGJUaUVzY0ZEeEIwTFEKRk5pM2Y3b24xLzBiTm1t'
-            b'SlhFdktjNjVQUC81eVJrMmlzdUxTeG8xRzZKTVJFSUdLRk9RT2ZQNzdpcEQ3UVNy'
-            b'Ywp0NFJUS2xJNk5EMWRKUHlJYmRKUjAvVFdzbFU1bHBCSlF5bnp3bHRGclFhVWpU'
-            b'ZUgycDFJNjEzVS82REV0MWxnCmE0bGl5dFBvYThDMzhNRDJnbEdaS01LaWJtSUs0'
-            b'eC9BN2tOd21xcis1ZW1ra3dhK1o4aWcwNEFOQ3ZKZDljWnEKbWI1SnZqc3Vjekc1'
-            b'UW5HNmthQU5obDlwZlJKTzNLL2xCZW16RndLaEVNaURXWlpyRWxsMzY5SHJ4YkI0'
-            b'bmhKRgpTQzBNb3YzNFlkUmJ3bU0wQ2R2YUlQWWlmbm4rMEdSdEtFNm1wNk9UQS84'
-            b'c3UvSGJtTlNUR2RuTEN5YVZOM0sxCmFZTDl2RVExSk9xMHgyNFgrQnY0b1hyMExY'
-            b'ZFdHc01RTDN4c1czc2h6cFhiaWVwV2pjcFRjSnR4VUhzMkFGZTkKWWhpb3hqdmNa'
-            b'N0VTb1hRVXhFRGRqMGFpZ0tWd0RRN1l3Nm93T2htZ3ErakF2ME04V3NLVUM2TW9k'
-            b'Q01QK052Ygp4RXJtMGgrdTNSRG1mZ1l3WTEzRmNMUExOVDNCRXJDL2RQeWNSQVBm'
-            b'OWFRdEllV0o5aVFWR1J3Rk1TeXRTVDViCk16RDMzcW1TWGVVUG8zN1RjRWxCSEIz'
-            b'VzVnUjF2ZVVpOGpTVlJuMHNiK1Z2eFFrZUE1amRxQVBvckxzMGd0U2QKdnc0WFRM'
-            b'eVllVlpRRi9NVE5pUG5XRkZYa2VvRithQnlyOUUzbDFPZEI1VnN0Yjdyb1NYUStB'
-            b'N20wK3RTTzllSQpaY2hNd0F0cE83QVlQLzVyZDFtQUwwZjhEVHM1ZFFJREFRQUJB'
-            b'b0lDQUFWeW4yaFhNZXVLM3FJRW9vMk1ZcmR5CnFocnU4eGd5YnIrTXVCdkgzeTQv'
-            b'aU5ZdDAyeWcrZ2wwNVpKYThwelhnQUxNSUJsbmk4cHlCL3FMcElIY1gwYUsKM2F0'
-            b'ZXE5ZEh3eDI5UWl2REtsTFA1cTJyT1hPUXRHdTZySnNzRnVFTkVUTXFoWjR3NjNG'
-            b'M2pJVFVwd2tKT05KaApPdHhXNHJRODhJSDVmVHhEdWJQRGlKcG1VTTZQU1Fnajlm'
-            b'WGNvU0pCdWI0bEF0MVFGRTA1T2NDVUtTSHowOHlICm1BaWVHZTBraVBGTkVUbXhu'
-            b'YTdQMUo2LzB0cGNDL2lzVGc3VlB1TlNCVjd4UUxtMm8zZWJsYUNhOW1PRitRRWUK'
-            b'alFQcWhFUmFxbGQwMGloeE05NmNscUlQaWtTaGpYS3RlcjFGdmZCU2o1Vkg0eDBr'
-            b'SGNVL0oxNVNUS3E0N29qSApwbHBOQVQwcWtuYUgvc25IYzNXU1ZmNHVXc2pSOHdO'
-            b'NlVWL2RDZStqR1Ftb0xLUlNieVN5Rk8rVUtUZFVualBoCndpWFZLSnEwRDR3aHNk'
-            b'QUdVRkNLd09Femc4V2gyVlYydllReStRWHZXRXdyWFhwelk1eGM5bEx6Mlhna1Ey'
-            b'cTYKb0dpWU0yMWR6UWxZUnlMS0h2ZUpvR2FoZmtCMHZSN3NSenlNNkg0Y3NDb3Bz'
-            b'aENlcVhvUytmRjVmNlhMTFJCcQp2MVVBejkrNGk0djJBS3MxenJNSTY5YjA0TXZL'
-            b'ZkZ1d0ZINU02eFZNdmZhY2pHQ0o1ajFEeVNkb0FDMVhDcWdmClkraFBQL0NEajZH'
-            b'M0pNN1oyZ1ZUWDhWYWpXc1RIaFkrb25hN1o4WloyeS9uZnRMcFljTUVINGlGbEZq'
-            b'MklhQnQKenpaQU1KV2dkOTkrblhIckNvdFJBb0lCQVFEMXd6aWJYRUN6c3JvbldS'
-            b'T3VEdWZkdk5ZNG5OWFczVVYwdUFYcwo1SFFiRDNCU09xaGYvU2dudDJjSzNNNC8y'
-            b'Z1dkSkNCdkFqaHFnNlA5dldpd2FFZ2Y2cXZra0NOMUVLVHNjMU1lCkp0VDM4ZVNX'
-            b'UjlUYzZMZXc2QmdLUkRMNzFTUXN1MlYwcGROTHBYdXhQaHlIaGxKb2VPcnhrT2VE'
-            b'T2cxNmlid3cKQmZlMW5HQnN3V09KaUloQ01scjNrZmVXN0tVQTFUKys4OWFmZ1Ix'
-            b'RmlMblh4b2RsUFNYUFQybXU5UVFsQkVlTworZW5wNTdZb3JXRldjMUc3ZnN3dzNO'
-            b'UjB4c3o0d1NTVno0TkFvTWszbjlVaUtLMEVzZ2hiRFpIczVJS2pNTmdNClJHZkcr'
-            b'S09tWUEzTXlaMFQxdXFXcmI0M2lyUzRnRUNkTU9vbVRrY0UyUFRhRXdBREFvSUJB'
-            b'UURrY01VOGZ2RzIKOGpEaHRXbEVGb0F5Wm1HSlJ0OWRwUzhyTCtPellqMTlVUmtG'
-            b'ZkdIdUQzejhPT3ZlVjV2M1hCbDRkbDNkSmNZNwpNWTdxakJtM0JwMFF4VFJiZlVB'
-            b'WG1JQjBJOU56QUpYZm9qZGZ0ajZ5bEZScXdOUmVJSDRacWEyWFQxWXJWcTZyCko4'
-            b'RU13QXpVY0JobVMrcmIrRXM5dGI5a0hyYTlnTDlhbHZ0MDk0UDZWcW1zZUIzaUlL'
-            b'OVRQVTVDRGZiZUhYV0UKS096ZlNoS2FOUDRoZTFsOFFFVGRVNXYxVHR0QWlPRVp6'
-            b'dEdQT011S0RPUlk0WlQ5bHZKMGxHNjM3ZWUxclZsUQpzWFpoRlRTbStETC9jNlc0'
-            b'VnBOWE9XeXRQcUJScDRhOW9VT0tmZ2x0alRQcWx0Z2hYWFdjMmorYnhpbC93eWZW'
-            b'CmhvTCs0cTNPY2hNbkFvSUJBUUM2WjNRTUFwRGd1M01PWFRYY0Uxb3lpUVJDdEZK'
-            b'TlFrOW9GQndLYmN6U3FZY2MKRjNtV05NRzhQaE5kM2RSaUFjKzRQS3FOQ0RZYU0v'
-            b'YXlnbk5oT2ZkYW5mZjZ5SWpjUmQrUnFIY21xM1ZsQ29mQwpwSUVEZlUrMlVwUEpW'
-            b'YWtGOGNnYVZaakNQUFJpc0FWOWpncTlrRmY0L1ozVjAzNkZ2Z1p6SnYwaHY2VCtq'
-            b'cmxrClE5cG5lck0rNGtxMDlIWENkNE0vZW45N0toOWpvOTY3MnRSNm9RNFk3NlE1'
-            b'OVpYSEtmZ1d5NFFySWNzVnFyWXoKYkM0a0VCdXlCcDZCZ1QxenhVVzZkMlIwYkl5'
-            b'MC9EOGlmWXgrK0RNakdKWFYyaGtRZ05IRlRVclJJeUZEZlZ0QwoyaUFkYjk1QUtn'
-            b'YU1ld09IeFNFRnYrRkNXTk9BY21iVGVtdGM3SVJaQW9JQkFRRFA5bEc0aHlCcG1n'
-            b'WWlGRkttClo0MkJWRzhLMS9oVWVpSjh3SFljUWgwVVRwWG14cHNvYS9VdWNHdFoy'
-            b'SXZtSG5RWmxEaFRNU1pMa1F3NFBoN1MKM2pSeXBmVEtMVFlCeFJWN3BYbkR3ZzZ1'
-            b'cmpDVzg0UVVjckIvRnRpK2Ivb2NScm4vZTN4SXEvc0xXWCtIcWZhRQpGeUEvVUhH'
-            b'WW0ydHozRmRHUUNmQVVNcmpIM3YvdWF6dVk2TEhuZm9tZC9ia1luVXg4U0NDaUhN'
-            b'SlEzQ1F2aEE5ClRtemo4alUreGd0cktjaGJBOVRaNVVKM2lpNkFvZ1c1d1k3SDAy'
-            b'VWRqeU5lT2hxcFd1Mk1HU21zS2tKSWsxT0IKaFlaM3c4SmtGSHpCOVVjWVdHRCt0'
-            b'UElYQkE1R3NBTEpOcmpDb1Z4VTA0NVVvdU14WHE4ODNsOFBKZ3R2R3RGNwpsYUlW'
-            b'QW9JQkFRQ2MvL3NNTlc0MUgvVGRyOXdqeWRMZGlaTkNTeHhVVEJnb2dab1BGUDRr'
-            b'aUw5WkRycE9yNnNCCmp2L2Nhc0FyVHhBcFkza2NWeUV2cDZ3dVBhMkVqRndERmNU'
-            b'S3Z0RDNnVzBEMHg2MTkrZm51TENLL0xEbFpEeWIKUjZYS0NWcXNtYXUxb2lIbnk4'
-            b'ME9ReTFxRlEzR1VTMlMwRDZqTkxrcnh4TnFnQnRYVXY0M3U3MEh6NllGOTRDSQpm'
-            b'U3FSeTJiV0g2Q3dLRzljNlR0YTdDVUVtcDdiVFZaemxvdlBhbTJ4UThaOGtJeW9l'
-            b'RitEbFdOajh1b1UyeXNNCld2YUdUNHdrSlBHc3JJbnpNZXB6a0hPNTlreHJEVS9Z'
-            b'eXdRV01KSXExamUvTDVlVmhEbjRrTEJVOFFMbzdFQmgKRE1QWVpFVGp2Uk1oaGZh'
-            b'YnRlWEpNQjNFSnowelc3UEIKLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLQ=='
+            b'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUR2akNDQXFhZ0F3SUJBZ0lJWVNpZnhqek80'
+            b'elF3RFFZSktvWklodmNOQVFFTEJRQXdnWjR4Q3pBSkJnTlYKQkFZVEFsVlRNUXN3Q1FZRFZRUUlE'
+            b'QUpPU2pFWk1CY0dBMVVFQnd3UVYyVnpkQ0JCYm5Sb2IyNTViR0Z1WkRFVwpNQlFHQTFVRUNnd05V'
+            b'Mk5vYm1WcFpHVnlJRXhNUXpFVk1CTUdBMVVFQ3d3TVlXTjBhVzl1TFdsMFpXMXpNUkV3CkR3WURW'
+            b'UVFEREFoamFHVnVMbUpwZWpFbE1DTUdDU3FHU0liM0RRRUpBUllXWVd4c2FYTnZibTFwYkd4bGNr'
+            b'QmoKYUdWdUxtSnBlakFlRncweU1EQXhNREV4TkRBeE1UVmFGdzB5T0RFeU1qa3hOREF4TVRWYU1J'
+            b'R2VNUXN3Q1FZRApWUVFHRXdKVlV6RUxNQWtHQTFVRUNBd0NUa294R1RBWEJnTlZCQWNNRUZkbGMz'
+            b'UWdRVzUwYUc5dWVXeGhibVF4CkZqQVVCZ05WQkFvTURWTmphRzVsYVdSbGNpQk1URU14RlRBVEJn'
+            b'TlZCQXNNREdGamRHbHZiaTFwZEdWdGN6RVIKTUE4R0ExVUVBd3dJWTJobGJpNWlhWG94SlRBakJn'
+            b'a3Foa2lHOXcwQkNRRVdGbUZzYkdsemIyNXRhV3hzWlhKQQpZMmhsYmk1aWFYb3dnZ0VpTUEwR0NT'
+            b'cUdTSWIzRFFFQkFRVUFBNElCRHdBd2dnRUtBb0lCQVFDeXFHdFJBUGNHCkF4SGZsTm1oV3BBKzJK'
+            b'ZVArZVg1ejN4OXJaWkVsWVJhTm04bWhNd25PbW83Z3ppOENEM0k0SXIvc3ArZG1uejQKUUpENTZi'
+            b'NUh5bzVNbHB4Y0dtcmxTYkRzWmlrRTBHWmZBcG9oVjVFMy9XUFBDaHFJSGxpWlBUZGEwaG1sZ1ha'
+            b'NwpzRmpMcmZtcEFQcmt2OGdmV0ZjNlZsaCtsbFFpMnRNMm9MYTdMaVBTeVdycXc5NjVXZG9rTzRJ'
+            b'b29HQ25XUUI4CkpiVmlYZEpFNEduZVF0cDBiQXplbzFsdHNadXNGOCtDdmQ2dGxSV0ZWZmUrd3Yv'
+            b'TU00UnpYYUFwTGpXSU5Ta2IKMmlWbWI5QmtpZ09VRHF6WUhlRzNWUGZKKzE2cjRicGZxZXljR3hu'
+            b'clkyL2Zpa0diRDRHVHRuZ1RITkovcWx5Ugp1Sjd0UkFzMTNUVHpBZ01CQUFFd0RRWUpLb1pJaHZj'
+            b'TkFRRUxCUUFEZ2dFQkFES0txR1dyS1ZWcEd1YmVubk5mCnp1Y1BvQk5jb0w2a2kzMVE1SmxKM09Q'
+            b'SVJtV3E4aGsycGlyeUxENkNCRER5VnUwd2Jtcnc2bHNrRWZRZE9qVW0KK1cxVElVQzJJeXJUT0w3'
+            b'RUY2YTdtT294VnZOSERnQ1JMaHZxakZtN2FlRE1ZMGpueGNycFJjUC9hRVJxSmRHWQovYWlSRDV5'
+            b'T0w3U2djVVd4ZEt6TmZiRzViOFcyVUNvTXdOS1NYcTJVRUR6d1U1RUZseTZsSFA3dTN0SE5QOGV6'
+            b'Ck9sU0VaUDdxTCswc0l4SitYeEk2ZGNPQzRVTXNSTGFLYjFHNXFoemFhRTFZU3FWWC9LcVBITUgz'
+            b'QzhXUXZJdUIKeE8vR2p6cHhBSmRXZzhJYU1qdWZPWExUMW15ZXJnZDU3b29SUVh1OVRJQzdjZG84'
+            b'N3Rjei9IMnk1aE83Vkkxbwo2SVU9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0KLS0tLS1CRUdJ'
+            b'TiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2Z0lCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktnd2dn'
+            b'U2tBZ0VBQW9JQkFRQ3lxR3RSQVBjR0F4SGYKbE5taFdwQSsySmVQK2VYNXozeDlyWlpFbFlSYU5t'
+            b'OG1oTXduT21vN2d6aThDRDNJNElyL3NwK2Rtbno0UUpENQo2YjVIeW81TWxweGNHbXJsU2JEc1pp'
+            b'a0UwR1pmQXBvaFY1RTMvV1BQQ2hxSUhsaVpQVGRhMGhtbGdYWjdzRmpMCnJmbXBBUHJrdjhnZldG'
+            b'YzZWbGgrbGxRaTJ0TTJvTGE3TGlQU3lXcnF3OTY1V2Rva080SW9vR0NuV1FCOEpiVmkKWGRKRTRH'
+            b'bmVRdHAwYkF6ZW8xbHRzWnVzRjgrQ3ZkNnRsUldGVmZlK3d2L01NNFJ6WGFBcExqV0lOU2tiMmlW'
+            b'bQpiOUJraWdPVURxellIZUczVlBmSisxNnI0YnBmcWV5Y0d4bnJZMi9maWtHYkQ0R1R0bmdUSE5K'
+            b'L3FseVJ1Sjd0ClJBczEzVFR6QWdNQkFBRUNnZ0VBTTd6b1R5NExXM2RhSHJoNWlldXpLREFMUEV1'
+            b'dldQZklZcEQ1bW1UK1RpM0QKWkpGQ21mMmx0QlJkUXI3VVBhOGhNY2xseGZ0dVEycFhVYmhxUFZv'
+            b'Z2VYZUlVbmZvQ3Z5Yk91cWU2R0Q5dEhnSgpjS3h1UnB1ZjR0NVhMcUl6SURXRktVejgxbHcybHIx'
+            b'TUNiZ1pPK01ueFVUd3pIc0Z6OFFmbnBFa1RtKzJpUFBuCml5WUc5YVBqSU90cWNFandxaEJhWWFt'
+            b'NVpwM0VOaEJpbkxjemhMb2srVlFnbkxwYlZXU29HbjZTZE5XcWRsbUQKdWxaYVZub1NSWkEwVzgy'
+            b'UjhLR01naVUyWUFHamphdmdBeGlBQXNoL1VwSE9nOVBFZHpNMEM5TGZWM2VEY3dQTAp3RXJicldE'
+            b'V1B2RXNidy9menkvRXJodEFDbVRFeExoazV2NGVqSnMzcVFLQmdRRG9jam9GTS9OcUpoWGVVRnQ3'
+            b'CnV3UCt5TWF6cnVUYnpBV0xKcGptSnlMTEVqNWZqWjhQVi9HUFkxTVAwYjY5TVJzbS9tZ3MyZGIz'
+            b'Q2JYS1pTRzcKZTZDRWlVMGdRODFPSVBUWitDUGx1Y1JaVVR2N3hHZU5SOEVUUjMzS1M5MmhZWEpJ'
+            b'cFZCNm1kWUlXNFpvSXhuTwpaa09NTFM4SU40WWlrNnJsam04NTZyUEd0UUtCZ1FERXd1VnhTK2ov'
+            b'Z01IZGowVG12WHJYbkVjYmxmd1ZhOU1wCnVEUTZIeVhubHFlL0xzb3ZFcmcrV2NFS2FURERmY2k2'
+            b'TWZXdzRpVjRDRUdjNHhJeGNwbUY2elFMWFJieGVZK3YKMDZ0KzBtdjI2bkdxeUdOYmlBS1FMYjRw'
+            b'SmxCU290c1Z2VGJHTjJzRGRkVTIzN2t0cHpQZ3FmSXZlbUFuZDBseApkU0N1L3UxdUJ3S0JnUURP'
+            b'WVh6NldhSHB3Vjd4UUUrNWo5YUFSU3VISmVXMDhYU0trLzUxZXBIOTAzamx4Z3hQCnh6bUdvaDJC'
+            b'a2l6VU5lRnh3YmdrK2xWT2lhU0t5emdrQ2lQL0NSa2RhSlhFcEtaQlVYd3QzNzVodnlxTzQxYzkK'
+            b'clZQVUZrbXRiNmFjUHJVRm95SE5lUUQ3OHFkbmxxSzNDejAySEhnQng2cWswSStQdWVNdmZSK1pj'
+            b'UUtCZ0M3SQpJQUZtQ1FubXRURldoUTFQYzh1YnpwUlNmdE1oQmQzZmZCdHRtSGVOckdpYVdWd0Qy'
+            b'V2FKdElvakpJTDJmeWsyCkE3S0FzbVB0b3B3SXFTUzBtS2ZzbWoweGJ1a08vQWpVRE94a1gyTWZy'
+            b'dExxUGlWZkd5em9rMVA1VmhPdndPTlUKVDVlbFNYNVRIOVNpTU1jWUFBK2ttSDZOWEJ0R0UySTBk'
+            b'UWJtZWRFMUFvR0JBS2xkMnlHTll2eDZMc1F1czlOWgpjVlZNWHFLbFVKY1pSTVY5aGdTdTQ3alZI'
+            b'ZnlMMVFRcTFnaG1rU0NpeGVZWXJLSW4xU09ubERsK2VwYTQ3SmxqClhhd3ZNRFREWmxRRGxwS05v'
+            b'dEgzbThLQUZ0VUVvQ2dzTm5zM3ZoOERDSXFJUEJEMDRndkV3R3pLYnNhQUM1WGIKUFprd1o0TlFK'
+            b'RWlDTnRyMUR6Qmg0ZktuCi0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K'
         )
         hard_coded_cert = base64.b64decode(hard_coded_cert_base64)
         with open(filepath, "wb+") as fw:

