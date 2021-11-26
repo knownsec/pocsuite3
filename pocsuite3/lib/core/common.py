@@ -92,9 +92,7 @@ def set_paths(root_path):
     paths.POCSUITE_POCS_PATH = os.path.join(paths.POCSUITE_ROOT_PATH, "pocs")
     paths.USER_POCS_PATH = None
 
-    paths.USER_AGENTS = os.path.join(paths.POCSUITE_DATA_PATH, "user-agents.txt")
     paths.WEAK_PASS = os.path.join(paths.POCSUITE_DATA_PATH, "password-top100.txt")
-    paths.LARGE_WEAK_PASS = os.path.join(paths.POCSUITE_DATA_PATH, "password-top1000.txt")
 
     paths.POCSUITE_HOME_PATH = os.path.expanduser("~")
     _ = os.path.join(paths.POCSUITE_HOME_PATH, ".pocsuite")

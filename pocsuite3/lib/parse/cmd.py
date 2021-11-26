@@ -54,9 +54,7 @@ def cmd_line_parser(argv=None):
         request.add_argument("--cookie", dest="cookie", help="HTTP Cookie header value")
         request.add_argument("--host", dest="host", help="HTTP Host header value")
         request.add_argument("--referer", dest="referer", help="HTTP Referer header value")
-        request.add_argument("--user-agent", dest="agent", help="HTTP User-Agent header value")
-        request.add_argument("--random-agent", dest="random_agent", action="store_true", default=False,
-                             help="Use randomly selected HTTP User-Agent header value")
+        request.add_argument("--user-agent", dest="agent", help="HTTP User-Agent header value (default random)")
         request.add_argument("--proxy", dest="proxy", help="Use a proxy to connect to the target URL")
         request.add_argument("--proxy-cred", dest="proxy_cred", help="Proxy authentication credentials (name:password)")
         request.add_argument("--timeout", dest="timeout", help="Seconds to wait before timeout connection (default 30)")

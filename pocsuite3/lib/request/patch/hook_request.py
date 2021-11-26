@@ -1,9 +1,9 @@
-from random import choice
 from pocsuite3.lib.core.data import conf
 from pocsuite3.lib.core.enums import HTTP_HEADER
+from pocsuite3.lib.utils import generate_random_user_agent
 from requests.models import Request
 from requests.sessions import Session
-from requests.sessions import merge_setting, merge_cookies
+from requests.sessions import merge_cookies
 from requests.cookies import RequestsCookieJar
 from requests.utils import get_encodings_from_content, to_key_val_list
 from requests.compat import OrderedDict, Mapping
@@ -37,8 +37,8 @@ def session_request(self, method, url,
     # Create the Request.
     merged_cookies = merge_cookies(merge_cookies(RequestsCookieJar(), self.cookies),
                                    cookies or (conf.cookie if 'cookie' in conf else None))
-    if conf.random_agent:
-        conf.http_headers[HTTP_HEADER.USER_AGENT] = choice(conf.agents)
+    if not conf.agent:
+        conf.http_headers[HTTP_HEADER.USER_AGENT] = generate_random_user_agent()
 
     req = Request(
         method=method.upper(),

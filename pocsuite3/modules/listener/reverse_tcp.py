@@ -32,7 +32,7 @@ def get_sock_listener(listen_port, listen_host="0.0.0.0", ipv6=False, protocol=N
     if conf.enable_tls_listener and protocol == socket.SOCK_STREAM:
         import ssl
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        cert_path = os.path.join(paths.POCSUITE_DATA_PATH, 'cacert.pem')
+        cert_path = os.path.join(paths.POCSUITE_TMP_PATH, 'cacert.pem')
         gen_cert(filepath=cert_path)
         context.load_cert_chain(cert_path)
         s = context.wrap_socket(s, server_side=True)

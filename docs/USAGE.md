@@ -44,8 +44,7 @@ Request:
   --cookie COOKIE       HTTP Cookie header value
   --host HOST           HTTP Host header value
   --referer REFERER     HTTP Referer header value
-  --user-agent AGENT    HTTP User-Agent header value
-  --random-agent        Use randomly selected HTTP User-Agent header value
+  --user-agent AGENT    HTTP User-Agent header value (default random)
   --proxy PROXY         Use a proxy to connect to the target URL
   --proxy-cred PROXY_CRED
                         Proxy authentication credentials (name:password)
@@ -98,6 +97,7 @@ Modules:
                         Connect back host for target PoC in shell mode
   --lport CONNECT_BACK_PORT
                         Connect back port for target PoC in shell mode
+  --tls                 Enable TLS listener in shell mode
   --comparison          Compare popular web search engines
   --dork-b64            Whether dork is in base64 format
 

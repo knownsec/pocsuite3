@@ -55,9 +55,7 @@ class TestCase(unittest.TestCase):
             request.add_option("--cookie", dest="cookie", help="HTTP Cookie header value")
             request.add_option("--host", dest="host", help="HTTP Host header value")
             request.add_option("--referer", dest="referer", help="HTTP Referer header value")
-            request.add_option("--user-agent", dest="agent", help="HTTP User-Agent header value")
-            request.add_option("--random-agent", dest="random_agent", action="store_true", default=False,
-                               help="Use randomly selected HTTP User-Agent header value")
+            request.add_option("--user-agent", dest="agent", help="HTTP User-Agent header value (default random)")
             request.add_option("--proxy", dest="proxy", help="Use a proxy to connect to the target URL")
             request.add_option("--proxy-cred", dest="proxy_cred",
                                help="Proxy authentication credentials (name:password)")
