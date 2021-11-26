@@ -17,7 +17,6 @@ optDict = {
         'host': 'string',
         'referer': 'string',
         'agent': 'string',
-        'random_agent': 'boolean',
         'proxy': 'string',
         'proxy_cred': 'string',
         'timeout': 'string',

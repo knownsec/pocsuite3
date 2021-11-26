@@ -54,8 +54,6 @@ BANNER = """\033[01;33m
 # Encoding used for Unicode data
 UNICODE_ENCODING = "utf-8"
 
-DEFAULT_USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 Safari/537.36"
-
 BOLD_PATTERNS = (
     "' is vulnerable",
     "success",
@@ -123,7 +121,6 @@ CMD_PARSE_WHITELIST = [
     "host",
     "referer",
     "user-agent",
-    "random-agent",
     "proxy",
     "proxy-cred",
     "timeout",

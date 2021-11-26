@@ -29,7 +29,7 @@ from pocsuite3.lib.core.enums import HTTP_HEADER, CUSTOM_LOGGING, PROXY_TYPE
 from pocsuite3.lib.core.exception import PocsuiteSyntaxException, PocsuiteSystemException, PocsuiteHeaderTypeException
 from pocsuite3.lib.core.log import FORMATTER
 from pocsuite3.lib.core.register import load_file_to_module
-from pocsuite3.lib.core.settings import DEFAULT_USER_AGENT, DEFAULT_LISTENER_PORT, CMD_PARSE_WHITELIST
+from pocsuite3.lib.core.settings import DEFAULT_LISTENER_PORT, CMD_PARSE_WHITELIST
 from pocsuite3.lib.core.statistics_comparison import StatisticsComparison
 from pocsuite3.lib.core.update import update
 from pocsuite3.lib.parse.cmd import DIY_OPTIONS
@@ -77,21 +77,6 @@ def _set_http_user_agent():
     set user-agent
     :return:
     '''
-
-    conf.http_headers[HTTP_HEADER.USER_AGENT] = DEFAULT_USER_AGENT
-
-    if conf.random_agent:
-        uapath = os.path.join(paths.POCSUITE_DATA_PATH, 'user-agents.txt')
-        if os.path.exists(uapath):
-            with open(uapath) as f:
-                agents = f.read().split("\n")
-                if len(agents) == 1 and "" in agents:
-                    logger.error("user-agents file is empty will use default")
-                else:
-                    conf.agents = agents
-        else:
-            logger.error("user-agents file not fond will use default")
-
     if conf.agent:
         conf.http_headers[HTTP_HEADER.USER_AGENT] = conf.agent
 
@@ -245,6 +230,7 @@ def _set_multiple_targets():
 
     if conf.dork_quake:
         conf.plugins.append('target_from_quake')
+
 
 def _set_task_queue():
     if kb.registered_pocs and kb.targets:
@@ -510,7 +496,6 @@ def _set_conf_attributes():
     conf.referer = None
     conf.agent = None
     conf.headers = None
-    conf.random_agent = None
     conf.proxy = None
     conf.proxy_cred = None
     conf.proxies = {}
@@ -518,7 +503,6 @@ def _set_conf_attributes():
     conf.retry = 0
     conf.delay = 0
     conf.http_headers = {}
-    conf.agents = [DEFAULT_USER_AGENT]  # When loading from the plug-in, if the data source has no default value, it needs to be processed
     conf.login_user = None
     conf.login_pass = None
     conf.shodan_token = None
