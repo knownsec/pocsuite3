@@ -8,7 +8,7 @@ class Jar(Zip):
         self.manifest = self.get_manifest()
         self.is_manifest_created = False
 
-    def get_manifest(self, main_class='Payload'):
+    def get_manifest(self, main_class='Test.Payload'):
         manifest = 'Manifest-Version: 1.0\n'
         manifest += 'Main-Class: %s\n' % main_class
         manifest += 'Permissions: all-permissions\n\n'
