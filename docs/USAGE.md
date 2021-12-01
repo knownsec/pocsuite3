@@ -87,7 +87,7 @@ Modules:
                         Fofa dork used for search.
   --dork-quake DORK_QUAKE
                         Quake dork used for search.
-  --max-page MAX_PAGE   Max page used in ZoomEye API(10 targets/Page).
+  --max-page MAX_PAGE   Max page used in search API.
   --search-type SEARCH_TYPE
                         search type used in ZoomEye API, web or host
   --vul-keyword VUL_KEYWORD
