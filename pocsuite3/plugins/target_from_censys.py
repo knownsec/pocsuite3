@@ -29,7 +29,7 @@ class TargetFromCensys(PluginBase):
             raise PocsuitePluginDorkException(msg)
         if conf.dork_b64:
             import base64
-            dork = str(base64.b64decode(dork),encoding = "utf-8")
+            dork = str(base64.b64decode(dork), encoding="utf-8")
         if kb.comparison:
             kb.comparison.add_dork("Censys", dork)
         info_msg = "[PLUGIN] try fetch targets from censys with dork: {0}".format(dork)

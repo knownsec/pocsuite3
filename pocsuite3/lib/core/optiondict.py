@@ -26,17 +26,30 @@ optDict = {
     },
     'Account': {
         'login_user': 'string',
-        'login_pass': 'string'
+        'login_pass': 'string',
+        'shodan_token': 'string',
+        'fofa_user': 'string',
+        'fofa_token': 'string',
+        'quake_token': 'string',
+        'censys_uid': 'string',
+        'censys_secret': 'string'
     },
     'Modules': {
         'dork': 'string',
+        'dork_zoomeye': 'string',
+        'dork_shodan': 'string',
+        'dork_censys': 'string',
+        'dork_fofa': 'string',
+        'dork_quake': 'string',
         'max_page': 'integer',
         'search_type': 'string',
         'vul_keyword': 'string',
         'ssvid': 'string',
         'connect_back_host': 'string',
         'connect_back_port': 'string',
-        "comparison": "boolean"
+        'enable_tls_listener': 'boolean',
+        "comparison": 'boolean',
+        'dork_b64': 'boolean'
     },
     'Optimization': {
         'plugins': 'string',
@@ -44,6 +57,14 @@ optDict = {
         'threads': 'integer',
         'batch': 'string',
         'check_requires': 'boolean',
-        'quiet': 'boolean'
+        'quiet': 'boolean',
+        'ppt': 'boolean',
+        'pcap': 'boolean',
+        'rule': 'boolean',
+        'rule_req': 'boolean',
+        'rule_filename': 'string'
+    },
+    'Poc options': {
+        'show_options': 'boolean'
     }
 }

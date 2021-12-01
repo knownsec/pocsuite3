@@ -106,7 +106,7 @@ def set_paths(root_path):
     paths.POCSUITE_TMP_PATH = os.path.join(_, "tmp")
     paths.POCSUITE_RC_PATH = os.path.join(paths.POCSUITE_HOME_PATH, ".pocsuiterc")
     paths.POCSUITE_OUTPUT_PATH = paths.get("POCSUITE_OUTPUT_PATH", os.path.join(_, "output"))
-    paths.SHELLCODES_DEV_PATH = os.path.join(paths.POCSUITE_ROOT_PATH, "shellcodes", "tools")
+    paths.SHELLCODES_DEV_PATH = os.path.join(paths.POCSUITE_TMP_PATH, "tools")
 
 
 def banner():

@@ -2,6 +2,7 @@ import re
 from pocsuite3.lib.core.data import conf
 from pocsuite3.lib.core.data import logger
 
+
 def regex_rule(files):
     if not conf.rule_filename:
         conf.rule_filename = "rule.rule"

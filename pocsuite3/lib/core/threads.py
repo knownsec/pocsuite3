@@ -6,7 +6,6 @@ from pocsuite3.lib.core.data import conf
 from pocsuite3.lib.core.data import kb
 from pocsuite3.lib.core.data import logger
 from pocsuite3.lib.core.exception import PocsuiteConnectionException
-from pocsuite3.lib.core.exception import PocsuiteThreadException
 from pocsuite3.lib.core.exception import PocsuiteUserQuitException
 from pocsuite3.lib.core.exception import PocsuiteValueException
 from pocsuite3.lib.core.settings import MAX_NUMBER_OF_THREADS
@@ -70,7 +69,7 @@ def run_threads(num_threads, thread_function, args: tuple = (), forward_exceptio
                     alive = True
                     time.sleep(0.1)
 
-    except (KeyboardInterrupt, PocsuiteUserQuitException) as ex:
+    except (KeyboardInterrupt, PocsuiteUserQuitException):
         kb.thread_continue = False
         kb.thread_exception = True
         logger.info("user aborted (Ctrl+C was pressed multiple times")

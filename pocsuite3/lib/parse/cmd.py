@@ -86,7 +86,7 @@ def cmd_line_parser(argv=None):
         modules.add_argument("--dork-quake", dest="dork_quake", action="store", default=None,
                              help="Quake dork used for search.")
         modules.add_argument("--max-page", dest="max_page", type=int, default=1,
-                             help="Max page used in ZoomEye API(10 targets/Page).")
+                             help="Max page used in search API.")
         modules.add_argument("--search-type", dest="search_type", action="store", default='host',
                              help="search type used in ZoomEye API, web or host")
         modules.add_argument("--vul-keyword", dest="vul_keyword", action="store", default=None,
@@ -125,7 +125,7 @@ def cmd_line_parser(argv=None):
         optimization.add_argument("--pcap", dest="pcap", action="store_true", default=False,
                                   help="use scapy capture flow")
         optimization.add_argument("--rule", dest="rule", action="store_true", default=False,
-                                  help="export rules, default export reqeust and response")
+                                  help="export suricata rules, default export reqeust and response")
         optimization.add_argument("--rule-req", dest="rule_req", action="store_true", default=False,
                                   help="only export request rule")
         optimization.add_argument("--rule-filename", dest="rule_filename", action="store", default=False,

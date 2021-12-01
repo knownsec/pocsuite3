@@ -1,4 +1,3 @@
-import urllib
 import getpass
 from base64 import b64encode
 from configparser import ConfigParser
@@ -75,14 +74,14 @@ class Fofa():
             for page in range(1, pages + 1):
                 url = "https://fofa.so/api/v1/search/all?email={user}&key={token}&qbase64={dork}&fields={resource}&page={page}".format(
                     user=self.user, token=self.token, dork=b64encode(dork.encode()).decode(), resource=resource, page=page)
-                resp = requests.get(url,timeout=80)
+                resp = requests.get(url, timeout=80)
                 if resp and resp.status_code == 200 and "results" in resp.json():
                     content = resp.json()
                     for match in content['results']:
                         if resource == "ip,port":
-                            search_result.add("%s:%s"%(match[0],match[1]))
+                            search_result.add("%s:%s" % (match[0], match[1]))
                         else:
-                            if not  match.startswith("https://"):
+                            if not match.startswith("https://"):
                                 search_result.add("http://"+match)
                             else:
                                 search_result.add(match)

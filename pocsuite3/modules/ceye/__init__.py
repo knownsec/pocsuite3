@@ -188,7 +188,7 @@ class CEye(object):
 
 
 if __name__ == "__main__":
-    ce = CEye(token="111") # Fill in the token
+    ce = CEye(token="111")  # Fill in the token
     # http record
     # Auxiliary generation of flag string
     flag = ce.build_request("HelloWorld3")

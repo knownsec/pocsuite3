@@ -1,9 +1,9 @@
-#!usr/bin/env python  
+#!usr/bin/env python
 # -*- coding:utf-8 -*-
-""" 
+"""
 @author: longofo
-@file: war.py 
-@time: 2020/03/18 
+@file: war.py
+@time: 2020/03/18
 """
 import os
 

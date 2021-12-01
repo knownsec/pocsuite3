@@ -4,7 +4,6 @@ from pocsuite3.api import logger
 from pocsuite3.api import conf
 from pocsuite3.api import ZoomEye
 from pocsuite3.api import register_plugin
-from pocsuite3.api import kb
 from pocsuite3.lib.core.exception import PocsuitePluginDorkException
 
 
@@ -32,7 +31,7 @@ class TargetFromZoomeye(PluginBase):
             raise PocsuitePluginDorkException(msg)
         if conf.dork_b64:
             import base64
-            dork = str(base64.b64decode(dork),encoding = "utf-8")
+            dork = str(base64.b64decode(dork), encoding="utf-8")
 
         info_msg = "[PLUGIN] try fetch targets from zoomeye with dork: {0}".format(dork)
         logger.info(info_msg)

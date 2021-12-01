@@ -1,5 +1,4 @@
 from pocsuite3.lib.core.data import logger
-from pocsuite3.lib.core.exception import PocsuiteSystemException
 from pocsuite3.lib.core.settings import IS_WIN
 from pocsuite3.lib.core.settings import PLATFORM
 
@@ -56,6 +55,5 @@ if _readline:
     except AttributeError:
         def clear_history():
             pass
-
 
         _readline.clear_history = clear_history

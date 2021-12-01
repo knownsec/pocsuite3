@@ -1,7 +1,7 @@
 import os
 from configparser import ConfigParser
 
-from pocsuite3.lib.core.data import logger, cmd_line_options, conf
+from pocsuite3.lib.core.data import logger, conf
 from pocsuite3.lib.core.enums import OPTION_TYPE
 from pocsuite3.lib.core.exception import PocsuiteFilePathException, PocsuiteMissingMandatoryOptionException, \
     PocsuiteValueException

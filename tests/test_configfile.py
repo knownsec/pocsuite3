@@ -68,12 +68,28 @@ class TestCase(unittest.TestCase):
             account = OptionGroup(parser, "Account", "Telnet404 account options")
             account.add_option("--login-user", dest="login_user", help="Telnet404 login user")
             account.add_option("--login-pass", dest="login_pass", help="Telnet404 login password")
+            account.add_option("--shodan-token", dest="shodan_token", help="Shodan token")
+            account.add_option("--fofa-user", dest="fofa_user", help="fofa user")
+            account.add_option("--fofa-token", dest="fofa_token", help="fofa token")
+            account.add_option("--quake-token", dest="quake_token", help="quake token")
+            account.add_option("--censys-uid", dest="censys_uid", help="Censys uid")
+            account.add_option("--censys-secret", dest="censys_secret", help="Censys secret")
             # Modules options
             modules = OptionGroup(parser, "Modules", "Modules(Seebug Zoomeye CEye Listener) options")
             modules.add_option("--dork", dest="dork", action="store", default=None,
                                help="Zoomeye dork used for search.")
+            modules.add_option("--dork-zoomeye", dest="dork_zoomeye", action="store", default=None,
+                               help="Zoomeye dork used for search.")
+            modules.add_option("--dork-shodan", dest="dork_shodan", action="store", default=None,
+                               help="Shodan dork used for search.")
+            modules.add_option("--dork-censys", dest="dork_censys", action="store", default=None,
+                               help="Censys dork used for search.")
+            modules.add_option("--dork-fofa", dest="dork_fofa", action="store", default=None,
+                               help="Fofa dork used for search.")
+            modules.add_option("--dork-quake", dest="dork_quake", action="store", default=None,
+                               help="Quake dork used for search.")
             modules.add_option("--max-page", dest="max_page", type=int, default=1,
-                               help="Max page used in ZoomEye API(10 targets/Page).")
+                               help="Max page used in search API.")
             modules.add_option("--search-type", dest="search_type", action="store", default='host',
                                help="search type used in ZoomEye API, web or host")
             modules.add_option("--vul-keyword", dest="vul_keyword", action="store", default=None,
@@ -84,6 +100,14 @@ class TestCase(unittest.TestCase):
                                help="Connect back host for target PoC in shell mode")
             modules.add_option("--lport", dest="connect_back_port", action="store", default=None,
                                help="Connect back port for target PoC in shell mode")
+            modules.add_option("--tls", dest="enable_tls_listener", action="store_true", default=False,
+                               help="Enable TLS listener in shell mode")
+            modules.add_option("--comparison", dest="comparison", help="Compare popular web search engines",
+                               action="store_true",
+                               default=False)
+            modules.add_option("--dork-b64", dest="dork_b64", help="Whether dork is in base64 format",
+                               action="store_true",
+                               default=False)
 
             # Optimization options
             optimization = OptionGroup(parser, "Optimization", "Optimization options")
@@ -99,9 +123,21 @@ class TestCase(unittest.TestCase):
                                     help="Check install_requires")
             optimization.add_option("--quiet", dest="quiet", action="store_true", default=False,
                                     help="Activate quiet mode, working without logger.")
+            optimization.add_option("--ppt", dest="ppt", action="store_true", default=False,
+                                    help="Hiden sensitive information when published to the network")
+            optimization.add_option("--pcap", dest="pcap", action="store_true", default=False,
+                                    help="use scapy capture flow")
+            optimization.add_option("--rule", dest="rule", action="store_true", default=False,
+                                    help="export suricata rules, default export reqeust and response")
+            optimization.add_option("--rule-req", dest="rule_req", action="store_true", default=False,
+                                    help="only export request rule")
+            optimization.add_option("--rule-filename", dest="rule_filename", action="store", default=False,
+                                    help="Specify the name of the export rule file")
 
             # Diy options
             diy_options = OptionGroup(parser, "Poc options", "definition options for PoC")
+            diy_options.add_option("--options", dest="show_options", action="store_true", default=False,
+                                   help="Show all definition options")
 
             parser.add_option_group(target)
             parser.add_option_group(mode)
@@ -117,7 +153,7 @@ class TestCase(unittest.TestCase):
         d = parser.__dict__
         optiondict = {}
         for group in d["option_groups"]:
-            desc = group.description
+            # desc = group.description
             title = group.title
             # print(desc, title)
             # config.add_section("; " + desc)

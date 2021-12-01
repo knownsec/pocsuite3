@@ -1,4 +1,4 @@
-from random import *
+from random import randint
 import types
 
 from pocsuite3.lib.core.common import create_shellcode
@@ -22,7 +22,7 @@ class AlphanumericEncoder(Encoder):
 
     @staticmethod
     def create_allowed_chars(bad_chars):
-        allowed_chars = range(0x61, 0x7b)+range(0x42, 0x5b) + range(0x30,0x3a)
+        allowed_chars = range(0x61, 0x7b)+range(0x42, 0x5b) + range(0x30, 0x3a)
         for ch in bad_chars:
             if ord(ch) in allowed_chars:
                 allowed_chars.remove(ord(ch))
@@ -31,13 +31,13 @@ class AlphanumericEncoder(Encoder):
     def encode(self, payload):
         shell = [ord(c) for c in payload]
         reg = self.buffer_register.upper()
-        stub =self.create_decoder_stub(reg)
-        offset=0
-        encoded=""
+        stub = self.create_decoder_stub(reg)
+        offset = 0
+        encoded = ""
         while offset < len(shell):
             block = shell[offset: offset+1]
-            encoded+=self.encode_byte(block)
-            offset+=1
+            encoded += self.encode_byte(block)
+            offset += 1
 
         return stub+encoded+'AA'
 
@@ -78,14 +78,14 @@ class AlphanumericEncoder(Encoder):
             edxmod = 'B' * (17 - (self.offset - 16))
 
         regprefix = {
-            'EAX'   : 'PY' + mod,                         # push eax, pop ecx
-            'ECX'   : 'I' + mod,                          # dec ecx
-            'EDX'   :  edxmod + nop + '7RY',			   # dec edx,,, push edx, pop ecx
-            'EBX'   : 'SY' + mod,                         # push ebx, pop ecx
-            'ESP'   : 'TY' + mod,                         # push esp, pop ecx
-            'EBP'   : 'UY' + mod,                         # push ebp, pop ecx
-            'ESI'   : 'VY' + mod,                         # push esi, pop ecx
-            'EDI'   : 'WY' + mod,                         # push edi, pop ecx
+            'EAX': 'PY' + mod,                         # push eax, pop ecx
+            'ECX': 'I' + mod,                          # dec ecx
+            'EDX':  edxmod + nop + '7RY',              # dec edx,,, push edx, pop ecx
+            'EBX': 'SY' + mod,                         # push ebx, pop ecx
+            'ESP': 'TY' + mod,                         # push esp, pop ecx
+            'EBP': 'UY' + mod,                         # push ebp, pop ecx
+            'ESI': 'VY' + mod,                         # push esi, pop ecx
+            'EDI': 'WY' + mod,                         # push edi, pop ecx
         }
 
         reg = reg.upper()
@@ -95,7 +95,7 @@ class AlphanumericEncoder(Encoder):
 
     def encode_byte(self, block):
         # No, not nipple.
-        nibble_chars = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]
+        nibble_chars = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []]
         for ch in self.allowed_chars:
             nibble_chars[ch & 0x0F].append(chr(ch))
         poss_encodings = []
@@ -111,7 +111,7 @@ class AlphanumericEncoder(Encoder):
             # In the decoding process, the low nibble of the second char gets combined
             # (either ADDed or XORed depending on the encoder) with the high nibble of the first char,
             # and we want the high nibble of our input byte to result
-            second_low_nibble = (block_high_nibble^first_high_nibble) & 0x0F
+            second_low_nibble = (block_high_nibble ^ first_high_nibble) & 0x0F
 
             # Find valid second chars for this first char and add each combination to our possible encodings
             second_chars = nibble_chars[second_low_nibble]
@@ -595,5 +595,5 @@ call_decoder:
         encoded_shell = encoder.encode(byte_str)
         if debug:
             print("Length of encoded shellcode: %s" % len(encoded_shell))
-            print(''.join("\\x%02x"%ord(c) for c in encoded_shell))
+            print(''.join("\\x%02x" % ord(c) for c in encoded_shell))
         return encoded_shell

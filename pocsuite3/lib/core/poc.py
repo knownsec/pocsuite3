@@ -14,10 +14,8 @@ from pocsuite3.lib.core.data import conf
 from pocsuite3.lib.core.data import logger
 from pocsuite3.lib.core.enums import OUTPUT_STATUS, CUSTOM_LOGGING, ERROR_TYPE_ID, POC_CATEGORY
 from pocsuite3.lib.core.exception import PocsuiteValidationException
-from pocsuite3.lib.core.interpreter_option import OptString, OptInteger, OptIP, OptPort, OptBool
-from pocsuite3.lib.utils import str_to_dict
+from pocsuite3.lib.core.interpreter_option import OptString, OptInteger, OptPort, OptBool
 # for pocsuite 2.x
-from pocsuite3.lib.core.register import register_poc as register
 
 
 class POCBase(object):

@@ -12,7 +12,7 @@ class TargetFromFofa(PluginBase):
     category = PLUGIN_TYPE.TARGETS
 
     def init_fofa_api(self):
-        self.fofa = Fofa(user=conf.fofa_user,token=conf.fofa_token)
+        self.fofa = Fofa(user=conf.fofa_user, token=conf.fofa_token)
 
     def init(self):
         self.init_fofa_api()
@@ -26,7 +26,7 @@ class TargetFromFofa(PluginBase):
             raise PocsuitePluginDorkException(msg)
         if conf.dork_b64:
             import base64
-            dork = str(base64.b64decode(dork),encoding = "utf-8")
+            dork = str(base64.b64decode(dork), encoding="utf-8")
 
         if kb.comparison:
             kb.comparison.add_dork("Fofa", dork)
@@ -43,5 +43,6 @@ class TargetFromFofa(PluginBase):
 
         info_msg = "[PLUGIN] get {0} target(s) from Fofa".format(count)
         logger.info(info_msg)
+
 
 register_plugin(TargetFromFofa)
