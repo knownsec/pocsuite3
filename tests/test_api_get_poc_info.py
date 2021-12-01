@@ -2,7 +2,7 @@ import os
 import unittest
 
 from pocsuite3.api import init_pocsuite
-from pocsuite3.api import load_file_to_module, paths,load_string_to_module
+from pocsuite3.api import load_file_to_module, paths, load_string_to_module
 
 
 class TestCase(unittest.TestCase):
@@ -80,4 +80,3 @@ register_poc(DemoPOC)
         mod = load_string_to_module(source)
         print(mod.get_infos())
         self.assertTrue(len(mod.get_infos()) > 0)
-

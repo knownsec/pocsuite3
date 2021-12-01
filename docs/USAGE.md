@@ -54,7 +54,7 @@ Request:
   --headers HEADERS     Extra headers (e.g. "key1: value1\nkey2: value2")
 
 Account:
-  Telnet404、Shodan、CEye、Fofa account options
+  Telnet404, Shodan, CEye, Fofa account options
 
   --login-user LOGIN_USER
                         Telnet404 login user
@@ -74,7 +74,7 @@ Account:
                         Censys secret
 
 Modules:
-  Modules(Seebug、Zoomeye、CEye、Fofa、Quake Listener) options
+  Modules(Seebug, Zoomeye, CEye, Fofa, Quake, Listener) options
 
   --dork DORK           Zoomeye dork used for search.
   --dork-zoomeye DORK_ZOOMEYE
@@ -87,7 +87,7 @@ Modules:
                         Fofa dork used for search.
   --dork-quake DORK_QUAKE
                         Quake dork used for search.
-  --max-page MAX_PAGE   Max page used in ZoomEye API(10 targets/Page).
+  --max-page MAX_PAGE   Max page used in search API.
   --search-type SEARCH_TYPE
                         search type used in ZoomEye API, web or host
   --vul-keyword VUL_KEYWORD
@@ -111,8 +111,7 @@ Optimization:
   --batch BATCH         Automatically choose defaut choice without asking.
   --requires            Check install_requires
   --quiet               Activate quiet mode, working without logger.
-  --ppt                 Hiden sensitive information when published to the
-                        network
+  --ppt                 Hiden sensitive information when published to the network
   --pcap                use scapy capture flow
   --rule                export rules, default export reqeust and response
   --rule-req            only export request rule
@@ -124,6 +123,8 @@ Poc options:
 
   --options             Show all definition options
 
+[*] shutting down at 14:39:27
+
 ```
 
 **-f, --file URLFILE**
@@ -134,7 +135,7 @@ Scan multiple targets given in a textual file
 $ pocsuite -r pocs/poc_example.py -f url.txt --verify
 ```
 
-> Attack batch processing mode only need to replace the ```--verify``` to ``` --attack```.
+> Attack batch processing mode only need to replace the ```--verify``` to ```--attack```.
 
 **-r POCFILE**
 

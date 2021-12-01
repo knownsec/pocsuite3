@@ -10,7 +10,7 @@ import prettytable
 from termcolor import colored
 
 from pocsuite3.lib.controller.controller import start
-from pocsuite3.lib.core.common import banner, index_modules, data_to_stdout, humanize_path, module_required, \
+from pocsuite3.lib.core.common import banner, index_modules, data_to_stdout, module_required, \
     get_poc_name, stop_after, get_local_ip, is_ipv6_address_format, rtrim, ltrim, exec_cmd
 from pocsuite3.lib.core.data import logger, paths, kb, conf
 from pocsuite3.lib.core.enums import POC_CATEGORY, AUTOCOMPLETE_TYPE

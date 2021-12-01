@@ -1,9 +1,9 @@
-#!usr/bin/env python  
+#!usr/bin/env python
 # -*- coding:utf-8 -*-
-""" 
+"""
 @author: longofo
-@file: test_httpserver.py 
-@time: 2019/03/31 
+@file: test_httpserver.py
+@time: 2019/03/31
 """
 import unittest
 import warnings

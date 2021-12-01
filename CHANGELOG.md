@@ -272,3 +272,8 @@ Cross-platform shell code generation
 -----------------
 * support encrypted shell (TLS) in shell mode
 * fix #228
+
+# version 1.8.7
+* fix bug
+* optimize code style & docs
+* delete the exe tool for compatibility with dfsg

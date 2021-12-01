@@ -11,7 +11,6 @@ from pocsuite3.lib.core.settings import MAX_HISTORY_LENGTH
 try:
     import rlcompleter
 
-
     class CompleterNG(rlcompleter.Completer):
         def global_matches(self, text):
             """
