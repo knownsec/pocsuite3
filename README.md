@@ -58,11 +58,39 @@ It comes with a powerful proof-of-concept engine, many nice features for the ult
 
 ## Installation
 
-The quick way:
+Paste at a terminal prompt:
+
+### Python pip
 
 ``` bash
-$ pip3 install pocsuite3
+pip3 install pocsuite3
+
+# use other pypi mirror
+pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple pocsuite3
 ```
+
+### MacOS
+
+``` bash
+brew update
+brew info pocsuite3
+brew install pocsuite3
+```
+
+### [Debian](https://tracker.debian.org/pkg/pocsuite3), [Ubuntu](https://launchpad.net/ubuntu/+source/pocsuite3), [Kali](http://pkg.kali.org/pkg/pocsuite3)
+
+``` bash
+sudo apt update
+sudo apt install pocsuite3
+```
+
+### ArchLinux
+
+``` bash
+yay pocsuite3
+```
+
+###
 
 Or click [here](https://github.com/knownsec/pocsuite3/archive/master.zip) to download the latest source zip package and extract
 
