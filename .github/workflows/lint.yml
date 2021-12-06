@@ -1,0 +1,40 @@
+name: Lint
+on: [pull_request]
+
+jobs:
+  lint:
+    strategy:
+      matrix:
+        python-version: ['3.10']
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache for pip
+      uses: actions/cache@v1
+      id: cache-pip
+      with:
+        path: ~/.cache/pip
+        key: ${{ matrix.os }}-cache-pip
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Critical lint
+      run: |
+        pip install flake8
+        # https://michaelcurrin.github.io/dev-cheatsheets/cheatsheets/python/linting/flake8.html
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+    - name: Style lint
+      run: |
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics > current.txt
+        git fetch origin
+        git checkout origin/"$GITHUB_BASE_REF"
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics > base.txt
+        if diff base.txt current.txt | grep '>'; then
+          false
+        fi
