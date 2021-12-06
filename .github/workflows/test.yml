@@ -27,4 +27,4 @@ jobs:
       run: |
         pip install --upgrade -r requirements.txt
         python setup.py install
-        pocsuite -r ecshop_rce.py --options
+        pocsuite -r ecshop_rce.py --options || false
