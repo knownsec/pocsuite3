@@ -56,6 +56,7 @@ class TestCase(unittest.TestCase):
         finally:
             httpd.stop()
 
+    @unittest.skip(reason='disable ipv6')
     def test_ipv6(self):
         try:
             logger.info('Test http server in ipv6')
@@ -88,6 +89,7 @@ class TestCase(unittest.TestCase):
         finally:
             httpd.stop()
 
+    @unittest.skip(reason='disable ipv6')
     def test_ipv6_https(self):
         try:
             logger.info('Test https server in ipv6')

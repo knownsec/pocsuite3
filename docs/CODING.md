@@ -395,7 +395,7 @@ from pocsuite3.api import OptString, OptDict, OptIP, OptPort, OptBool, OptIntege
 
 #### Pocsuite3 远程调用文件列表<div id="inclue_files"></div>
 部分 PoC 需要采用包含远程文件的形式，要求基于 Pocsuite3 的 PoC 统一调用统一文件(如需引用未在以下文件列表内文件，请联系 404-team@knownsec.com 或者直接提交 issue)。
-统一 URL 调用路径：`http://pocsuite.org/include_files/`，如 `http://pocsuite.org/include_files/xxe_verify.xml`
+统一 URL 调用路径：`https://pocsuite.org/include_files/`，如 `https://pocsuite.org/include_files/xxe_verify.xml`
 
 **文件列表**
 
@@ -561,7 +561,7 @@ HttpServer Demo:
 """
 If you have issues about development, please read:
 https://github.com/knownsec/pocsuite3/blob/master/docs/CODING.md
-for more about information, plz visit http://pocsuite.org
+for more about information, plz visit https://pocsuite.org
 """
 from http.server import SimpleHTTPRequestHandler
 

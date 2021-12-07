@@ -103,7 +103,7 @@ $ python3 setup.py install
 ```
 
 
-The latest version of this software is available at: http://pocsuite.org
+The latest version of this software is available at: https://pocsuite.org
 
 ## Documentation
 
@@ -153,7 +153,7 @@ console mode
 * [Change Log](./CHANGELOG.md)
 * [Bug tracking](https://github.com/knownsec/pocsuite3/issues)
 * [Copyright](./COPYING)
-* [Pocsuite](http://pocsuite.org)
+* [Pocsuite](https://pocsuite.org)
 * [Seebug](https://www.seebug.org)
 * [ZoomEye](https://www.zoomeye.org)
 * [Knownsec](https://www.knownsec.com)

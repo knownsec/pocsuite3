@@ -12,13 +12,19 @@ except ImportError:
                 if "__init__.py" in files]
 
 
+long_description = (
+    'Pocsuite3 is an open-sourced remote vulnerability testing and proof-of-concept development framework '
+    'developed by the Knownsec 404 Team. It comes with a powerful proof-of-concept engine, many nice '
+    'features for the ultimate penetration testers and security researchers.'
+)
+
+
 setup(
     name='pocsuite3',
     version='1.8.7',
-    url='http://pocsuite.org',
+    url='https://pocsuite.org',
     description='Open-sourced remote vulnerability testing framework.',
-    long_description="""\
-Pocsuite3 is an open-sourced remote vulnerability testing and proof-of-concept development framework developed by the Knownsec 404 Team. It comes with a powerful proof-of-concept engine, many nice features for the ultimate penetration testers and security researchers.""",
+    long_description=long_description,
     keywords='PoC,Exp,Pocsuite',
     author='Knownsec 404 Team',
     author_email='404-team@knownsec.com',

@@ -136,7 +136,7 @@ class HtmlExport:
 
     def write_html(self, results=None):
         menus = {
-            'Site': 'http://pocsuite.org',
+            'Site': 'https://pocsuite.org',
             'Seebug': 'https://www.seebug.org',
             'Help': 'https://github.com/knownsec/pocsuite3/blob/master/docs/CODING.md',
             'Bug report': 'https://github.com/knownsec/pocsuite3/issues',
