@@ -274,6 +274,7 @@ Cross-platform shell code generation
 * fix #228
 
 # version 1.8.7
+-----------------
 * fix bug
 * optimize code style & docs
 * delete the exe tool for compatibility with dfsg

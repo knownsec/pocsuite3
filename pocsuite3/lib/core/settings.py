@@ -8,7 +8,7 @@ from pocsuite3.lib.core.revision import get_revision_number
 
 VERSION = __version__
 REVISION = get_revision_number()
-SITE = "http://pocsuite.org"
+SITE = "https://pocsuite.org"
 VERSION_STRING = "pocsuite/%s%s" % (
     VERSION,
     "-%s" % REVISION
