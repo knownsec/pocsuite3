@@ -35,8 +35,7 @@ class TargetFromShodan(PluginBase):
             kb.comparison.add_dork("Shodan", dork)
         info_msg = "[PLUGIN] try fetch targets from shodan with dork: {0}".format(dork)
         logger.info(info_msg)
-        # The api of shodan currently only has a host field, not a web field
-        targets = self.shodan.search(dork, conf.max_page, resource="host")
+        targets = self.shodan.search(dork, conf.max_page, resource=conf.search_type)
         count = 0
         if targets:
             for target in targets:
