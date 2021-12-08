@@ -11,6 +11,8 @@ class Fofa():
         self.headers = None
         self.credits = 0
         self.conf_path = conf_path
+        self.user = user
+        self.token = token
 
         if self.conf_path:
             self.parser = ConfigParser()
@@ -21,9 +23,6 @@ class Fofa():
             except Exception:
                 pass
 
-        if token or user:
-            self.user = user
-            self.token = token
         self.check_token()
 
     def token_is_available(self):

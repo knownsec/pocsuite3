@@ -11,6 +11,7 @@ class Shodan():
         self.headers = None
         self.credits = 0
         self.conf_path = conf_path
+        self.token = token
 
         if self.conf_path:
             self.parser = ConfigParser()
@@ -20,8 +21,6 @@ class Shodan():
             except Exception:
                 pass
 
-        if token:
-            self.token = token
         self.check_token()
 
     def token_is_available(self):
