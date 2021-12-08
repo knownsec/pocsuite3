@@ -7,29 +7,31 @@ from pocsuite3.lib.request import requests
 
 class Quake():
     def __init__(self, conf_path=paths.POCSUITE_RC_PATH, token=None):
-        self.headers = None
+        self.headers = {'User-Agent': 'curl/7.80.0', 'Content-Type': 'application/json'}
         self.credits = 0
         self.conf_path = conf_path
+        self.token = token
 
         if self.conf_path:
             self.parser = ConfigParser()
             self.parser.read(self.conf_path)
             try:
-                self.token = self.parser.get("Quake", 'token')
+                self.token = self.token or self.parser.get("Quake", 'token')
             except Exception:
                 pass
 
-        if token:
-            self.token = token
         self.check_token()
 
     def token_is_available(self):
         if self.token:
             try:
-                headers = {"X-QuakeToken": self.token,
-                           "Content-Type": "application/json"}
+                self.headers['X-QuakeToken'] = self.token
                 resp = requests.get(
-                    'https://quake.360.cn/api/v3/user/info', headers=headers)
+                    'https://quake.360.cn/api/v3/user/info', headers=self.headers)
+
+                if 'month_remaining_credit' not in resp.text:
+                    logger.info(resp.text)
+
                 if resp and resp.status_code == 200 and resp.json()['code'] == 0:
                     return True
             except Exception as ex:
@@ -39,8 +41,8 @@ class Quake():
     def check_token(self):
         if self.token_is_available():
             return True
-        else:
-            new_token = getpass.getpass("Quake API token:")
+        while True:
+            new_token = getpass.getpass("Quake API token: (input will hidden)")
             self.token = new_token
             if self.token_is_available():
                 self.write_conf()
@@ -48,7 +50,6 @@ class Quake():
             else:
                 logger.error("The Quake api token is incorrect. "
                              "Please enter the correct api token.")
-                self.check_token()
 
     def write_conf(self):
         if not self.parser.has_section("Quake"):
@@ -61,8 +62,6 @@ class Quake():
 
     def search(self, dork, pages=2):
         search_result = set()
-        headers = {"X-QuakeToken": self.token,
-                   "Content-Type": "application/json"}
         data = {"query": dork, "size": 10,
                 "ignore_cache": "false", "start": 1}
         try:
@@ -70,7 +69,7 @@ class Quake():
                 data['start'] = page
                 url = "https://quake.360.cn/api/v3/search/quake_service"
                 resp = requests.post(
-                    url, json=data, headers=headers, timeout=80)
+                    url, json=data, headers=self.headers, timeout=80)
                 if resp and resp.status_code == 200 and resp.json()['code'] == 0:
                     content = resp.json()
                     for match in content['data']:

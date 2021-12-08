@@ -13,7 +13,7 @@ from pocsuite3.lib.utils import get_middle_text, random_str
 
 class CEye(object):
     def __init__(self, conf_path=paths.POCSUITE_RC_PATH, username=None, password=None, token=None):
-        self.headers = None
+        self.headers = {'User-Agent': 'curl/7.80.0'}
         self.token = token
         self.conf_path = conf_path
         self.username = username
@@ -22,31 +22,23 @@ class CEye(object):
         if self.conf_path:
             self.parser = ConfigParser()
             self.parser.read(self.conf_path)
-
-        if not self.token:
             try:
-                self.token = self.parser.get("Telnet404", 'Jwt token')
+                self.token = self.token or self.parser.get("Telnet404", 'Jwt token')
             except Exception:
                 pass
-        if not self.check_account():
-            msg = "Ceye verify faild!"
-            raise Exception(msg)
+
+        self.check_account()
 
     def token_is_available(self):
         if self.token:
-            headers = {'Authorization': 'JWT %s' % self.token}
-            headers2 = {'Authorization': self.token}
+            # distinguish Jwt Token & API Token
+            self.headers['Authorization'] = self.token if len(self.token) < 48 else f'JWT {self.token}'
             try:
-                resp = requests.get('http://api.ceye.io/v1/identify', headers=headers)
-                if resp and resp.status_code == 200 and "data" in resp.json():
-                    self.headers = headers
+                resp = requests.get('http://api.ceye.io/v1/identify', headers=self.headers)
+                if resp and resp.status_code == 200 and "identify" in resp.text:
                     return True
-
-                resp = requests.get('http://api.ceye.io/v1/identify', headers=headers2)
-                if resp and resp.status_code == 200 and "data" in resp.json():
-                    self.headers = headers2
-                    return True
-
+                else:
+                    logger.info(resp.text)
             except Exception as ex:
                 logger.error(str(ex))
         return False
@@ -54,12 +46,14 @@ class CEye(object):
     def new_token(self):
         data = '{{"username": "{}", "password": "{}"}}'.format(self.username, self.password)
         try:
-            resp = requests.post('https://api.zoomeye.org/user/login', data=data, )
-            if resp.status_code != 401 and "access_token" in resp.json():
+            resp = requests.post('https://api.zoomeye.org/user/login', data=data)
+            if resp.status_code != 401 and "access_token" in resp.text:
                 content = resp.json()
                 self.token = content['access_token']
-                self.headers = {'Authorization': 'JWT %s' % self.token}
+                self.headers['Authorization'] = f'JWT {self.token}'
                 return True
+            else:
+                logger.info(resp.text)
         except Exception as ex:
             logger.error(str(ex))
         return False
@@ -67,23 +61,21 @@ class CEye(object):
     def check_account(self):
         if self.token_is_available():
             return True
-        else:
-            if self.username and self.password:
-                if self.new_token():
-                    self.write_conf()
-                    return True
+        elif self.username and self.password:
+            if self.new_token():
+                self.write_conf()
+                return True
+        while True:
+            username = input("Telnet404 email account: ")
+            password = getpass.getpass("Telnet404 password: (input will hidden)")
+            self.username = username
+            self.password = password
+            if self.new_token():
+                self.write_conf()
+                return True
             else:
-                username = input("Telnet404 email account:")
-                password = getpass.getpass("Telnet404 password:")
-                self.username = username
-                self.password = password
-                if self.new_token():
-                    self.write_conf()
-                    return True
-                else:
-                    logger.error("The username or password is incorrect. "
-                                 "Please enter the correct username and password.")
-        return False
+                logger.error("The username or password is incorrect, "
+                             "Please enter the correct username and password.")
 
     def write_conf(self):
         if not self.parser.has_section("Telnet404"):
@@ -104,8 +96,9 @@ class CEye(object):
         """
         ret_val = False
         counts = 3
-        url = "http://api.ceye.io/v1/records?token={token}&type={type}&filter={flag}".format(token=self.token,
-                                                                                             type=type, flag=flag)
+        url = (
+            "http://api.ceye.io/v1/records?token={token}&type={type}&filter={flag}"
+        ).format(token=self.token, type=type, flag=flag)
         while counts:
             try:
                 time.sleep(1)
@@ -128,8 +121,9 @@ class CEye(object):
         :return: Return the acquired data
         """
         counts = 3
-        url = "http://api.ceye.io/v1/records?token={token}&type={type}&filter={flag}".format(token=self.token,
-                                                                                             type=type, flag=flag)
+        url = (
+            "http://api.ceye.io/v1/records?token={token}&type={type}&filter={flag}"
+        ).format(token=self.token, type=type, flag=flag)
         while counts:
             try:
                 time.sleep(1)
@@ -188,7 +182,7 @@ class CEye(object):
 
 
 if __name__ == "__main__":
-    ce = CEye(token="111")  # Fill in the token
+    ce = CEye()
     # http record
     # Auxiliary generation of flag string
     flag = ce.build_request("HelloWorld3")
@@ -196,7 +190,7 @@ if __name__ == "__main__":
     # Simulate requests with requests
     try:
         r = requests.get(flag["url"])
-    except:
+    except Exception:
         pass
     time.sleep(1)
     print("request over")
@@ -210,7 +204,7 @@ if __name__ == "__main__":
     print(flag)
     # Simulate request with requests
     # r = requests.get(flag["url"])
-    os.system("ping " + flag["url"])
+    os.system("ping -nc 2 " + flag["url"])
     time.sleep(1)
     print("ping over")
     # Get the requested data

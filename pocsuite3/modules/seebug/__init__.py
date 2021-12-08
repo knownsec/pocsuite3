@@ -9,7 +9,7 @@ from pocsuite3.lib.core.data import paths
 
 class Seebug():
     def __init__(self, conf_path=paths.POCSUITE_RC_PATH, username=None, password=None):
-        self.headers = None
+        self.headers = {'User-Agent': 'curl/7.80.0'}
         self.token = None
         self.conf_path = conf_path
         self.username = username
@@ -23,13 +23,14 @@ class Seebug():
             except Exception:
                 pass
 
+        self.check_account()
+
     def token_is_available(self):
         if self.token:
-            headers = {'Authorization': 'JWT %s' % self.token}
+            self.headers['Authorization'] = f'JWT {self.token}'
             try:
-                resp = requests.get('https://www.seebug.org/api/user/poc_list', headers=headers)
-                if resp and resp.status_code == 200 and "id" in resp.json()[0]:
-                    self.headers = headers
+                resp = requests.get('https://www.seebug.org/api/user/poc_list', headers=self.headers)
+                if resp and resp.status_code == 200 and "name" in resp.text:
                     return True
             except Exception as ex:
                 logger.error(str(ex))
@@ -38,12 +39,14 @@ class Seebug():
     def new_token(self):
         data = '{{"username": "{}", "password": "{}"}}'.format(self.username, self.password)
         try:
-            resp = requests.post('https://api.zoomeye.org/user/login', data=data, )
-            if resp.status_code != 401 and "access_token" in resp.json():
+            resp = requests.post('https://api.zoomeye.org/user/login', data=data)
+            if resp.status_code != 401 and "access_token" in resp.text:
                 content = resp.json()
                 self.token = content['access_token']
-                self.headers = {'Authorization': 'JWT %s' % self.token}
+                self.headers['Authorization'] = f'JWT {self.token}'
                 return True
+            else:
+                logger.info(resp.text)
         except Exception as ex:
             logger.error(str(ex))
         return False
@@ -51,23 +54,21 @@ class Seebug():
     def check_account(self):
         if self.token_is_available():
             return True
-        else:
-            if self.username and self.password:
-                if self.new_token():
-                    self.write_conf()
-                    return True
+        elif self.username and self.password:
+            if self.new_token():
+                self.write_conf()
+                return True
+        while True:
+            username = input("Telnet404 email account: ")
+            password = getpass.getpass("Telnet404 password: (input will hidden)")
+            self.username = username
+            self.password = password
+            if self.new_token():
+                self.write_conf()
+                return True
             else:
-                username = input("Telnet404 email account:")
-                password = getpass.getpass("Telnet404 password:")
-                self.username = username
-                self.password = password
-                if self.new_token():
-                    self.write_conf()
-                    return True
-                else:
-                    logger.error("The username or password is incorrect. "
-                                 "Please enter the correct username and password.")
-                    return False
+                logger.error("The username or password is incorrect, "
+                             "Please enter the correct username and password.")
 
     def write_conf(self):
         if not self.parser.has_section("Telnet404"):
