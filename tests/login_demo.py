@@ -38,9 +38,6 @@ class DemoPOC(POCBase):
         result = {}
         payload = "username={0}&password={1}".format(self.get_option("username"), self.get_option("password"))
         r = requests.post(self.url, data=payload)
-        import sys
-        print(sys.getdefaultencoding())
-        print(sys.stdout.encoding)
         print(r.text)
         if r.status_code == 200:
             result['VerifyInfo'] = {}

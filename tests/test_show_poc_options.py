@@ -15,6 +15,9 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_cmd_run(self):
-        command = 'pocsuite -r ecshop_rce.py --options'
-        res = os.popen(command).read()
+        pipeline = os.popen('pocsuite -r ecshop_rce.py --options')
+
+        # os.popen default encoding may not be utf-8
+        res = pipeline.buffer.read().decode('utf-8')
+
         self.assertTrue('You can select dict_keys' in res)

@@ -22,7 +22,10 @@ class TestCase(unittest.TestCase):
 
         eval_path = os.path.join(path, "../pocsuite3/cli.py")
         poc_path = os.path.join(path, "login_demo.py")
-        command = '''python3 {0} -u http://www.baidu.com -r {1} --verify -v 2  --password mypass123 --username "asd asd" --testt abctest'''.format(
-            eval_path, poc_path)
+        command = (
+            f'python3 {eval_path} -u http://www.baidu.com -r {poc_path} --verify -v 2  --password mypass123 '
+            '--username "asd asd" --testt abctest'
+        )
         pipeline = os.popen(command)
-        self.assertTrue('1 / 1' in pipeline.read())
+        res = pipeline.buffer.read().decode('utf-8')
+        self.assertTrue('1 / 1' in res)
