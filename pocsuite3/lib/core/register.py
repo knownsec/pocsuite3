@@ -8,6 +8,7 @@ from pocsuite3.lib.core.common import (
     is_pocsuite3_poc, get_poc_requires, get_poc_name)
 from pocsuite3.lib.core.data import kb
 from pocsuite3.lib.core.data import logger
+from pocsuite3.lib.core.data import conf
 from pocsuite3.lib.core.settings import POC_IMPORTDICT
 
 
@@ -65,6 +66,9 @@ class PocLoader(Loader):
                 err_msg = f'{install_name} not found, try install with "python -m pip install {install_name}"'
                 logger.error(err_msg)
                 raise SystemExit
+            else:
+                err_msg = f'{install_name} not found, try install with "python -m pip install {install_name}"'
+                logger.error(err_msg)
 
     def exec_module(self, module):
         filename = self.get_filename(self.fullname)
@@ -86,6 +90,12 @@ def load_file_to_module(file_path, module_name=None):
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         poc_model = kb.registered_pocs[module_name]
+        if conf.app_name:
+            if poc_model.appName.lower() == conf.app_name.lower():
+                return poc_model
+            else:
+                kb.registered_pocs.pop(module_name)
+                return None
     except KeyError:
         poc_model = None
     except ImportError:

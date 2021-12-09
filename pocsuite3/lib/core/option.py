@@ -334,17 +334,19 @@ def _set_pocs_modules():
                 else:
                     file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc + exists_pocs.get(poc))
                 if file_path:
-                    info_msg = "loading PoC script '{0}'".format(file_path)
-                    logger.info(info_msg)
                     load_poc_sucess = load_file_to_module(file_path)
+                    if load_poc_sucess:
+                        info_msg = "loading PoC script '{0}'".format(file_path)
+                        logger.info(info_msg)
 
             # step2. load poc from given file path
             try:
                 if not load_poc_sucess:
                     if not poc.startswith('ssvid-') and check_file(poc):
-                        info_msg = "loading PoC script '{0}'".format(poc)
-                        logger.info(info_msg)
                         load_poc_sucess = load_file_to_module(poc)
+                        if load_poc_sucess:
+                            info_msg = "loading PoC script '{0}'".format(poc)
+                            logger.info(info_msg)
             except PocsuiteSystemException:
                 logger.error('PoC file "{0}" not found'.format(repr(poc)))
                 continue
@@ -491,6 +493,7 @@ def _set_conf_attributes():
     conf.url_file = None
     conf.mode = 'verify'
     conf.poc = None
+    conf.app_name = None
     conf.cookie = None
     conf.host = None
     conf.referer = None
