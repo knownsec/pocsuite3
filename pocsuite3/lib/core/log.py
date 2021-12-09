@@ -9,6 +9,7 @@ logging.addLevelName(CUSTOM_LOGGING.ERROR, "-")
 logging.addLevelName(CUSTOM_LOGGING.WARNING, "!")
 
 LOGGER = logging.getLogger("pocsuite")
+sys.stdout = open(sys.stdout.fileno(), mode='w', encoding='utf8', buffering=1)
 LOGGER_HANDLER = logging.StreamHandler(sys.stdout)
 PRIMARY_FMT = (
     "%(cyan)s[%(asctime)s] %(log_color)s[%(levelname)s]%(reset)s %(message)s"
