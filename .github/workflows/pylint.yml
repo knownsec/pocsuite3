@@ -33,6 +33,6 @@ jobs:
         git fetch origin
         git checkout origin/"$GITHUB_BASE_REF"
         pylint --exit-zero --errors-only --ignore=serialization.py pocsuite3 > base.txt
-        if diff base.txt current.txt | grep '>'; then
+        if diff base.txt current.txt | grep "^> "; then
           false
         fi
