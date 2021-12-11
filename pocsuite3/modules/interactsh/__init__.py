@@ -7,9 +7,9 @@ import random
 import time
 from uuid import uuid4
 from base64 import b64encode
-from Cryptodome.Cipher import AES, PKCS1_OAEP
-from Cryptodome.PublicKey import RSA
-from Cryptodome.Hash import SHA256
+from Crypto.Cipher import AES, PKCS1_OAEP
+from Crypto.PublicKey import RSA
+from Crypto.Hash import SHA256
 from pocsuite3.api import requests, logger, random_str
 
 
