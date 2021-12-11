@@ -52,7 +52,8 @@ setup(
         "prettytable",
         "colorlog",
         "scapy",
-        "Faker"
+        "Faker",
+        "pycryptodome"
     ],
     extras_require={
         'complete': [

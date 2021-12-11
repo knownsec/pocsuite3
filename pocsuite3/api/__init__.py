@@ -28,6 +28,7 @@ from pocsuite3.modules.seebug import Seebug
 from pocsuite3.modules.shodan import Shodan
 from pocsuite3.modules.spider import crawl
 from pocsuite3.modules.zoomeye import ZoomEye
+from pocsuite3.modules.interactsh import Interactsh
 from pocsuite3.shellcodes import OSShellcodes, WebShell
 
 __all__ = ('requests', 'PluginBase', 'register_plugin', 'PLUGIN_TYPE',
@@ -43,7 +44,7 @@ __all__ = ('requests', 'PluginBase', 'register_plugin', 'PLUGIN_TYPE',
            'OptFloat', 'OptString', 'OptItems', 'get_middle_text',
            'generate_shellcode_list', 'random_str', 'encoder_bash_payload',
            'encoder_powershell_payload', 'get_host_ipv6', 'bind_shell',
-           'bind_tcp_shell', 'bind_telnet_shell')
+           'bind_tcp_shell', 'bind_telnet_shell', 'Interactsh')
 
 
 def get_listener_ip():
