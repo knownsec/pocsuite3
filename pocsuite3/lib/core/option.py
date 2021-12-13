@@ -322,7 +322,7 @@ def _set_pocs_modules():
     if conf.ssvid:
         conf.plugins.append('poc_from_seebug')
 
-    if not (conf.poc and conf.vul_keyword) and conf.poc_keyword:
+    if not (conf.poc or conf.vul_keyword) and conf.poc_keyword:
         conf.poc = [paths.POCSUITE_POCS_PATH]
 
     if conf.poc:
@@ -352,7 +352,7 @@ def _set_pocs_modules():
                         _pocs.extend(map(lambda x: os.path.join(root, x), files))
 
                 for p in _pocs:
-                    file_content = open(p).read()
+                    file_content = open(p, encoding='utf-8').read()
                     if 'register_poc' not in file_content:
                         continue
                     if conf.poc_keyword:
