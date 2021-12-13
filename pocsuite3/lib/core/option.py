@@ -213,8 +213,8 @@ def _set_multiple_targets():
 
     if conf.dork:
         # enable plugin 'target_from_zoomeye' by default
-        if ('target_from_shodan' not in conf.plugins and 'target_from_fofa' not in conf.plugins and
-                'target_from_quake' not in conf.plugins):
+        if ('target_from_shodan' not in conf.plugins and 'target_from_fofa' not in conf.plugins
+                and 'target_from_quake' not in conf.plugins):
             conf.plugins.append('target_from_zoomeye')
 
     if conf.dork_zoomeye:

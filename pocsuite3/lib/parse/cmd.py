@@ -37,7 +37,7 @@ def cmd_line_parser(argv=None):
 
         target.add_argument("-f", "--file", dest="url_file", help="Scan multiple targets given in a textual file")
         target.add_argument("-r", dest="poc", nargs='+', help="Load PoC file from local or remote from seebug website")
-        target.add_argument("-k", dest="poc_keyword",  help="Filter PoC by keyword, e.g. ecshop")
+        target.add_argument("-k", dest="poc_keyword", help="Filter PoC by keyword, e.g. ecshop")
         target.add_argument("-c", dest="configFile", help="Load options from a configuration INI file")
 
         # Mode options
