@@ -31,10 +31,10 @@ jobs:
 
     - name: Style lint
       run: |
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --ignore=C901 --statistics > current.txt
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --ignore=C901,W503,W504 --statistics > current.txt
         git fetch origin
         git checkout origin/"$GITHUB_BASE_REF"
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --ignore=C901 --statistics > base.txt
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --ignore=C901,W503,W504 --statistics > base.txt
         if diff base.txt current.txt | grep "^> ./"; then
           false
         fi
