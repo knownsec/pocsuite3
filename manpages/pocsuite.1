@@ -50,6 +50,9 @@ Scan multiple targets given in a textual file
 \fB\-r\fR POC [POC ...]
 Load POC file from local or remote from seebug website
 .TP
+\fB\-k\fR POC_KEYWORD
+Filter PoC by keyword, e.g. ecshop
+.TP
 \fB\-c\fR CONFIGFILE
 Load options from a configuration INI file
 .SS "Mode:"
@@ -90,7 +93,7 @@ Proxy authentication credentials (name:password)
 Seconds to wait before timeout connection (default 30)
 .TP
 \fB\-\-retry\fR RETRY
-Time out retrials times.
+Time out retrials times
 .TP
 \fB\-\-delay\fR DELAY
 Delay between two request of one thread
@@ -116,6 +119,9 @@ fofa user
 \fB\-\-fofa\-token\fR FOFA_TOKEN
 fofa token
 .TP
+\fB\-\-quake\-token\fR QUAKE_TOKEN
+quake token
+.TP
 \fB\-\-censys\-uid\fR CENSYS_UID
 Censys uid
 .TP
@@ -126,31 +132,31 @@ Censys secret
 Modules (Seebug, Zoomeye, CEye, Fofa, Listener) options
 .TP
 \fB\-\-dork\fR DORK
-Zoomeye dork used for search.
+Zoomeye dork used for search
 .TP
 \fB\-\-dork\-zoomeye\fR DORK_ZOOMEYE
-Zoomeye dork used for search.
+Zoomeye dork used for search
 .TP
 \fB\-\-dork\-shodan\fR DORK_SHODAN
-Shodan dork used for search.
+Shodan dork used for search
 .TP
 \fB\-\-dork\-censys\fR DORK_CENSYS
-Censys dork used for search.
+Censys dork used for search
 .TP
 \fB\-\-dork\-fofa\fR DORK_FOFA
-Fofa dork used for search.
+Fofa dork used for search
 .TP
 \fB\-\-max\-page\fR MAX_PAGE
-Max page used in search API.
+Max page used in search API
 .TP
 \fB\-\-search\-type\fR SEARCH_TYPE
 search type used in ZoomEye API, web or host
 .TP
 \fB\-\-vul\-keyword\fR VUL_KEYWORD
-Seebug keyword used for search.
+Seebug keyword used for search
 .TP
 \fB\-\-ssv\-id\fR SSVID
-Seebug SSVID number for target PoC.
+Seebug SSVID number for target PoC
 .TP
 \fB\-\-lhost\fR CONNECT_BACK_HOST
 Connect back host for target PoC in shell mode
@@ -180,13 +186,13 @@ User defined poc scripts path
 Max number of concurrent network requests (default 1)
 .TP
 \fB\-\-batch\fR BATCH
-Automatically choose defalut choice without asking.
+Automatically choose defalut choice without asking
 .TP
 \fB\-\-requires\fR
 Check install_requires
 .TP
 \fB\-\-quiet\fR
-Activate quiet mode, working without logger.
+Activate quiet mode, working without logger
 .TP
 \fB\-\-ppt\fR
 Hiden sensitive information when published to the

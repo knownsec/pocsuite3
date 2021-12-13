@@ -4,13 +4,13 @@ import logging
 import os
 import re
 import socket
-import socks
 import importlib
-import prettytable
-from termcolor import colored
 from queue import Queue
 from urllib.parse import urlsplit
 
+import socks
+import prettytable
+from termcolor import colored
 from pocsuite3.lib.core.clear import remove_extra_log_message
 from pocsuite3.lib.core.common import boldify_message, check_file, get_file_items, parse_target, \
     get_public_type_members, data_to_stdout
@@ -213,7 +213,8 @@ def _set_multiple_targets():
 
     if conf.dork:
         # enable plugin 'target_from_zoomeye' by default
-        if 'target_from_shodan' not in conf.plugins and 'target_from_fofa' not in conf.plugins and 'target_from_quake' not in conf.plugins:
+        if ('target_from_shodan' not in conf.plugins and 'target_from_fofa' not in conf.plugins
+                and 'target_from_quake' not in conf.plugins):
             conf.plugins.append('target_from_zoomeye')
 
     if conf.dork_zoomeye:
@@ -320,44 +321,58 @@ def _set_pocs_modules():
     # load poc scripts .pyc file support
     if conf.ssvid:
         conf.plugins.append('poc_from_seebug')
+
+    if not (conf.poc or conf.vul_keyword) and conf.poc_keyword:
+        conf.poc = [paths.POCSUITE_POCS_PATH]
+
     if conf.poc:
-        # step1. load system packed poc from pocsuite3/pocs folder
         exists_poc_with_ext = list(
             filter(lambda x: x not in ['__init__.py', '__init__.pyc'], os.listdir(paths.POCSUITE_POCS_PATH)))
         exists_pocs = dict([os.path.splitext(x) for x in exists_poc_with_ext])
         for poc in conf.poc:
-            load_poc_sucess = False
-            if any([poc in exists_poc_with_ext, poc in exists_pocs]):
-                poc_name, poc_ext = os.path.splitext(poc)
-                if poc_ext in ['.py', '.pyc']:
-                    file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc)
-                else:
-                    file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc + exists_pocs.get(poc))
-                if file_path:
-                    info_msg = "loading PoC script '{0}'".format(file_path)
-                    logger.info(info_msg)
-                    load_poc_sucess = load_file_to_module(file_path)
-
-            # step2. load poc from given file path
+            # load poc from pocsuite3/pocs folder or other local path
             try:
-                if not load_poc_sucess:
-                    if not poc.startswith('ssvid-') and check_file(poc):
-                        info_msg = "loading PoC script '{0}'".format(poc)
-                        logger.info(info_msg)
-                        load_poc_sucess = load_file_to_module(poc)
+                _pocs = []
+                load_poc_sucess = False
+
+                if os.path.isfile(poc):
+                    _pocs.append(poc)
+
+                elif any([poc in exists_poc_with_ext, poc in exists_pocs]):
+                    poc_name, poc_ext = os.path.splitext(poc)
+                    if poc_ext in ['.py', '.pyc']:
+                        file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc)
+                    else:
+                        file_path = os.path.join(paths.POCSUITE_POCS_PATH, poc + exists_pocs.get(poc))
+                    _pocs.append(file_path)
+
+                elif check_path(poc):
+                    for root, _, files in os.walk(poc):
+                        files = filter(lambda x: not x.startswith("__") and x.endswith(".py"), files)
+                        _pocs.extend(map(lambda x: os.path.join(root, x), files))
+
+                for p in _pocs:
+                    file_content = open(p, encoding='utf-8').read()
+                    if 'register_poc' not in file_content:
+                        continue
+                    if conf.poc_keyword:
+                        attr_field = re.search(r'vulID.*?def .*?\(', file_content, re.DOTALL)
+                        if attr_field and conf.poc_keyword.lower() not in attr_field.group().lower():
+                            continue
+                    info_msg = "loading PoC script '{0}'".format(p)
+                    logger.info(info_msg)
+                    load_poc_sucess = load_file_to_module(p) or load_poc_sucess
             except PocsuiteSystemException:
                 logger.error('PoC file "{0}" not found'.format(repr(poc)))
                 continue
 
-            # step3. load poc from seebug website using plugin 'poc_from_seebug'
-            if not load_poc_sucess:
-                if poc.startswith('ssvid-'):
-                    info_msg = "loading Poc script 'https://www.seebug.org/vuldb/{0}'".format(poc)
-                    logger.info(info_msg)
-                    if "poc_from_seebug" not in conf.plugins:
-                        conf.plugins.append('poc_from_seebug')
+            # load poc from seebug website using plugin 'poc_from_seebug'
+            if not load_poc_sucess and poc.startswith('ssvid-'):
+                info_msg = "loading Poc script 'https://www.seebug.org/vuldb/{0}'".format(poc)
+                logger.info(info_msg)
+                if "poc_from_seebug" not in conf.plugins:
+                    conf.plugins.append('poc_from_seebug')
 
-    load_keyword_poc_sucess = False
     if conf.vul_keyword:
         # step4. load poc with vul_keyword search seebug website
         info_msg = "loading PoC script from seebug website using search keyword '{0}' ".format(conf.vul_keyword)
@@ -491,6 +506,7 @@ def _set_conf_attributes():
     conf.url_file = None
     conf.mode = 'verify'
     conf.poc = None
+    conf.poc_keyword = None
     conf.cookie = None
     conf.host = None
     conf.referer = None
@@ -724,7 +740,9 @@ def init():
     update()
     _set_multiple_targets()
     _set_user_pocs_path()
-    _set_pocs_modules()  # The poc module module must be in front of the plug-in module, and some parameters in the poc option call the plug-in
+    # The poc module module must be in front of the plug-in module,
+    # and some parameters in the poc option call the plug-in
+    _set_pocs_modules()
     _set_plugins()
     _init_targets_plugins()
     _init_pocs_plugins()

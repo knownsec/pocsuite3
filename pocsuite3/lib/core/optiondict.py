@@ -7,6 +7,7 @@ optDict = {
         'url': 'string',
         'url_file': 'string',
         'poc': 'string',
+        'poc_keyword': 'string',
         'configFile': 'string'
     },
     'Mode': {

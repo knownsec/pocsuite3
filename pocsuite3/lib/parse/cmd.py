@@ -36,7 +36,8 @@ def cmd_line_parser(argv=None):
                             help="Target URL (e.g. \"http://www.site.com/vuln.php?id=1\")")
 
         target.add_argument("-f", "--file", dest="url_file", help="Scan multiple targets given in a textual file")
-        target.add_argument("-r", dest="poc", nargs='+', help="Load POC file from local or remote from seebug website")
+        target.add_argument("-r", dest="poc", nargs='+', help="Load PoC file from local or remote from seebug website")
+        target.add_argument("-k", dest="poc_keyword", help="Filter PoC by keyword, e.g. ecshop")
         target.add_argument("-c", dest="configFile", help="Load options from a configuration INI file")
 
         # Mode options
@@ -58,7 +59,7 @@ def cmd_line_parser(argv=None):
         request.add_argument("--proxy", dest="proxy", help="Use a proxy to connect to the target URL")
         request.add_argument("--proxy-cred", dest="proxy_cred", help="Proxy authentication credentials (name:password)")
         request.add_argument("--timeout", dest="timeout", help="Seconds to wait before timeout connection (default 30)")
-        request.add_argument("--retry", dest="retry", default=False, help="Time out retrials times.")
+        request.add_argument("--retry", dest="retry", default=False, help="Time out retrials times")
         request.add_argument("--delay", dest="delay", help="Delay between two request of one thread")
         request.add_argument("--headers", dest="headers", help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
         # Account options
@@ -74,25 +75,25 @@ def cmd_line_parser(argv=None):
         # Modules options
         modules = parser.add_argument_group("Modules", "Modules(Seebug, Zoomeye, CEye, Fofa, Quake, Listener) options")
         modules.add_argument("--dork", dest="dork", action="store", default=None,
-                             help="Zoomeye dork used for search.")
+                             help="Zoomeye dork used for search")
         modules.add_argument("--dork-zoomeye", dest="dork_zoomeye", action="store", default=None,
-                             help="Zoomeye dork used for search.")
+                             help="Zoomeye dork used for search")
         modules.add_argument("--dork-shodan", dest="dork_shodan", action="store", default=None,
-                             help="Shodan dork used for search.")
+                             help="Shodan dork used for search")
         modules.add_argument("--dork-censys", dest="dork_censys", action="store", default=None,
-                             help="Censys dork used for search.")
+                             help="Censys dork used for search")
         modules.add_argument("--dork-fofa", dest="dork_fofa", action="store", default=None,
-                             help="Fofa dork used for search.")
+                             help="Fofa dork used for search")
         modules.add_argument("--dork-quake", dest="dork_quake", action="store", default=None,
-                             help="Quake dork used for search.")
+                             help="Quake dork used for search")
         modules.add_argument("--max-page", dest="max_page", type=int, default=1,
-                             help="Max page used in search API.")
+                             help="Max page used in search API")
         modules.add_argument("--search-type", dest="search_type", action="store", default='host',
                              help="search type used in ZoomEye API, web or host")
         modules.add_argument("--vul-keyword", dest="vul_keyword", action="store", default=None,
-                             help="Seebug keyword used for search.")
+                             help="Seebug keyword used for search")
         modules.add_argument("--ssv-id", dest="ssvid", action="store", default=None,
-                             help="Seebug SSVID number for target PoC.")
+                             help="Seebug SSVID number for target PoC")
         modules.add_argument("--lhost", dest="connect_back_host", action="store", default=None,
                              help="Connect back host for target PoC in shell mode")
         modules.add_argument("--lport", dest="connect_back_port", action="store", default=None,
@@ -115,11 +116,11 @@ def cmd_line_parser(argv=None):
         optimization.add_argument("--threads", dest="threads", type=int, default=1,
                                   help="Max number of concurrent network requests (default 1)")
         optimization.add_argument("--batch", dest="batch",
-                                  help="Automatically choose defaut choice without asking.")
+                                  help="Automatically choose defaut choice without asking")
         optimization.add_argument("--requires", dest="check_requires", action="store_true", default=False,
                                   help="Check install_requires")
         optimization.add_argument("--quiet", dest="quiet", action="store_true", default=False,
-                                  help="Activate quiet mode, working without logger.")
+                                  help="Activate quiet mode, working without logger")
         optimization.add_argument("--ppt", dest="ppt", action="store_true", default=False,
                                   help="Hiden sensitive information when published to the network")
         optimization.add_argument("--pcap", dest="pcap", action="store_true", default=False,
