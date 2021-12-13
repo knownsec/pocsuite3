@@ -278,3 +278,9 @@ Cross-platform shell code generation
 * fix bug
 * optimize code style & docs
 * delete the exe tool for compatibility with dfsg
+
+# version 1.8.8
+-----------------
+* rewrite multi module
+* integrate with interactsh
+* support filter poc by keyword
