@@ -37,7 +37,8 @@ class TestCase(unittest.TestCase):
             target.add_option("-u", "--url", dest="url", help="Target URL (e.g. \"http://www.site.com/vuln.php?id=1\")")
 
             target.add_option("-f", "--file", dest="url_file", help="Scan multiple targets given in a textual file")
-            target.add_option("-r", dest="poc", help="Load POC file from local or remote from seebug website")
+            target.add_option("-r", dest="poc", help="Load PoC file from local or remote from seebug website")
+            target.add_option("-k", dest="poc_keyword",  help="Filter PoC by keyword, e.g. ecshop")
             target.add_option("-c", dest="configFile", help="Load options from a configuration INI file")
 
             # Mode options
@@ -61,7 +62,7 @@ class TestCase(unittest.TestCase):
                                help="Proxy authentication credentials (name:password)")
             request.add_option("--timeout", dest="timeout",
                                help="Seconds to wait before timeout connection (default 30)")
-            request.add_option("--retry", dest="retry", default=False, help="Time out retrials times.")
+            request.add_option("--retry", dest="retry", default=False, help="Time out retrials times")
             request.add_option("--delay", dest="delay", help="Delay between two request of one thread")
             request.add_option("--headers", dest="headers", help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
             # Account options
@@ -77,25 +78,25 @@ class TestCase(unittest.TestCase):
             # Modules options
             modules = OptionGroup(parser, "Modules", "Modules(Seebug Zoomeye CEye Listener) options")
             modules.add_option("--dork", dest="dork", action="store", default=None,
-                               help="Zoomeye dork used for search.")
+                               help="Zoomeye dork used for search")
             modules.add_option("--dork-zoomeye", dest="dork_zoomeye", action="store", default=None,
-                               help="Zoomeye dork used for search.")
+                               help="Zoomeye dork used for search")
             modules.add_option("--dork-shodan", dest="dork_shodan", action="store", default=None,
-                               help="Shodan dork used for search.")
+                               help="Shodan dork used for search")
             modules.add_option("--dork-censys", dest="dork_censys", action="store", default=None,
-                               help="Censys dork used for search.")
+                               help="Censys dork used for search")
             modules.add_option("--dork-fofa", dest="dork_fofa", action="store", default=None,
-                               help="Fofa dork used for search.")
+                               help="Fofa dork used for search")
             modules.add_option("--dork-quake", dest="dork_quake", action="store", default=None,
-                               help="Quake dork used for search.")
+                               help="Quake dork used for search")
             modules.add_option("--max-page", dest="max_page", type=int, default=1,
-                               help="Max page used in search API.")
+                               help="Max page used in search API")
             modules.add_option("--search-type", dest="search_type", action="store", default='host',
                                help="search type used in ZoomEye API, web or host")
             modules.add_option("--vul-keyword", dest="vul_keyword", action="store", default=None,
-                               help="Seebug keyword used for search.")
+                               help="Seebug keyword used for search")
             modules.add_option("--ssv-id", dest="ssvid", action="store", default=None,
-                               help="Seebug SSVID number for target PoC.")
+                               help="Seebug SSVID number for target PoC")
             modules.add_option("--lhost", dest="connect_back_host", action="store", default=None,
                                help="Connect back host for target PoC in shell mode")
             modules.add_option("--lport", dest="connect_back_port", action="store", default=None,
@@ -118,11 +119,11 @@ class TestCase(unittest.TestCase):
             optimization.add_option("--threads", dest="threads", type=int, default=1,
                                     help="Max number of concurrent network requests (default 1)")
             optimization.add_option("--batch", dest="batch",
-                                    help="Automatically choose defaut choice without asking.")
+                                    help="Automatically choose defaut choice without asking")
             optimization.add_option("--requires", dest="check_requires", action="store_true", default=False,
                                     help="Check install_requires")
             optimization.add_option("--quiet", dest="quiet", action="store_true", default=False,
-                                    help="Activate quiet mode, working without logger.")
+                                    help="Activate quiet mode, working without logger")
             optimization.add_option("--ppt", dest="ppt", action="store_true", default=False,
                                     help="Hiden sensitive information when published to the network")
             optimization.add_option("--pcap", dest="pcap", action="store_true", default=False,

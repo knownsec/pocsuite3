@@ -157,7 +157,7 @@ from pocsuite3.lib.utils import random_str
     desc = '/api/v2.0/user/remoteserver.saml接口的name参数存在命令注入'  # 漏洞简要描述
     samples = ['http://192.168.1.1']  # 测试样列，就是用 PoC 测试成功的目标
     install_requires = ['BeautifulSoup4:bs4']  # PoC 第三方模块依赖，请尽量不要使用第三方模块，必要时请参考《PoC第三方模块依赖说明》填写
-   	pocDesc = ''' poc的用法描述 '''
+    pocDesc = ''' poc的用法描述 '''
     dork = {'zoomeye': 'deviceState.admin.hostname'}  # 搜索 dork，如果运行 PoC 时不提供目标且该字段不为空，将会调用插件从搜索引擎获取目标。
     suricata_request = '''http.uri; content: "/api/v2.0/user/remoteserver.saml";'''  # 请求流量 suricata 规则
     suricata_response = ''  # 响应流量 suricata 规则

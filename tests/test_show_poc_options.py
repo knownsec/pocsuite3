@@ -15,7 +15,7 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_cmd_run(self):
-        pipeline = os.popen('pocsuite -r ecshop_rce.py --options')
+        pipeline = os.popen('pocsuite -k ecshop --options')
 
         # os.popen default encoding may not be utf-8
         res = pipeline.buffer.read().decode('utf-8')

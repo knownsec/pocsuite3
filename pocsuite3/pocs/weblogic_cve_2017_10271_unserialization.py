@@ -23,7 +23,7 @@ class DemoPOC(POCBase):
     references = ['https://www.seebug.org/vuldb/ssvid-97009']
     name = 'Weblogic < 10.3.6 wls-wsat XMLDecoder 反序列化漏洞（CVE-2017-10271）'
     appPowerLink = ''
-    appName = 'ECSHOP'
+    appName = 'Weblogic'
     appVersion = '< 10.3.6'
     vulType = VUL_TYPE.CODE_EXECUTION
     desc = '''
