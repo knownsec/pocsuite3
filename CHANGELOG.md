@@ -284,3 +284,7 @@ Cross-platform shell code generation
 * rewrite multi module
 * integrate with interactsh
 * support filter poc by keyword
+
+# version 1.8.9
+-----------------
+* fix user-agent bug #252
