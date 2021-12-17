@@ -37,7 +37,7 @@ def session_request(self, method, url,
     # Create the Request.
     merged_cookies = merge_cookies(merge_cookies(RequestsCookieJar(), self.cookies),
                                    cookies or (conf.cookie if 'cookie' in conf else None))
-    if not conf.agent:
+    if not conf.agent and HTTP_HEADER.USER_AGENT not in conf.http_headers:
         conf.http_headers[HTTP_HEADER.USER_AGENT] = generate_random_user_agent()
 
     req = Request(
