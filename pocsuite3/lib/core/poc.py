@@ -2,7 +2,6 @@ import re
 import traceback
 import inspect
 from collections import OrderedDict
-from urllib.parse import urlparse
 
 from requests.exceptions import ConnectTimeout
 from requests.exceptions import ConnectionError
@@ -15,6 +14,7 @@ from pocsuite3.lib.core.data import logger
 from pocsuite3.lib.core.enums import OUTPUT_STATUS, CUSTOM_LOGGING, ERROR_TYPE_ID, POC_CATEGORY
 from pocsuite3.lib.core.exception import PocsuiteValidationException
 from pocsuite3.lib.core.interpreter_option import OptString, OptInteger, OptPort, OptBool
+from pocsuite3.lib.utils import urlparse
 # for pocsuite 2.x
 
 

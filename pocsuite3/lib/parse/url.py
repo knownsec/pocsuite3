@@ -1,4 +1,4 @@
-from urllib.parse import urlparse
+from pocsuite3.lib.utils import urlparse
 
 
 class URL:
