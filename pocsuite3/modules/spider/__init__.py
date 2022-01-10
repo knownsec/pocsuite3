@@ -1,9 +1,10 @@
 import re
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urljoin
 from html.parser import HTMLParser
 from pocsuite3.lib.request import requests
 from pocsuite3.lib.core.settings import IMG_EXT
 from pocsuite3.lib.core.data import logger
+from pocsuite3.lib.utils import urlparse
 
 
 class LinkParser(HTMLParser):

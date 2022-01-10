@@ -1,3 +1,4 @@
+import re
 import ast
 import base64
 import binascii
@@ -6,7 +7,7 @@ import string
 import random
 from faker import Faker
 from socket import gethostbyname
-from urllib.parse import urlparse
+import urllib.parse
 from pocsuite3.lib.core.data import logger, paths
 from pocsuite3.lib.core.enums import (
     CUSTOM_LOGGING, OS, OS_ARCH, SHELLCODE_CONNECTION
@@ -14,6 +15,12 @@ from pocsuite3.lib.core.enums import (
 # for pocsuite 2.x
 from pocsuite3.lib.core.exception import PocsuiteGenericException
 from pocsuite3.shellcodes import OSShellcodes
+
+
+def urlparse(address):
+    if not re.search(r'^[A-Za-z0-9+.\-]+://', address):
+        address = 'tcp://{0}'.format(address)
+    return urllib.parse.urlparse(address)
 
 
 def url2ip(url, with_port=False):

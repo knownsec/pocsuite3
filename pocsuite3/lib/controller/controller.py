@@ -10,6 +10,7 @@ from pocsuite3.lib.core.exception import PocsuiteValidationException, PocsuiteSy
 from pocsuite3.lib.core.poc import Output
 from pocsuite3.lib.core.settings import CMD_PARSE_WHITELIST
 from pocsuite3.lib.core.threads import run_threads
+from pocsuite3.lib.utils import urlparse
 from pocsuite3.modules.listener import handle_listener_connection
 from pocsuite3.modules.listener.reverse_tcp import handle_listener_connection_for_console
 
@@ -97,7 +98,6 @@ def task_run():
         if conf.pcap:
             # start capture flow
             import os
-            import urllib
             import logging
 
             os.environ["MPLBACKEND"] = "Agg"
@@ -105,7 +105,7 @@ def task_run():
 
             from pocsuite3.lib.utils.pcap_sniffer import Sniffer
             from scapy.utils import wrpcap
-            sniffer = Sniffer(urllib.parse.urlparse(target).hostname)
+            sniffer = Sniffer(urlparse(target).hostname)
             if sniffer.use_pcap:
                 if not sniffer.is_admin:
                     logger.warn("Please use administrator privileges, and the poc will continue to execute without fetching the packet")
@@ -197,12 +197,8 @@ def task_run():
         kb.results.append(output)
         if conf.pcap:
             sniffer.join(20)
-            import urllib
             if not sniffer.is_alive():
-                filename = (
-                    urllib.parse.urlparse(target).hostname +
-                    time.strftime('_%Y_%m_%d_%H%M%S.pcap')
-                )
+                filename = urlparse(target).hostname + time.strftime('_%Y_%m_%d_%H%M%S.pcap')
                 logger.info(f"pcap data has been saved in: {filename}")
                 wrpcap(filename, sniffer.pcap.results)
             else:
