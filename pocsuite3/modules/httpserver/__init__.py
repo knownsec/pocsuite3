@@ -92,7 +92,6 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
     def __init__(self, bind_ip='0.0.0.0', bind_port=666, is_ipv6=False, use_https=False,
                  certfile=os.path.join(paths.POCSUITE_TMP_PATH, 'cacert.pem'),
                  requestHandler=BaseRequestHandler):
-        gen_cert(filepath=certfile)
         threading.Thread.__init__(self)
         self.bind_ip = bind_ip
         self.bind_port = int(bind_port)
@@ -100,6 +99,7 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
         self.https = use_https
         if self.https:
             self.scheme = 'https'
+            gen_cert(filepath=certfile)
         else:
             self.scheme = 'http'
         self.certfile = certfile

@@ -288,3 +288,9 @@ Cross-platform shell code generation
 # version 1.8.9
 -----------------
 * fix user-agent bug #252
+
+# version 1.8.10
+-----------------
+* fix #254
+* fix urlparse fails with simple url
+* use pycryptodomex instead of pycryptodome, fix #255
