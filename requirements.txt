@@ -10,4 +10,4 @@ colorlog >= 4.7.2
 scapy >= 2.4.4
 pyOpenSSL >= 20.0.0
 Faker >= 0.7.7
-pycryptodome >= 3.9.0
+pycryptodomex >= 3.9.0
