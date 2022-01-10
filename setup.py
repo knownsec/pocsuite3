@@ -53,7 +53,7 @@ setup(
         "colorlog",
         "scapy",
         "Faker",
-        "pycryptodome"
+        "pycryptodomex"
     ],
     extras_require={
         'complete': [

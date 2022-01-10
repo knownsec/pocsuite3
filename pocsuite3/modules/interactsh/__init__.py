@@ -7,19 +7,19 @@ import random
 import time
 from uuid import uuid4
 from base64 import b64encode
-from Crypto.Cipher import AES, PKCS1_OAEP
-from Crypto.PublicKey import RSA
-from Crypto.Hash import SHA256
+from Cryptodome.Cipher import AES, PKCS1_OAEP
+from Cryptodome.PublicKey import RSA
+from Cryptodome.Hash import SHA256
 from pocsuite3.api import requests, logger, random_str
 
 
 class Interactsh:
-    def __init__(self, token=None, server=None):
+    def __init__(self, token='', server=''):
         rsa = RSA.generate(2048)
         self.public_key = rsa.publickey().exportKey()
         self.private_key = rsa.exportKey()
         self.token = token
-        self.server = server.lstrip('.') or 'interactsh.com'
+        self.server = server.lstrip('.') or 'interact.sh'
         self.headers = {
             "Content-Type": "application/json",
         }
@@ -92,7 +92,7 @@ class Interactsh:
           }
 
         """
-        flag = random_str(length)
+        flag = random_str(length).lower()
         url = f'{flag}.{self.domain}'
         if method.startswith('http'):
             url = f'{method}://{url}'
@@ -108,7 +108,7 @@ class Interactsh:
         """
         result = self.poll()
         for item in result:
-            if flag.lower() in item['full-id']:
+            if flag.lower() in item['full-id'].lower():
                 return (True, result) if get_result else True
         return (False, result) if get_result else False
 
