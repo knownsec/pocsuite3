@@ -12,7 +12,7 @@ LOGGER = logging.getLogger("pocsuite")
 try:
     # for python>=3.7
     sys.stdout.reconfigure(encoding='utf-8')
-except Exception:
+except AttributeError:
     # http://www.macfreek.nl/memory/Encoding_of_Python_stdout
     import codecs
     sys.stdout = codecs.getwriter('utf-8')(sys.stdout, 'strict')
