@@ -15,7 +15,7 @@ try:
 except AttributeError:
     # http://www.macfreek.nl/memory/Encoding_of_Python_stdout
     import codecs
-    sys.stdout = codecs.getwriter('utf-8')(sys.stdout, 'strict')
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
 LOGGER_HANDLER = logging.StreamHandler(sys.stdout)
 PRIMARY_FMT = (
     "%(cyan)s[%(asctime)s] %(log_color)s[%(levelname)s]%(reset)s %(message)s"

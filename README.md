@@ -54,7 +54,7 @@ It comes with a powerful proof-of-concept engine, many nice features for the ult
 
 ## Requirements
 
-- Python 3.6+
+- Python 3.7+
 - Works on Linux, Windows, Mac OSX, BSD, etc.
 
 ## Installation

@@ -294,3 +294,7 @@ Cross-platform shell code generation
 * fix #254
 * fix urlparse fails with simple url
 * use pycryptodomex instead of pycryptodome, fix #255
+
+# version 1.8.11
+-----------------
+* fix windows log color issue #258
