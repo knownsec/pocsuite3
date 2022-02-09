@@ -86,7 +86,7 @@ class Fofa():
                             search_result.add("%s:%s" % (match[0], match[1]))
                         else:
                             if not match.startswith("https://"):
-                                search_result.add("http://"+match)
+                                search_result.add("http://" + match)
                             else:
                                 search_result.add(match)
                 else:
