@@ -13,6 +13,7 @@ class Fofa():
         self.conf_path = conf_path
         self.user = user
         self.token = token
+        self.api_url = 'https://fofa.info/api/v1'
 
         if self.conf_path:
             self.parser = ConfigParser()
@@ -29,7 +30,7 @@ class Fofa():
         if self.token and self.user:
             try:
                 resp = requests.get(
-                    'https://fofa.so/api/v1/info/my?email={user}&key={token}'.format(user=self.user, token=self.token),
+                    f'{self.api_url}/info/my?email={self.user}&key={self.token}',
                     headers=self.headers)
                 logger.info(resp.text)
                 if resp and resp.status_code == 200 and "username" in resp.json():
@@ -72,11 +73,11 @@ class Fofa():
         search_result = set()
         try:
             for page in range(1, pages + 1):
+                dork = b64encode(dork.encode()).decode()
                 url = (
-                    "https://fofa.so/api/v1/search/all?email={user}&key={token}&qbase64={dork}&"
-                    "fields={resource}&page={page}"
-                ).format(user=self.user, token=self.token, dork=b64encode(dork.encode()).decode(),
-                         resource=resource, page=page)
+                    f"{self.api_url}/search/all?email={self.user}&key={self.token}&qbase64={dork}&"
+                    f"fields={resource}&page={page}"
+                )
                 resp = requests.get(url, timeout=80, headers=self.headers)
                 if resp and resp.status_code == 200 and "results" in resp.json():
                     content = resp.json()
