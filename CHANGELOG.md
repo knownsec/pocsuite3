@@ -298,3 +298,7 @@ Cross-platform shell code generation
 # version 1.8.11
 -----------------
 * fix windows log color issue #258
+
+# version 1.8.12
+-----------------
+* update fofa api url #263
