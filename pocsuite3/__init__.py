@@ -1,5 +1,5 @@
 __title__ = 'pocsuite3'
-__version__ = '1.8.11'
+__version__ = '1.8.12'
 __author__ = 'Knownsec 404 Team'
 __author_email__ = '404-team@knownsec.com'
 __license__ = 'GPLv2'
