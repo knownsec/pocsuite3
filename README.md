@@ -85,6 +85,12 @@ sudo apt update
 sudo apt install pocsuite3
 ```
 
+### Docker
+
+```
+docker run -it pocsuite3/pocsuite3
+```
+
 ### ArchLinux
 
 ``` bash
