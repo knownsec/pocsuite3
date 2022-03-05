@@ -302,3 +302,8 @@ Cross-platform shell code generation
 # version 1.8.12
 -----------------
 * update fofa api url #263
+
+# version 1.9.0
+-----------------
+* Fix urllib3 issue with parsing URIs
+* Prevent URL encoding

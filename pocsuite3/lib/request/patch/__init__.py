@@ -6,9 +6,14 @@ from .remove_warnings import disable_warnings
 from .hook_request import patch_session
 from .add_httpraw import patch_addraw
 from .hook_request_redirect import patch_redirect
+from .hook_urllib3_parse_url import patch_urllib3_parse_url
+from .unquote_request_uri import unquote_request_uri
 
 
 def patch_all():
+    # fix https://github.com/urllib3/urllib3/issues/1790
+    patch_urllib3_parse_url()
+    unquote_request_uri()
     urllib3.response.HTTPResponse._update_chunk_length = _update_chunk_length
     disable_warnings()
     remove_ssl_verify()
