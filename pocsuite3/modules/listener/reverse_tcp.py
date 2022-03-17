@@ -117,7 +117,7 @@ def get_client(cmd):
         target = int(target)
         client = kb.data.clients[target]  # Connect to the selected clients
         data_to_stdout("Now Connected: {0}\n".format(
-            desensitization(client.address[0] if conf.ppt else client.address[0])))
+            desensitization(client.address[0]) if conf.ppt else client.address[0]))
         return client
     except Exception:
         data_to_stdout("Invalid Client\n")
