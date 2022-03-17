@@ -41,8 +41,6 @@ def get_sock_listener(listen_port, listen_host="0.0.0.0", ipv6=False, protocol=N
         s.bind((listen_host, listen_port))
     except socket.error:
         s.close()
-        # import traceback
-        # traceback.print_exc()
         return None
 
     if protocol == socket.SOCK_STREAM:
@@ -98,10 +96,10 @@ def list_clients():
                 elif "uname" in ret:
                     system = "Windows"
 
-        except Exception as ex:  # If a connection fails, remove it
-            logger.exception(ex)
+        except Exception:  # If a connection fails, remove it
             del kb.data.clients[i]
             continue
+
         results += (
                 str(i) +
                 "   " +
@@ -127,7 +125,9 @@ def get_client(cmd):
 
 
 def send_shell_commands_for_console(client):
-    module_prompt_default_template = "\001\033[4m\002SHELL\001\033[0m\002 (\001\033[91m\002{hostname}\001\033[0m\002) > "
+    module_prompt_default_template = (
+        "\001\033[4m\002SHELL\001\033[0m\002 (\001\033[91m\002{hostname}\001\033[0m\002) > "
+    )
     while True:
         cmd = None
         try:
@@ -148,6 +148,10 @@ def send_shell_commands_for_console(client):
             resp = poll_cmd_execute(client)
 
             data_to_stdout(resp)
+
+        except KeyboardInterrupt:
+            logger.warn('Interrupt: use the \'quit\' command to quit')
+            continue
 
         except Exception as ex:
             logger.error(str(ex))
@@ -179,6 +183,10 @@ def send_shell_commands(client):
             resp = poll_cmd_execute(client)
 
             data_to_stdout(resp)
+
+        except KeyboardInterrupt:
+            logger.warn('Interrupt: use the \'quit\' command to quit')
+            continue
 
         except Exception as ex:
             logger.error(str(ex))
@@ -259,18 +267,17 @@ def print_cmd_help():
 
 
 def handle_listener_connection_for_console(wait_time=3, try_count=3):
-    cmd = "select 0"
-    client = get_client(cmd)
-    if client is not None:
-        f = send_shell_commands_for_console(client)
-        if f:
-            return
+    while len(kb.data.clients) == 0:
+        try:
+            time.sleep(wait_time)
+        except KeyboardInterrupt:
+            break
 
-    if try_count > 0:
-        time.sleep(wait_time)
-        data_to_stdout("connect err remaining number of retries %s times\n" % (try_count))
-        try_count -= 1
-        return handle_listener_connection_for_console(wait_time=wait_time, try_count=try_count)
+    if len(kb.data.clients) > 0:
+        cmd = "select 0"
+        client = get_client(cmd)
+        if client is not None:
+            send_shell_commands_for_console(client)
 
 
 def handle_listener_connection():
@@ -278,28 +285,33 @@ def handle_listener_connection():
     auto_completion(AUTOCOMPLETE_TYPE.POCSUITE, commands=_)
 
     while True:
-        cmd = None
-        cmd = input('shell>: ').strip()
-        if not cmd:
+        try:
+            cmd = None
+            cmd = input('shell>: ').strip()
+            if not cmd:
+                continue
+            elif cmd.lower() in ("?", "help"):
+                print_cmd_help()
+            elif cmd.lower() == "clear":
+                clear_history()
+                data_to_stdout("[i] history cleared\n")
+                save_history(AUTOCOMPLETE_TYPE.POCSUITE)
+            elif cmd.lower() in ("x", "q", "exit", "quit"):
+                raise PocsuiteShellQuitException
+            elif cmd == "list":
+                list_clients()
+            elif cmd.lower().split(" ")[0] in ('select', 'use'):
+                client = get_client(cmd)
+                if client is not None:
+                    send_shell_commands(client)
+            else:
+                save_history(AUTOCOMPLETE_TYPE.POCSUITE)
+                load_history(AUTOCOMPLETE_TYPE.POCSUITE)
+                data_to_stdout("Command Not Found... type ? for help.")
+
+        except KeyboardInterrupt:
+            logger.warn('Interrupt: use the \'quit\' command to quit')
             continue
-        elif cmd.lower() in ("?", "help"):
-            print_cmd_help()
-        elif cmd.lower() == "clear":
-            clear_history()
-            data_to_stdout("[i] history cleared\n")
-            save_history(AUTOCOMPLETE_TYPE.POCSUITE)
-        elif cmd.lower() in ("x", "q", "exit", "quit"):
-            raise PocsuiteShellQuitException
-        elif cmd == "list":
-            list_clients()
-        elif cmd.lower().split(" ")[0] in ('select', 'use'):
-            client = get_client(cmd)
-            if client is not None:
-                send_shell_commands(client)
-        else:
-            save_history(AUTOCOMPLETE_TYPE.POCSUITE)
-            load_history(AUTOCOMPLETE_TYPE.POCSUITE)
-            data_to_stdout("Command Not Found... type ? for help.")
 
 
 class REVERSE_PAYLOAD:
