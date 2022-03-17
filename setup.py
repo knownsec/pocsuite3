@@ -21,7 +21,7 @@ long_description = (
 
 setup(
     name='pocsuite3',
-    version='1.9.0',
+    version='1.9.1',
     url='https://pocsuite.org',
     description='Open-sourced remote vulnerability testing framework.',
     long_description=long_description,
@@ -42,7 +42,7 @@ setup(
         ]
     },
     install_requires=[
-        "requests",
+        "requests >= 2.22.0",
         "requests-toolbelt",
         "PySocks",
         "urllib3",

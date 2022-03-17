@@ -307,3 +307,9 @@ Cross-platform shell code generation
 -----------------
 * Fix urllib3 issue with parsing URIs
 * Prevent URL encoding
+
+# version 1.9.1
+-----------------
+* fix #272, #274
+* the hook support of requests can be used alone
+* refactor shell mode, add handle for keyboard interrupt
