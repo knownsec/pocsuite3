@@ -87,17 +87,15 @@ def list_clients():
     results = ''
     for i, client in enumerate(kb.data.clients):
         try:
-            client.conn.send(str.encode('uname\n'))
-            time.sleep(0.2)
-            ret = client.conn.recv(2048)
+            client.conn.send(b'uname\n')
+            ret = poll_cmd_execute(client).lower()
+            system = "unknown"
             if ret:
-                ret = ret.decode('utf-8', errors="ignore")
-                system = "unknown"
-                if "darwin" in ret.lower():
+                if "darwin" in ret:
                     system = "Darwin"
-                elif "linux" in ret.lower():
+                elif "linux" in ret:
                     system = "Linux"
-                elif "uname" in ret.lower():
+                elif "uname" in ret:
                     system = "Windows"
 
         except Exception as ex:  # If a connection fails, remove it
@@ -213,7 +211,6 @@ def poll_cmd_execute(client, timeout=3):
                     break
                 else:
                     ret += get_unicode(client.conn.recv(0x10000))
-                    # ret += str(client.conn.recv(0x10000), "utf-8")
             else:
                 if ret:
                     break
@@ -233,7 +230,6 @@ def poll_cmd_execute(client, timeout=3):
             ready = select.select([client.conn], [], [], 0.2)
             if ready[0]:
                 ret += get_unicode(client.conn.recv(0x10000))
-                # ret += str(client.conn.recv(0x10000), "utf-8")
             else:
                 if ret:
                     break
