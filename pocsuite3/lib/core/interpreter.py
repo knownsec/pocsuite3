@@ -89,11 +89,11 @@ class BaseInterpreter(object):
             except PocsuiteBaseException as warn:
                 logger.warn(warn)
             except EOFError:
-                logger.info("Pocsuite stopped")
+                logger.info("Pocsuite3 stopped")
                 break
             except KeyboardInterrupt:
-                logger.info("User Quit")
-                break
+                logger.warn('Interrupt: use the \'exit\' command to quit')
+                continue
 
     def complete(self, text, state):
         """Return the next possible completion for 'text'.
