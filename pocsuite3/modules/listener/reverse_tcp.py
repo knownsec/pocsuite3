@@ -41,6 +41,8 @@ def get_sock_listener(listen_port, listen_host="0.0.0.0", ipv6=False, protocol=N
         s.bind((listen_host, listen_port))
     except socket.error:
         s.close()
+        if conf.connect_back_host in kb.data.local_ips:
+            logger.warn(f'unable to listen on {listen_host}:{listen_port}, check if the port is occupied.')
         return None
 
     if protocol == socket.SOCK_STREAM:
@@ -83,19 +85,29 @@ def listener_worker():
 
 def list_clients():
     results = ''
+    # https://en.wikipedia.org/wiki/Uname
+    # https://en.wikipedia.org/wiki/Ver_(command)
+    os_fingerprint = {
+        'Linux': ['Linux', 'GNU'],
+        'macOS': ['Darwin'],
+        'Windows': ['Windows', 'PS ', 'C:\\', 'CYGWIN', 'MS-DOS', 'MSYS_NT', 'cmdlet'],
+        'BSD': ['FreeBSD', 'OpenBSD', 'NetBSD', 'MidnightBSD'],
+        'Solaris': ['SunOS']
+    }
     for i, client in enumerate(kb.data.clients):
         try:
-            client.conn.send(b'uname\n')
+            client.conn.send(b'uname\nver\n')
+            time.sleep(0.2)
             ret = poll_cmd_execute(client).lower()
-            system = "unknown"
-            if ret:
-                if "darwin" in ret:
-                    system = "Darwin"
-                elif "linux" in ret:
-                    system = "Linux"
-                elif "uname" in ret:
-                    system = "Windows"
-
+            system, found = 'unknown', False
+            for o, ks in os_fingerprint.items():
+                if found:
+                    break
+                for k in ks:
+                    if k.lower() in ret.lower():
+                        system = o
+                        found = True
+                        break
         except Exception:  # If a connection fails, remove it
             del kb.data.clients[i]
             continue
@@ -307,7 +319,7 @@ def handle_listener_connection():
             else:
                 save_history(AUTOCOMPLETE_TYPE.POCSUITE)
                 load_history(AUTOCOMPLETE_TYPE.POCSUITE)
-                data_to_stdout("Command Not Found... type ? for help.")
+                data_to_stdout("Command Not Found... type ? for help.\n")
 
         except KeyboardInterrupt:
             logger.warn('Interrupt: use the \'quit\' command to quit')
