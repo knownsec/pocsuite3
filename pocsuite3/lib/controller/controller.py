@@ -144,7 +144,7 @@ def task_run():
                     raise SystemExit
 
                 if v.require and v.value == "":
-                    info_msg = "Poc:'{poc}' Option '{key}' must be set,please add parameters '--{key}'".format(
+                    info_msg = "Poc:'{poc}' Option '{key}' must be set, please add parameters '--{key}'".format(
                         poc=poc_name, key=opt)
                     logger.error(info_msg)
                     raise SystemExit
