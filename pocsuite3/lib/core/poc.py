@@ -3,19 +3,13 @@ import traceback
 import inspect
 from collections import OrderedDict
 
-from requests.exceptions import ConnectTimeout
-from requests.exceptions import ConnectionError
-from requests.exceptions import HTTPError
-from requests.exceptions import TooManyRedirects
-
+from requests.exceptions import ConnectTimeout, ConnectionError, HTTPError, TooManyRedirects
 from pocsuite3.lib.core.common import parse_target_url, desensitization
-from pocsuite3.lib.core.data import conf
-from pocsuite3.lib.core.data import logger
+from pocsuite3.lib.core.data import conf, logger
 from pocsuite3.lib.core.enums import OUTPUT_STATUS, CUSTOM_LOGGING, ERROR_TYPE_ID, POC_CATEGORY
 from pocsuite3.lib.core.exception import PocsuiteValidationException
 from pocsuite3.lib.core.interpreter_option import OptString, OptInteger, OptPort, OptBool
 from pocsuite3.lib.utils import urlparse
-# for pocsuite 2.x
 
 
 class POCBase(object):
@@ -24,6 +18,9 @@ class POCBase(object):
         self.target = None
         self.headers = None
         self.url = None
+        self.scheme = None
+        self.rhost = None
+        self.rport = None
         self.mode = None
         self.params = None
         self.verbose = None
@@ -71,9 +68,9 @@ class POCBase(object):
     def get_option(self, name):
         if name not in self.options:
             raise PocsuiteValidationException
-        # 处理options中的payload,将Payload的IP和端口转换
+        # 处理options中的payload, 将Payload的IP和端口转换
         value = self.options[name].value
-        flag = re.search('\{0\}.+\{1\}', str(value))
+        flag = re.search(r'\{0\}.+\{1\}', str(value))
         if flag:
             value = value.format(conf.connect_back_host, conf.connect_back_port)
         return value
@@ -137,21 +134,20 @@ class POCBase(object):
             for k, v in option.items():
                 if v.require and v.value == "":
                     raise PocsuiteValidationException(
-                        "'{key}' must be set,please using command 'set {key}'".format(key=k))
+                        "'{key}' must be set, please using command 'set {key}'".format(key=k))
         return True
 
     def build_url(self):
-        if self.target and not conf.console_mode:
-            pr = urlparse(parse_target_url(self.target))
-            rport = pr.port if pr.port else 0
-            rhost = pr.hostname
-            ssl = False
-            if pr.scheme == 'https':
-                ssl = True
-            self.setg_option("rport", rport)
-            self.setg_option("rhost", rhost)
-            self.setg_option("ssl", ssl)
-        return parse_target_url(self.target)
+        target = parse_target_url(self.target)
+        pr = urlparse(target)
+        self.scheme = 'https' if pr.scheme.startswith('https') else 'http'
+        self.rhost = pr.hostname
+        self.rport = pr.port if pr.port else 443 if pr.scheme.startswith('https') else 80
+        if self.target and self.current_protocol != POC_CATEGORY.PROTOCOL.HTTP and not conf.console_mode:
+            self.setg_option("rport", self.rport)
+            self.setg_option("rhost", self.rhost)
+            self.setg_option("ssl", self.scheme == 'https')
+        return target
 
     def _execute(self):
         if self.mode == 'shell':
@@ -167,7 +163,11 @@ class POCBase(object):
 
     def execute(self, target, headers=None, params=None, mode='verify', verbose=True):
         self.target = target
-        self.url = parse_target_url(target) if self.current_protocol == POC_CATEGORY.PROTOCOL.HTTP else self.build_url()
+        self.url = self.build_url()
+        # TODO: Thread safe problem in self.headers
+        # https://github.com/knownsec/pocsuite3/issues/262
+        # The value should not be modified in PoC Plugin !!!
+        # Some PoC use this bug as a feature, For the purpose of PoC plugin compatibility, it will not be fixed
         self.headers = headers
         if isinstance(params, dict) or isinstance(params, str):
             self.params = params
@@ -218,7 +218,6 @@ class POCBase(object):
             logger.debug(str(e))
             output = Output(self)
 
-
         except BaseException as e:
             self.expt = (ERROR_TYPE_ID.OTHER, e)
             logger.error("PoC has raised a exception")
@@ -229,13 +228,13 @@ class POCBase(object):
             output.params = self.params
         return output
 
-    # def _shell(self):
-    #     """
-    #     @function   以Poc的shell模式对urls进行检测(具有危险性)
-    #                 需要在用户自定义的Poc中进行重写
-    #                 返回一个Output类实例
-    #     """
-    #     raise NotImplementedError
+    def _shell(self):
+        """
+        @function   以Poc的shell模式对urls进行检测(具有危险性)
+                    需要在用户自定义的Poc中进行重写
+                    返回一个Output类实例
+        """
+        raise NotImplementedError
 
     def _attack(self):
         """
@@ -252,6 +251,14 @@ class POCBase(object):
                     返回一个Output类实例
         """
         raise NotImplementedError
+
+    def parse_output(self, result):
+        output = Output(self)
+        if result:
+            output.success(result)
+        else:
+            output.fail('Internet nothing returned')
+        return output
 
     def _run(self):
         """

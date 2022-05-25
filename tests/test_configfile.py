@@ -73,6 +73,7 @@ class TestCase(unittest.TestCase):
             account.add_option("--fofa-user", dest="fofa_user", help="fofa user")
             account.add_option("--fofa-token", dest="fofa_token", help="fofa token")
             account.add_option("--quake-token", dest="quake_token", help="quake token")
+            account.add_option("--hunter-token", dest="hunter_token", help="hunter token")
             account.add_option("--censys-uid", dest="censys_uid", help="Censys uid")
             account.add_option("--censys-secret", dest="censys_secret", help="Censys secret")
             # Modules options
@@ -89,6 +90,8 @@ class TestCase(unittest.TestCase):
                                help="Fofa dork used for search")
             modules.add_option("--dork-quake", dest="dork_quake", action="store", default=None,
                                help="Quake dork used for search")
+            modules.add_option("--dork-hunter", dest="dork_hunter", action="store", default=None,
+                               help="Hunter dork used for search")
             modules.add_option("--max-page", dest="max_page", type=int, default=1,
                                help="Max page used in search API")
             modules.add_option("--search-type", dest="search_type", action="store", default='host',

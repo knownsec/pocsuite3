@@ -213,8 +213,11 @@ def _set_multiple_targets():
 
     if conf.dork:
         # enable plugin 'target_from_zoomeye' by default
-        if ('target_from_shodan' not in conf.plugins and 'target_from_fofa' not in conf.plugins
-                and 'target_from_quake' not in conf.plugins):
+        if ('target_from_shodan' not in conf.plugins and
+                'target_from_censys' not in conf.plugins and
+                'target_from_fofa' not in conf.plugins and
+                'target_from_quake' not in conf.plugins and
+                'target_from_hunter' not in conf.plugins):
             conf.plugins.append('target_from_zoomeye')
 
     if conf.dork_zoomeye:
@@ -231,6 +234,9 @@ def _set_multiple_targets():
 
     if conf.dork_quake:
         conf.plugins.append('target_from_quake')
+
+    if conf.dork_hunter:
+        conf.plugins.append('target_from_hunter')
 
 
 def _set_task_queue():
@@ -525,6 +531,7 @@ def _set_conf_attributes():
     conf.fofa_user = None
     conf.fofa_token = None
     conf.quake_token = None
+    conf.hunter_token = None
     conf.censys_uid = None
     conf.censys_secret = None
     conf.dork = None
@@ -532,6 +539,7 @@ def _set_conf_attributes():
     conf.dork_shodan = None
     conf.dork_fofa = None
     conf.dork_quake = None
+    conf.dork_hunter = None
     conf.dork_censys = None
     conf.dork_b64 = False
     conf.max_page = 1
@@ -691,7 +699,7 @@ def _init_target_from_poc_dork():
             continue
         # find a available target source
         target_source = ''
-        for i in ["zoomeye", "fofa", "shodan", "quake", "censys"]:
+        for i in ["zoomeye", "fofa", "shodan", "quake", "hunter", "censys"]:
             if i in poc_class.dork.keys():
                 target_source = i
                 break

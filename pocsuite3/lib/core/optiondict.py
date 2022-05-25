@@ -32,6 +32,7 @@ optDict = {
         'fofa_user': 'string',
         'fofa_token': 'string',
         'quake_token': 'string',
+        'hunter_token': 'string',
         'censys_uid': 'string',
         'censys_secret': 'string'
     },
@@ -42,6 +43,7 @@ optDict = {
         'dork_censys': 'string',
         'dork_fofa': 'string',
         'dork_quake': 'string',
+        'dork_hunter': 'string',
         'max_page': 'integer',
         'search_type': 'string',
         'vul_keyword': 'string',

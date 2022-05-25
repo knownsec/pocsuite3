@@ -317,3 +317,8 @@ Cross-platform shell code generation
 # version 1.9.2
 -----------------
 * Improved shell mode
+
+# version 1.9.3
+-----------------
+* add support for qianxin hunter cyberspace search engine
+* support self.rhost & self.rport in POCBase

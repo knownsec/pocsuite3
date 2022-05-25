@@ -69,13 +69,15 @@ Account:
                         fofa token
   --quake-token QUAKE_TOKEN
                         quake token
+  --hunter-token HUNTER_TOKEN
+                        hunter token
   --censys-uid CENSYS_UID
                         Censys uid
   --censys-secret CENSYS_SECRET
                         Censys secret
 
 Modules:
-  Modules(Seebug, Zoomeye, CEye, Fofa, Quake, Listener) options
+  Modules(Seebug, Zoomeye, CEye, Fofa, Quake, Hunter, Listener) options
 
   --dork DORK           Zoomeye dork used for search
   --dork-zoomeye DORK_ZOOMEYE
@@ -88,6 +90,8 @@ Modules:
                         Fofa dork used for search
   --dork-quake DORK_QUAKE
                         Quake dork used for search
+  --dork-hunter DORK_HUNTER
+                        Hunter dork used for search
   --max-page MAX_PAGE   Max page used in search API
   --search-type SEARCH_TYPE
                         search type used in ZoomEye API, web or host
