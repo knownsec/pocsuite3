@@ -24,6 +24,7 @@ from pocsuite3.modules.httpserver import PHTTPServer
 from pocsuite3.modules.listener import (REVERSE_PAYLOAD, bind_shell,
                                         bind_tcp_shell, bind_telnet_shell)
 from pocsuite3.modules.quake import Quake
+from pocsuite3.modules.hunter import Hunter
 from pocsuite3.modules.seebug import Seebug
 from pocsuite3.modules.shodan import Shodan
 from pocsuite3.modules.spider import crawl
@@ -36,7 +37,7 @@ __all__ = ('requests', 'PluginBase', 'register_plugin', 'PLUGIN_TYPE',
            'register_poc', 'conf', 'kb', 'logger', 'paths',
            'DEFAULT_LISTENER_PORT', 'load_file_to_module',
            'load_string_to_module', 'single_time_warn_message', 'CEye',
-           'Seebug', 'ZoomEye', 'Shodan', 'Fofa', 'Quake', 'Censys',
+           'Seebug', 'ZoomEye', 'Shodan', 'Fofa', 'Quake', 'Hunter', 'Censys',
            'PHTTPServer', 'REVERSE_PAYLOAD', 'get_listener_ip',
            'get_listener_port', 'get_results', 'init_pocsuite',
            'start_pocsuite', 'get_poc_options', 'crawl', 'OSShellcodes',

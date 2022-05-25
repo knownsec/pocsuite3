@@ -70,10 +70,12 @@ def cmd_line_parser(argv=None):
         group.add_argument("--fofa-user", dest="fofa_user", help="fofa user")
         group.add_argument("--fofa-token", dest="fofa_token", help="fofa token")
         group.add_argument("--quake-token", dest="quake_token", help="quake token")
+        group.add_argument("--hunter-token", dest="hunter_token", help="hunter token")
         group.add_argument("--censys-uid", dest="censys_uid", help="Censys uid")
         group.add_argument("--censys-secret", dest="censys_secret", help="Censys secret")
         # Modules options
-        modules = parser.add_argument_group("Modules", "Modules(Seebug, Zoomeye, CEye, Fofa, Quake, Listener) options")
+        modules = parser.add_argument_group(
+            "Modules", "Modules(Seebug, Zoomeye, CEye, Fofa, Quake, Hunter, Listener) options")
         modules.add_argument("--dork", dest="dork", action="store", default=None,
                              help="Zoomeye dork used for search")
         modules.add_argument("--dork-zoomeye", dest="dork_zoomeye", action="store", default=None,
@@ -86,6 +88,8 @@ def cmd_line_parser(argv=None):
                              help="Fofa dork used for search")
         modules.add_argument("--dork-quake", dest="dork_quake", action="store", default=None,
                              help="Quake dork used for search")
+        modules.add_argument("--dork-hunter", dest="dork_hunter", action="store", default=None,
+                             help="Hunter dork used for search")
         modules.add_argument("--max-page", dest="max_page", type=int, default=1,
                              help="Max page used in search API")
         modules.add_argument("--search-type", dest="search_type", action="store", default='host',
