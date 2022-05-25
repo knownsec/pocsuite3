@@ -228,13 +228,13 @@ class POCBase(object):
             output.params = self.params
         return output
 
-    # def _shell(self):
-    #     """
-    #     @function   以Poc的shell模式对urls进行检测(具有危险性)
-    #                 需要在用户自定义的Poc中进行重写
-    #                 返回一个Output类实例
-    #     """
-    #     raise NotImplementedError
+    def _shell(self):
+        """
+        @function   以Poc的shell模式对urls进行检测(具有危险性)
+                    需要在用户自定义的Poc中进行重写
+                    返回一个Output类实例
+        """
+        raise NotImplementedError
 
     def _attack(self):
         """
