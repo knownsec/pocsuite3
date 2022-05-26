@@ -239,7 +239,7 @@ def parse_target_url(url):
     if conf.ipv6 and is_ipv6_address_format(url):
         ret = "[" + ret + "]"
 
-    if not re.search("^http[s]*://", ret, re.I) and not re.search("^ws[s]*://", ret, re.I):
+    if not re.search("^http[s]*://", ret, re.I) and not re.search("^ws[s]*://", ret, re.I) and '://' not in ret:
         if re.search(":443[/]*$", ret):
             ret = "https://" + ret
         else:

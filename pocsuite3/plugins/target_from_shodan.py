@@ -13,9 +13,8 @@ class TargetFromShodan(PluginBase):
 
     def init_shodan_api(self):
         self.shodan = Shodan(token=conf.shodan_token)
-        if self.shodan.get_resource_info():
-            info_msg = "[PLUGIN] shodan credits limit {0}".format(self.shodan.credits)
-            logger.info(info_msg)
+        info_msg = "[PLUGIN] shodan credits limit {0}".format(self.shodan.credits)
+        logger.info(info_msg)
 
     def init(self):
         self.init_shodan_api()
@@ -35,7 +34,7 @@ class TargetFromShodan(PluginBase):
             kb.comparison.add_dork("Shodan", dork)
         info_msg = "[PLUGIN] try fetch targets from shodan with dork: {0}".format(dork)
         logger.info(info_msg)
-        targets = self.shodan.search(dork, conf.max_page, resource=conf.search_type)
+        targets = self.shodan.search(dork, conf.max_page)
         count = 0
         if targets:
             for target in targets:
@@ -44,7 +43,7 @@ class TargetFromShodan(PluginBase):
                 if self.add_target(target):
                     count += 1
 
-        info_msg = "[PLUGIN] get {0} target(s) from shodan".format(count)
+        info_msg = "[PLUGIN] got {0} target(s) from shodan".format(count)
         logger.info(info_msg)
 
 

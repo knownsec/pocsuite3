@@ -13,9 +13,8 @@ class TargetFromCensys(PluginBase):
 
     def init_censys_api(self):
         self.censys = Censys(uid=conf.censys_uid, secret=conf.censys_secret)
-        if self.censys.get_resource_info():
-            info_msg = "[PLUGIN] Censys credits limit {0}".format(self.censys.credits)
-            logger.info(info_msg)
+        info_msg = "[PLUGIN] Censys credits limit {0}".format(self.censys.credits)
+        logger.info(info_msg)
 
     def init(self):
         self.init_censys_api()
@@ -48,7 +47,7 @@ class TargetFromCensys(PluginBase):
                 if self.add_target(target):
                     count += 1
 
-        info_msg = "[PLUGIN] get {0} target(s) from Censys".format(count)
+        info_msg = "[PLUGIN] got {0} target(s) from Censys".format(count)
         logger.info(info_msg)
 
 

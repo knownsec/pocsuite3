@@ -102,13 +102,16 @@ Delay between two request of one thread
 Extra headers (e.g. "key1: value1\enkey2: value2")
 .SS "Account:"
 .IP
-Telnet404, Shodan, CEye, Fofa account options
+Account options
 .TP
-\fB\-\-login\-user\fR LOGIN_USER
-Telnet404 login user
+\fB\-\-ceye\-token\fR CEYE_TOKEN
+CEye token
 .TP
-\fB\-\-login\-pass\fR LOGIN_PASS
-Telnet404 login password
+\fB\-\-seebug\-token\fR SEEBUG_TOKEN
+Seebug token
+.TP
+\fB\-\-zoomeye\-token\fR ZOOMEYE_TOKEN
+ZoomEye token
 .TP
 \fB\-\-shodan\-token\fR SHODAN_TOKEN
 Shodan token
@@ -132,7 +135,7 @@ Censys uid
 Censys secret
 .SS "Modules:"
 .IP
-Modules (Seebug, Zoomeye, CEye, Fofa, Listener) options
+Modules options
 .TP
 \fB\-\-dork\fR DORK
 Zoomeye dork used for search
@@ -143,8 +146,8 @@ Zoomeye dork used for search
 \fB\-\-dork\-shodan\fR DORK_SHODAN
 Shodan dork used for search
 .TP
-\fB\-\-dork\-censys\fR DORK_CENSYS
-Censys dork used for search
+\fB\-\-dork\-fofa\fR DORK_FOFA
+Fofa dork used for search
 .TP
 \fB\-\-dork\-quake\fR DORK_QUAKE
 Quake dork used for search
@@ -152,14 +155,14 @@ Quake dork used for search
 \fB\-\-dork\-hunter\fR DORK_HUNTER
 Hunter dork used for search
 .TP
-\fB\-\-dork\-fofa\fR DORK_FOFA
-Fofa dork used for search
+\fB\-\-dork\-censys\fR DORK_CENSYS
+Censys dork used for search
 .TP
 \fB\-\-max\-page\fR MAX_PAGE
 Max page used in search API
 .TP
 \fB\-\-search\-type\fR SEARCH_TYPE
-search type used in ZoomEye API, web or host
+search type used in search API, web or host
 .TP
 \fB\-\-vul\-keyword\fR VUL_KEYWORD
 Seebug keyword used for search

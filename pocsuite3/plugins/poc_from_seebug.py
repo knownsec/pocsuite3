@@ -10,7 +10,7 @@ class PocFromSeebug(PluginBase):
     category = PLUGIN_TYPE.POCS
 
     def init_seebug_api(self):
-        self.seebug = Seebug()
+        self.seebug = Seebug(token=conf.seebug_token)
 
     def init(self):
         self.init_seebug_api()

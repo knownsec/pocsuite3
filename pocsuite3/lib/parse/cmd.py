@@ -63,37 +63,38 @@ def cmd_line_parser(argv=None):
         request.add_argument("--delay", dest="delay", help="Delay between two request of one thread")
         request.add_argument("--headers", dest="headers", help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
         # Account options
-        group = parser.add_argument_group("Account", "Telnet404, Shodan, CEye, Fofa account options")
-        group.add_argument("--login-user", dest="login_user", help="Telnet404 login user")
-        group.add_argument("--login-pass", dest="login_pass", help="Telnet404 login password")
+        group = parser.add_argument_group("Account", "Account options")
+        group.add_argument("--ceye-token", dest="ceye_token", help="CEye token")
+        group.add_argument("--seebug-token", dest="seebug_token", help="Seebug token")
+        group.add_argument("--zoomeye-token", dest="zoomeye_token", help="ZoomEye token")
         group.add_argument("--shodan-token", dest="shodan_token", help="Shodan token")
-        group.add_argument("--fofa-user", dest="fofa_user", help="fofa user")
-        group.add_argument("--fofa-token", dest="fofa_token", help="fofa token")
-        group.add_argument("--quake-token", dest="quake_token", help="quake token")
-        group.add_argument("--hunter-token", dest="hunter_token", help="hunter token")
+        group.add_argument("--fofa-user", dest="fofa_user", help="Fofa user")
+        group.add_argument("--fofa-token", dest="fofa_token", help="Fofa token")
+        group.add_argument("--quake-token", dest="quake_token", help="Quake token")
+        group.add_argument("--hunter-token", dest="hunter_token", help="Hunter token")
         group.add_argument("--censys-uid", dest="censys_uid", help="Censys uid")
         group.add_argument("--censys-secret", dest="censys_secret", help="Censys secret")
         # Modules options
         modules = parser.add_argument_group(
-            "Modules", "Modules(Seebug, Zoomeye, CEye, Fofa, Quake, Hunter, Listener) options")
+            "Modules", "Modules options")
         modules.add_argument("--dork", dest="dork", action="store", default=None,
                              help="Zoomeye dork used for search")
         modules.add_argument("--dork-zoomeye", dest="dork_zoomeye", action="store", default=None,
                              help="Zoomeye dork used for search")
         modules.add_argument("--dork-shodan", dest="dork_shodan", action="store", default=None,
                              help="Shodan dork used for search")
-        modules.add_argument("--dork-censys", dest="dork_censys", action="store", default=None,
-                             help="Censys dork used for search")
         modules.add_argument("--dork-fofa", dest="dork_fofa", action="store", default=None,
                              help="Fofa dork used for search")
         modules.add_argument("--dork-quake", dest="dork_quake", action="store", default=None,
                              help="Quake dork used for search")
         modules.add_argument("--dork-hunter", dest="dork_hunter", action="store", default=None,
                              help="Hunter dork used for search")
+        modules.add_argument("--dork-censys", dest="dork_censys", action="store", default=None,
+                             help="Censys dork used for search")
         modules.add_argument("--max-page", dest="max_page", type=int, default=1,
                              help="Max page used in search API")
         modules.add_argument("--search-type", dest="search_type", action="store", default='host',
-                             help="search type used in ZoomEye API, web or host")
+                             help="search type used in search API, web or host")
         modules.add_argument("--vul-keyword", dest="vul_keyword", action="store", default=None,
                              help="Seebug keyword used for search")
         modules.add_argument("--ssv-id", dest="ssvid", action="store", default=None,

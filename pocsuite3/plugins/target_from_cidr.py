@@ -38,7 +38,7 @@ class TargetFromCIDR(PluginBase):
                     count += 1
             except ValueError:
                 logger.error("[PLUGIN] error format from " + i)
-        info_msg = "[PLUGIN] get {0} target(s) from CIDR".format(count)
+        info_msg = "[PLUGIN] got {0} target(s) from CIDR".format(count)
         logger.info(info_msg)
 
 

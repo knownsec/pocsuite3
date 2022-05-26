@@ -49,7 +49,7 @@ class TargetFromRedis(PluginBase):
                     if self.add_target(target):
                         count += 1
 
-            info_msg = "[PLUGIN] get {0} target(s) from redis".format(count)
+            info_msg = "[PLUGIN] got {0} target(s) from redis".format(count)
             logger.info(info_msg)
 
 

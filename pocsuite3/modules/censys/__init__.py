@@ -1,6 +1,8 @@
+import time
 import getpass
 from configparser import ConfigParser
 from pocsuite3.lib.core.data import paths, logger
+from pocsuite3.lib.core.common import is_ipv6_address_format
 from pocsuite3.api import requests
 
 
@@ -50,8 +52,7 @@ class Censys():
                 self.write_conf()
                 return True
             else:
-                logger.error("The censys api id or secret are incorrect, "
-                             "Please enter a correct one.")
+                logger.error("The censys api id or secret are incorrect, Please enter a correct one.")
 
     def write_conf(self):
         if not self.parser.has_section("Censys"):
@@ -63,16 +64,12 @@ class Censys():
         except Exception as ex:
             logger.error(str(ex))
 
-    def get_resource_info(self):
-        if self.check_token():
-            return True
-        return False
-
     def search(self, dork, pages=1, resource='ipv4'):
         search_result = set()
         try:
             cursor = ''
             for page in range(1, pages + 1):
+                time.sleep(1)
                 url = "https://search.censys.io/api/v2/hosts/search"
                 data = {
                     "q": dork,  # Search keywords
@@ -87,9 +84,12 @@ class Censys():
                     cursor = resp.json()['result']['links']['next']
                     for i in results:
                         ip = i['ip']
+                        if is_ipv6_address_format(ip):
+                            ip = f'[{ip}]'
                         for j in i['services']:
                             port = j['port']
-                            search_result.add(f'{ip}:{port}')
+                            scheme = j['service_name'].lower()
+                            search_result.add(f'{scheme}://{ip}:{port}' if scheme else f'{ip}:{port}')
         except Exception as ex:
             logger.error(str(ex))
         return search_result
