@@ -55,46 +55,48 @@ Request:
   --headers HEADERS     Extra headers (e.g. "key1: value1\nkey2: value2")
 
 Account:
-  Telnet404, Shodan, CEye, Fofa account options
+  Account options
 
-  --login-user LOGIN_USER
-                        Telnet404 login user
-  --login-pass LOGIN_PASS
-                        Telnet404 login password
+  --ceye-token CEYE_TOKEN
+                        CEye token
+  --seebug-token SEEBUG_TOKEN
+                        Seebug token
+  --zoomeye-token ZOOMEYE_TOKEN
+                        ZoomEye token
   --shodan-token SHODAN_TOKEN
                         Shodan token
   --fofa-user FOFA_USER
-                        fofa user
+                        Fofa user
   --fofa-token FOFA_TOKEN
-                        fofa token
+                        Fofa token
   --quake-token QUAKE_TOKEN
-                        quake token
+                        Quake token
   --hunter-token HUNTER_TOKEN
-                        hunter token
+                        Hunter token
   --censys-uid CENSYS_UID
                         Censys uid
   --censys-secret CENSYS_SECRET
                         Censys secret
 
 Modules:
-  Modules(Seebug, Zoomeye, CEye, Fofa, Quake, Hunter, Listener) options
+  Modules options
 
   --dork DORK           Zoomeye dork used for search
   --dork-zoomeye DORK_ZOOMEYE
                         Zoomeye dork used for search
   --dork-shodan DORK_SHODAN
                         Shodan dork used for search
-  --dork-censys DORK_CENSYS
-                        Censys dork used for search
   --dork-fofa DORK_FOFA
                         Fofa dork used for search
   --dork-quake DORK_QUAKE
                         Quake dork used for search
   --dork-hunter DORK_HUNTER
                         Hunter dork used for search
+  --dork-censys DORK_CENSYS
+                        Censys dork used for search
   --max-page MAX_PAGE   Max page used in search API
   --search-type SEARCH_TYPE
-                        search type used in ZoomEye API, web or host
+                        search type used in search API, web or host
   --vul-keyword VUL_KEYWORD
                         Seebug keyword used for search
   --ssv-id SSVID        Seebug SSVID number for target PoC
@@ -127,8 +129,6 @@ Poc options:
   definition options for PoC
 
   --options             Show all definition options
-
-[*] shutting down at 14:39:27
 
 ```
 

@@ -1,8 +1,9 @@
 import getpass
+import time
 from base64 import b64encode
 from configparser import ConfigParser
-from pocsuite3.lib.core.data import logger
-from pocsuite3.lib.core.data import paths
+from pocsuite3.lib.core.data import logger, paths
+from pocsuite3.lib.core.common import is_ipv6_address_format
 from pocsuite3.lib.request import requests
 
 
@@ -52,8 +53,7 @@ class Fofa():
                 self.write_conf()
                 return True
             else:
-                logger.error("The Fofa user email or api key are incorrect, "
-                             "Please enter the correct one.")
+                logger.error("The Fofa user email or api key are incorrect, Please enter the correct one.")
 
     def write_conf(self):
         if not self.parser.has_section("Fofa"):
@@ -65,14 +65,15 @@ class Fofa():
         except Exception as ex:
             logger.error(str(ex))
 
-    def search(self, dork, pages=1, resource='ip,port'):
+    def search(self, dork, pages=1, resource='host'):
         if resource == 'host':
-            resource = 'ip,port'
+            resource = 'protocol,ip,port'
         else:
-            resource = 'host'
+            resource = 'protocol,host'
         search_result = set()
         try:
             for page in range(1, pages + 1):
+                time.sleep(1)
                 dork = b64encode(dork.encode()).decode()
                 url = (
                     f"{self.api_url}/search/all?email={self.user}&key={self.token}&qbase64={dork}&"
@@ -82,13 +83,16 @@ class Fofa():
                 if resp and resp.status_code == 200 and "results" in resp.json():
                     content = resp.json()
                     for match in content['results']:
-                        if resource == "ip,port":
-                            search_result.add("%s:%s" % (match[0], match[1]))
+                        if resource == "protocol,ip,port":
+                            ip = match[1]
+                            if is_ipv6_address_format(ip):
+                                ip = f'[{ip}]'
+                            search_result.add("%s://%s:%s" % (match[0], ip, match[2]))
                         else:
-                            if not match.startswith("https://"):
-                                search_result.add("http://" + match)
+                            if '://' not in match[1]:
+                                search_result.add("%s://%s" % (match[0], match[1]))
                             else:
-                                search_result.add(match)
+                                search_result.add(match[1])
                 else:
                     logger.error("[PLUGIN] Fofa:{}".format(resp.text))
         except Exception as ex:
@@ -99,4 +103,6 @@ class Fofa():
 if __name__ == "__main__":
     fa = Fofa()
     z = fa.search('body="thinkphp"')
+    print(z)
+    z = fa.search('body="thinkphp"', resource='web')
     print(z)

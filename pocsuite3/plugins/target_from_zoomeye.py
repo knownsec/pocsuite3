@@ -11,13 +11,9 @@ class TargetFromZoomeye(PluginBase):
     category = PLUGIN_TYPE.TARGETS
 
     def init_zoomeye_api(self):
-        self.zoomeye = ZoomEye(username=conf.login_user, password=conf.login_pass)
-        if self.zoomeye.get_resource_info():
-            info_msg = "[PLUGIN] ZoomEeye search limit {0}".format(self.zoomeye.resources)
-            logger.info(info_msg)
-        else:
-            info_msg = "[PLUGIN] ZoomEye login faild"
-            logger.error(info_msg)
+        self.zoomeye = ZoomEye(token=conf.zoomeye_token)
+        info_msg = "[PLUGIN] ZoomEeye search limit {0}".format(self.zoomeye.resources)
+        logger.info(info_msg)
 
     def init(self):
         self.init_zoomeye_api()
@@ -42,7 +38,7 @@ class TargetFromZoomeye(PluginBase):
                 if self.add_target(target):
                     count += 1
 
-        info_msg = "[PLUGIN] get {0} target(s) from zoomeye".format(count)
+        info_msg = "[PLUGIN] got {0} target(s) from zoomeye".format(count)
         logger.info(info_msg)
 
 

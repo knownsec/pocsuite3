@@ -525,8 +525,9 @@ def _set_conf_attributes():
     conf.retry = 0
     conf.delay = 0
     conf.http_headers = {}
-    conf.login_user = None
-    conf.login_pass = None
+    conf.ceye_token = None
+    conf.seebug_token = None
+    conf.zoomeye_token = None
     conf.shodan_token = None
     conf.fofa_user = None
     conf.fofa_token = None

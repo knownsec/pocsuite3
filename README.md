@@ -29,9 +29,12 @@ It comes with a powerful proof-of-concept engine, many nice features for the ult
 * Integrate with [Seebug](https://www.seebug.org) (for load PoC from Seebug website)
 * Integrate with [ZoomEye](https://www.zoomeye.org) (for load target from ZoomEye `Dork`)
 * Integrate with [Shodan](https://www.shodan.io) (for load target from Shodan `Dork`)
+* Integrate with [Fofa](https://fofa.info) (for load target from Fofa `Dork`)
+* Integrate with [Quake](https://quake.360.cn)(for load target from Quake `Dork`)
+* Integrate with [Hunter](https://hunter.qianxin.com) (for load target from Hunter `Dork`)
+* Integrate with [Censys](https://censys.io) (for load target from Censys `Dork`)
 * Integrate with [Ceye](http://ceye.io/) (for verify blind DNS and HTTP request)
 * Integrate with [Interactsh](https://github.com/projectdiscovery/interactsh) (for verify blind DNS and HTTP request)
-* Integrate with Fofa (for load target from Fofa `Dork`)
 * Friendly debug PoC scripts with IDEs
 * More ...
 
@@ -102,11 +105,11 @@ yay pocsuite3
 Or click [here](https://github.com/knownsec/pocsuite3/archive/master.zip) to download the latest source zip package and extract
 
 ``` bash
-$ wget https://github.com/knownsec/pocsuite3/archive/master.zip
-$ unzip master.zip
-$ cd pocsuite3-master
-$ pip3 install -r requirements.txt
-$ python3 setup.py install
+wget https://github.com/knownsec/pocsuite3/archive/master.zip
+unzip master.zip
+cd pocsuite3-master
+pip3 install -r requirements.txt
+python3 setup.py install
 ```
 
 

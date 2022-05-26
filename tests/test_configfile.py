@@ -66,36 +66,37 @@ class TestCase(unittest.TestCase):
             request.add_option("--delay", dest="delay", help="Delay between two request of one thread")
             request.add_option("--headers", dest="headers", help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
             # Account options
-            account = OptionGroup(parser, "Account", "Telnet404 account options")
-            account.add_option("--login-user", dest="login_user", help="Telnet404 login user")
-            account.add_option("--login-pass", dest="login_pass", help="Telnet404 login password")
+            account = OptionGroup(parser, "Account", "Account options")
+            account.add_option("--ceye-token", dest="ceye_token", help="CEye token")
+            account.add_option("--seebug-token", dest="seebug_token", help="Seebug token")
+            account.add_option("--zoomeye-token", dest="zoomeye_token", help="ZooomEye token")
             account.add_option("--shodan-token", dest="shodan_token", help="Shodan token")
-            account.add_option("--fofa-user", dest="fofa_user", help="fofa user")
-            account.add_option("--fofa-token", dest="fofa_token", help="fofa token")
-            account.add_option("--quake-token", dest="quake_token", help="quake token")
-            account.add_option("--hunter-token", dest="hunter_token", help="hunter token")
+            account.add_option("--fofa-user", dest="fofa_user", help="Fofa user")
+            account.add_option("--fofa-token", dest="fofa_token", help="Fofa token")
+            account.add_option("--quake-token", dest="quake_token", help="Quake token")
+            account.add_option("--hunter-token", dest="hunter_token", help="Hunter token")
             account.add_option("--censys-uid", dest="censys_uid", help="Censys uid")
             account.add_option("--censys-secret", dest="censys_secret", help="Censys secret")
             # Modules options
-            modules = OptionGroup(parser, "Modules", "Modules(Seebug Zoomeye CEye Listener) options")
+            modules = OptionGroup(parser, "Modules", "Modules options")
             modules.add_option("--dork", dest="dork", action="store", default=None,
                                help="Zoomeye dork used for search")
             modules.add_option("--dork-zoomeye", dest="dork_zoomeye", action="store", default=None,
                                help="Zoomeye dork used for search")
             modules.add_option("--dork-shodan", dest="dork_shodan", action="store", default=None,
                                help="Shodan dork used for search")
-            modules.add_option("--dork-censys", dest="dork_censys", action="store", default=None,
-                               help="Censys dork used for search")
             modules.add_option("--dork-fofa", dest="dork_fofa", action="store", default=None,
                                help="Fofa dork used for search")
             modules.add_option("--dork-quake", dest="dork_quake", action="store", default=None,
                                help="Quake dork used for search")
             modules.add_option("--dork-hunter", dest="dork_hunter", action="store", default=None,
                                help="Hunter dork used for search")
+            modules.add_option("--dork-censys", dest="dork_censys", action="store", default=None,
+                               help="Censys dork used for search")
             modules.add_option("--max-page", dest="max_page", type=int, default=1,
                                help="Max page used in search API")
             modules.add_option("--search-type", dest="search_type", action="store", default='host',
-                               help="search type used in ZoomEye API, web or host")
+                               help="search type used in search API, web or host")
             modules.add_option("--vul-keyword", dest="vul_keyword", action="store", default=None,
                                help="Seebug keyword used for search")
             modules.add_option("--ssv-id", dest="ssvid", action="store", default=None,

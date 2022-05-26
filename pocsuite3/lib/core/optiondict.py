@@ -26,8 +26,9 @@ optDict = {
         'headers': 'string'
     },
     'Account': {
-        'login_user': 'string',
-        'login_pass': 'string',
+        'ceye_token': 'string',
+        'seebug_token': 'string',
+        'zoomeye_token': 'string',
         'shodan_token': 'string',
         'fofa_user': 'string',
         'fofa_token': 'string',
@@ -40,10 +41,10 @@ optDict = {
         'dork': 'string',
         'dork_zoomeye': 'string',
         'dork_shodan': 'string',
-        'dork_censys': 'string',
         'dork_fofa': 'string',
         'dork_quake': 'string',
         'dork_hunter': 'string',
+        'dork_censys': 'string',
         'max_page': 'integer',
         'search_type': 'string',
         'vul_keyword': 'string',
