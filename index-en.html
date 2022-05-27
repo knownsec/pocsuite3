@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Pocsuite3：Open-sourced Remote Vulnerability Testing Framework</title>
+    <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?6fe17d703662dcfbf9458f3c30ba72b5";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Pocsuite3</h1>
+        <h2>An Open-sourced Remote Vulnerability Testing Framework Developed By the Knownsec 404 Team</h2>
+        <a href="https://github.com/knownsec/pocsuite3" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <pre><code>                              ,--. ,--.
+ ,---. ,---. ,---.,---.,--.,--`--,-'  '-.,---.
+| .-. | .-. | .--(  .-'|  ||  ,--'-.  .-| .-. :
+| '-' ' '-' \ `--.-'  `'  ''  |  | |  | \   --.
+|  |-' `---' `---`----' `----'`--' `--'  `----'
+`--'                        https://pocsuite.org
+
+</code></pre>
+
+<h2 id="introduction">
+<a id="Introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>Pocsuite3 is an open-sourced remote vulnerability testing and PoC development framework developed by the Knownsec 404 Team. It serves as the cornerstone of the team.</p>
+<p>You can use Pocsuite3 to verify and exploit vulnerabilities or write PoC/Exp based on it. You can also integrate Pocsuite3 in your vulnerability testing tool, which provides a standard calling class.</p>
+
+<h2 id="features">
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h2>
+
+<p><ul>
+  <li>PoC scripts can running with `verify`, `attack`, `shell` mode in different way</li>
+  <li>Plugin ecosystem</li>
+  <li>Dynamic loading PoC script from any where (local file, redis, database, Seebug ...)</li>
+  <li>Load multi-target from any where (CIDR, local file, redis, database, ZoomEye ...)</li>
+  <li>Results can be easily exported</li>
+  <li>Dynamic patch and hook requests </li>
+  <li>Both command line tool and python package import to use</li>
+  <li>IPV6 support</li>
+  <li>Global HTTP/HTTPS/SOCKS proxy support</li>
+  <li>Simple spider API for PoC script to use</li>
+  <li>Integrate with [Seebug](https://www.seebug.org) (for load PoC from Seebug website)</li>
+  <li>Integrate with [ZoomEye](https://www.zoomeye.org) (for load target from ZoomEye `Dork`)</li>
+  <li>Integrate with [Shodan](https://www.shodan.io) (for load target from Shodan `Dork`)</li>
+  <li>Integrate with [Fofa](https://fofa.info) (for load target from Fofa `Dork`)</li>
+  <li>Integrate with [Quake](https://quake.360.cn)(for load target from Quake `Dork`)</li>
+  <li>Integrate with [Hunter](https://hunter.qianxin.com) (for load target from Hunter `Dork`)</li>
+  <li>Integrate with [Censys](https://censys.io) (for load target from Censys `Dork`)</li>
+  <li>Integrate with [Ceye](http://ceye.io/) (for verify blind DNS and HTTP request)</li>
+  <li>Integrate with [Interactsh](https://github.com/projectdiscovery/interactsh) (for verify blind DNS and HTTP request)</li>
+  <li>More ...</li>
+  </ul>
+</p>
+
+<h2 id="functions">
+<a id="Functions" class="anchor" href="#functions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Functions</h2>
+
+<h3 id="vul_test" style="margin-left: 35px;">
+<a id="Vulnerability Testing Framework" class="anchor" href="#vul_test" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Vulnerability Testing Framework</h3>
+
+<p>Written in Python3 and supported both validation and exploitation two plugin-invoked modes, Pocsuite3 could import batch targets from files and test those targets against multiple exploit-plugins in advance.（See<a href="https://github.com/knownsec/pocsuite3/blob/master/docs/USAGE.md"> "Pocsuite3 usage"</a>）</p>
+
+<h3 id="develop_kit" style="margin-left: 35px;">
+<a id="PoC/Exp Development Kit" class="anchor" href="#develop_kit" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PoC/Exp Development Kit</h3>
+
+<p>Like Metasploit, it is a development kit for pentesters to develope their own exploits. Based on Pocsuite3, you can write the most core code of PoC/Exp without caring about the resulting output etc. There are at least several hundred people writing PoC/Exp based on Pocsuite3 up to date.</p>
+
+<h3 id="develop_module" style="margin-left: 35px;">
+<a id="Integratable Module" class="anchor" href="#develop_module" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Integratable Module</h3>
+
+<p>Users could utilize some auxiliary modules packaged in Pocsuite3 to extend their exploit functions or integrate Pocsuite3 to develop other vulnerability assesment tools.</p>
+
+<h3 id="integrated_api" style="margin-left: 35px;">
+<a id="Integrated ZoomEye & Seebug APIs" class="anchor" href="#integrated_api" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Integrated ZoomEye And Seebug APIs</h3>
+<p>Pocsuite3 is also an extremely useful tool to integrate Seebug and ZoomEye APIs in a collaborative way. Vulnerablity assessment can be done automatically and effectively by searching targets through ZoomEye and acquiring PoC scripts from Seebug or locally.</p>
+
+<h2 id="install">
+<a id="Installation" class="anchor" href="#%E5%AE%89%E8%A3%85" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Pocsuite3 works out of the box with Python version 3.6+ on any platform. you can install Pocsuite3 in one of the following ways:</p>
+
+<p>Python pip</p>
+
+<div class="highlight highlight-source-shell"><pre>
+$ pip3 install pocsuite3
+$ pocsuite --version
+</pre></div>
+
+<p>MacOS</p>
+<div class="highlight highlight-source-shell"><pre>
+$ brew update
+$ brew info pocsuite3
+$ brew install pocsuite3
+</pre></div>
+
+<p>Debian, Ubuntu, Kali</p>
+<div class="highlight highlight-source-shell"><pre>
+$ sudo apt update
+$ sudo apt install pocsuite3
+</pre></div>
+
+<p>Docker</p>
+<div class="highlight highlight-source-shell"><pre>
+$ docker run -it pocsuite3/pocsuite3
+</pre></div>
+
+<p>ArchLinux</p>
+<div class="highlight highlight-source-shell"><pre>
+$ yay pocsuite3
+</pre></div>
+
+<p>You can use git to clone the latest source code repository and install from source.</p>
+<div class="highlight highlight-source-shell"><pre>
+$ https://github.com/knownsec/pocsuite3.git
+$ cd pocsuite3
+$ pip3 install -r requirements.txt
+$ python3 setup.py install
+</pre></div>
+
+<h2 id="usage">
+<a id="Usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+<ul>
+<li><a href="https://github.com/knownsec/pocsuite3/blob/master/docs/USAGE.md">How to use Pocsuite3 test vulnerability</a>
+</li>
+<li><a href="https://github.com/knownsec/pocsuite3/blob/master/docs/CODING.md">How to develop PoC/Exp based on Pocsuite3</a>
+</li>
+<li><a href="https://github.com/knownsec/pocsuite3/blob/master/docs/CODING.md">How to integrate Pocsuite3 in applications</a>
+</li>
+</ul>
+
+<h2 id="demo">
+<a id="Demo" class="anchor" href="#Demo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Demo</h2>
+<p><video width="550" height="400" controls="controls" style="margin-top:-30px;">
+   <source src="images/pocsuite_demo.mp4" type="video/mp4">pocsuite_demo.mp4
+          您的浏览器不支持 video 标签
+</video></p>
+
+<h2 id="links">
+<a id="Links" class="anchor" href="#%E7%9B%B8%E5%85%B3%E9%93%BE%E6%8E%A5" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Links</h2>
+
+<ul>
+<li><a href="https://github.com/knownsec/pocsuite3/blob/master/docs/CONTRIBUTORS.md">Thanks List</a></li>
+<li><a href="https://github.com/knownsec/pocsuite3/blob/master/CHANGELOG.md">Change Log</a></li>
+<li><a href="https://github.com/knownsec/pocsuite3/issues">Bug Feedback</a></li>
+<li><a href="https://github.com/knownsec/pocsuite3/blob/master/COPYING">Copying</a></li>
+<li><a href="https://pocsuite.org">Pocsuite3 Website: https://pocsuite.org</a></li>
+<li><a href="https://www.seebug.org">Seebug Website: https://www.seebug.org</a></li>
+<li><a href="https://www.zoomeye.org">ZoomEye Website: https://www.zoomeye.org</a></li>
+</ul>
+        </section>
+
+        <aside id="sidebar">
+
+          <a href="https://github.com/knownsec/Pocsuite3/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/knownsec/Pocsuite3/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/knownsec/Pocsuite3"></a> Developed by <a href="https://github.com/knownsec">Knownsec</a>.</p>
+
+
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+
+          <hr>
+          <p class="repo-owner">访问 <a href="index.html">中文页面</a> </p>
+        </aside>
+      </div>
+    </div>
+
+
+  </body>
+</html>

