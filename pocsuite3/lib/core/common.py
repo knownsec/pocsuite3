@@ -330,7 +330,7 @@ def get_md5(value):
 
 
 def extract_cookies(cookie):
-    cookies = dict([l.split("=", 1) for l in cookie.split("; ")])
+    cookies = dict([i.split("=", 1) for i in cookie.split("; ")])
     return cookies
 
 
@@ -939,7 +939,7 @@ def check_port(ip, port):
         s.connect(sa)
         s.shutdown(2)
         return True
-    except:
+    except socket.error:
         return False
     finally:
         s.close()
@@ -976,9 +976,9 @@ def desensitization(s):
     """
     s = str(s)
     return (
-            s[:len(s) // 4 if len(s) < 30 else 8] +
-            '***' +
-            s[len(s) * 3 // 4:]
+        s[:len(s) // 4 if len(s) < 30 else 8] +
+        '***' +
+        s[len(s) * 3 // 4:]
     )
 
 
