@@ -1,3 +1,4 @@
+# pylint: disable=E1101
 import time
 import re
 import traceback
@@ -230,7 +231,7 @@ class POCBase(object):
             output.params = self.params
         return output
 
-    def _check(self, dork='', allow_redirects=False, return_obj=False, is_http=True):
+    def _check(self, dork='', allow_redirects=False, return_obj=False, is_http=True, honeypot_check=True):
         u = urlparse(self.url)
         # the port closed
         if u.port and not check_port(u.hostname, u.port):
@@ -266,7 +267,56 @@ class POCBase(object):
         if return_obj:
             return res
 
-        return res and (dork.lower() in str(res.headers) or dork.lower() in res.text.lower())
+        if res is None:
+            return False
+
+        content = str(res.headers).lower() + res.text.lower()
+        dork = dork.lower()
+
+        if dork not in content:
+            return False
+
+        if not honeypot_check:
+            return True
+
+        is_honeypot = False
+
+        # detect honeypot
+        # https://www.zoomeye.org/searchResult?q=%22GoAhead-Webs%22%20%2B%22Apache-Coyote%22
+        keyword = [
+            'goahead-webs',
+            'apache-coyote',
+            'upnp/',
+            'openresty',
+            'tomcat'
+        ]
+
+        sin = 0
+        for k in keyword:
+            if k in content:
+                sin += 1
+
+        if sin >= 3:
+            logger.debug(f'honeypot: sin({sin}) >= 3')
+            is_honeypot = True
+
+        # maybe some false positives
+        elif len(re.findall('<title>(.*)</title>', content)) > 5:
+            logger.debug('honeypot: too many title')
+            is_honeypot = True
+
+        elif len(re.findall('basic realm=', content)) > 5:
+            logger.debug('honeypot: too many www-auth')
+            is_honeypot = True
+
+        elif len(re.findall('server: ', content)) > 5:
+            logger.debug('honeypot: too many server')
+            is_honeypot = True
+
+        if is_honeypot:
+            logger.warn(f'{self.url} is a honeypot.')
+
+        return not is_honeypot
 
     def _shell(self):
         """
