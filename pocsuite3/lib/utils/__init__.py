@@ -99,7 +99,7 @@ def generate_shellcode_list(listener_ip, listener_port, os_target=OS.WINDOWS, os
     filepath = os.path.join(paths.POCSUITE_TMP_PATH, filename)
     if os_target == OS.WINDOWS:
         filepath = os.path.join(paths.POCSUITE_TMP_PATH, filename) + '.exe'
-    shellcode = s.create_shellcode(
+    _ = s.create_shellcode(
         connection_type,
         encode='',
         make_exe=1,
@@ -273,8 +273,9 @@ def gen_cert(countryName='',
 
 def minimum_version_required(ver):
     from pocsuite3 import __version__
-    from packaging import version
-    if version.parse(__version__) < version.parse(ver):
-        logger.error(f'The minimum version required for this PoC plugin is {ver}, '
-                     f'you installed {__version__}, please upgrade pocsuite3 :)')
-        sys.exit(-1)
+    v1, v2 = ver.split('.'), __version__.split('.')
+    for i in range(len(v1)):
+        if int(v1[i]) > int(v2[i]):
+            logger.error(f'The minimum version required for this PoC plugin is {ver}, '
+                         f'you installed {__version__}, please upgrade pocsuite3 :)')
+            sys.exit(-1)
