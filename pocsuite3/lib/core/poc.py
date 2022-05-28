@@ -1,14 +1,16 @@
+import time
 import re
 import traceback
 import inspect
 from collections import OrderedDict
 
 from requests.exceptions import ConnectTimeout, ConnectionError, HTTPError, TooManyRedirects
-from pocsuite3.lib.core.common import parse_target_url, desensitization
+from pocsuite3.lib.core.common import parse_target_url, desensitization, check_port, OrderedSet
 from pocsuite3.lib.core.data import conf, logger
 from pocsuite3.lib.core.enums import OUTPUT_STATUS, CUSTOM_LOGGING, ERROR_TYPE_ID, POC_CATEGORY
 from pocsuite3.lib.core.exception import PocsuiteValidationException
 from pocsuite3.lib.core.interpreter_option import OptString, OptInteger, OptPort, OptBool
+from pocsuite3.lib.request import requests
 from pocsuite3.lib.utils import urlparse
 
 
@@ -228,6 +230,44 @@ class POCBase(object):
             output.params = self.params
         return output
 
+    def _check(self, dork='', allow_redirects=False, return_obj=False, is_http=True):
+        u = urlparse(self.url)
+        # the port closed
+        if u.port and not check_port(u.hostname, u.port):
+            logger.debug(f'{self.url}, the port is closed.')
+            return False
+
+        if not is_http:
+            return True
+
+        res = None
+        netloc = self.url.split('://', 1)[-1]
+        urls = OrderedSet()
+        urls.add(self.url)
+        urls.add(f'http://{netloc}')
+        urls.add(f'https://{netloc}')
+        for url in urls:
+            try:
+                time.sleep(0.5)
+                res = requests.get(url, allow_redirects=allow_redirects)
+                # access ok, the url need to be correct
+                if 'plain HTTP request was sent to HTTPS port' in res.text:
+                    self.url = f'https://{netloc}'
+                    res = requests.get(self.url, allow_redirects=allow_redirects)
+                    logger.warn(f'auto correct url to: {self.url}')
+                # another protocol is access ok
+                elif url != self.url:
+                    self.url = url
+                    logger.warn(f'auto correct url to: {self.url}')
+                break
+            except requests.ConnectionError:
+                pass
+
+        if return_obj:
+            return res
+
+        return res and (dork.lower() in str(res.headers) or dork.lower() in res.text.lower())
+
     def _shell(self):
         """
         @function   以Poc的shell模式对urls进行检测(具有危险性)
@@ -252,7 +292,7 @@ class POCBase(object):
         """
         raise NotImplementedError
 
-    def parse_output(self, result):
+    def parse_output(self, result={}):
         output = Output(self)
         if result:
             output.success(result)
