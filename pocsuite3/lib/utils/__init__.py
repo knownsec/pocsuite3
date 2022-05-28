@@ -1,3 +1,4 @@
+import sys
 import re
 import ast
 import base64
@@ -268,3 +269,12 @@ def gen_cert(countryName='',
         hard_coded_cert = base64.b64decode(hard_coded_cert_base64)
         with open(filepath, "wb+") as fw:
             fw.write(hard_coded_cert)
+
+
+def minimum_version_required(ver):
+    from pocsuite3 import __version__
+    from packaging import version
+    if version.parse(__version__) < version.parse(ver):
+        logger.error(f'The minimum version required for this PoC plugin is {ver}, '
+                     f'you installed {__version__}, please upgrade pocsuite3 :)')
+        sys.exit(-1)

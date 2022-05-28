@@ -16,7 +16,7 @@ from pocsuite3.lib.core.register import (load_file_to_module,
 from pocsuite3.lib.core.settings import DEFAULT_LISTENER_PORT
 from pocsuite3.lib.request import requests
 from pocsuite3.lib.utils import (generate_shellcode_list, get_middle_text,
-                                 random_str)
+                                 random_str, minimum_version_required)
 from pocsuite3.modules.censys import Censys
 from pocsuite3.modules.ceye import CEye
 from pocsuite3.modules.fofa import Fofa
@@ -34,7 +34,7 @@ from pocsuite3.shellcodes import OSShellcodes, WebShell
 
 __all__ = ('requests', 'PluginBase', 'register_plugin', 'PLUGIN_TYPE',
            'POCBase', 'Output', 'AttribDict', 'POC_CATEGORY', 'VUL_TYPE',
-           'register_poc', 'conf', 'kb', 'logger', 'paths',
+           'register_poc', 'conf', 'kb', 'logger', 'paths', 'minimum_version_required',
            'DEFAULT_LISTENER_PORT', 'load_file_to_module',
            'load_string_to_module', 'single_time_warn_message', 'CEye',
            'Seebug', 'ZoomEye', 'Shodan', 'Fofa', 'Quake', 'Hunter', 'Censys',
