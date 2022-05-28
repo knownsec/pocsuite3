@@ -14,6 +14,7 @@ import time
 import collections
 import chardet
 import requests
+import ipaddress
 from collections import OrderedDict
 from functools import wraps
 from ipaddress import ip_address, ip_network
@@ -495,6 +496,10 @@ def get_host_ip(dst='8.8.8.8'):
         <str>:  source ip address
     """
 
+    # maybe docker env
+    if dst == ['127.0.0.1', 'localhost']:
+        dst = '8.8.8.8'
+
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect((dst, 80))
@@ -504,6 +509,11 @@ def get_host_ip(dst='8.8.8.8'):
     finally:
         s.close()
 
+    if ipaddress.ip_address(ip).is_private:
+        logger.warn(
+            f'your wan ip {ip} is a private ip, '
+            'there may be some issues in the next stages of exploitation'
+        )
     return ip
 
 

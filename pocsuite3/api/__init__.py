@@ -1,6 +1,6 @@
 from pocsuite3.lib.controller.controller import start
 from pocsuite3.lib.core.common import (encoder_bash_payload,
-                                       encoder_powershell_payload,
+                                       encoder_powershell_payload, get_host_ip,
                                        get_host_ipv6, single_time_warn_message)
 from pocsuite3.lib.core.data import conf, kb, logger, paths
 from pocsuite3.lib.core.datatype import AttribDict
@@ -44,7 +44,7 @@ __all__ = ('requests', 'PluginBase', 'register_plugin', 'PLUGIN_TYPE',
            'WebShell', 'OptDict', 'OptIP', 'OptPort', 'OptBool', 'OptInteger',
            'OptFloat', 'OptString', 'OptItems', 'get_middle_text',
            'generate_shellcode_list', 'random_str', 'encoder_bash_payload',
-           'encoder_powershell_payload', 'get_host_ipv6', 'bind_shell',
+           'encoder_powershell_payload', 'get_host_ip', 'get_host_ipv6', 'bind_shell',
            'bind_tcp_shell', 'bind_telnet_shell', 'Interactsh')
 
 
