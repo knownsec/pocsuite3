@@ -1,14 +1,17 @@
+# pylint: disable=E1101
+import time
 import re
 import traceback
 import inspect
 from collections import OrderedDict
 
 from requests.exceptions import ConnectTimeout, ConnectionError, HTTPError, TooManyRedirects
-from pocsuite3.lib.core.common import parse_target_url, desensitization
+from pocsuite3.lib.core.common import parse_target_url, desensitization, check_port, OrderedSet
 from pocsuite3.lib.core.data import conf, logger
 from pocsuite3.lib.core.enums import OUTPUT_STATUS, CUSTOM_LOGGING, ERROR_TYPE_ID, POC_CATEGORY
 from pocsuite3.lib.core.exception import PocsuiteValidationException
 from pocsuite3.lib.core.interpreter_option import OptString, OptInteger, OptPort, OptBool
+from pocsuite3.lib.request import requests
 from pocsuite3.lib.utils import urlparse
 
 
@@ -228,6 +231,93 @@ class POCBase(object):
             output.params = self.params
         return output
 
+    def _check(self, dork='', allow_redirects=False, return_obj=False, is_http=True, honeypot_check=True):
+        u = urlparse(self.url)
+        # the port closed
+        if u.port and not check_port(u.hostname, u.port):
+            logger.debug(f'{self.url}, the port is closed.')
+            return False
+
+        if not is_http:
+            return True
+
+        res = None
+        netloc = self.url.split('://', 1)[-1]
+        urls = OrderedSet()
+        urls.add(self.url)
+        urls.add(f'http://{netloc}')
+        urls.add(f'https://{netloc}')
+        for url in urls:
+            try:
+                time.sleep(0.5)
+                res = requests.get(url, allow_redirects=allow_redirects)
+                # access ok, the url need to be correct
+                if 'plain HTTP request was sent to HTTPS port' in res.text:
+                    self.url = f'https://{netloc}'
+                    res = requests.get(self.url, allow_redirects=allow_redirects)
+                    logger.warn(f'auto correct url to: {self.url}')
+                # another protocol is access ok
+                elif url != self.url:
+                    self.url = url
+                    logger.warn(f'auto correct url to: {self.url}')
+                break
+            except requests.ConnectionError:
+                pass
+
+        if return_obj:
+            return res
+
+        if res is None:
+            return False
+
+        content = str(res.headers).lower() + res.text.lower()
+        dork = dork.lower()
+
+        if dork not in content:
+            return False
+
+        if not honeypot_check:
+            return True
+
+        is_honeypot = False
+
+        # detect honeypot
+        # https://www.zoomeye.org/searchResult?q=%22GoAhead-Webs%22%20%2B%22Apache-Coyote%22
+        keyword = [
+            'goahead-webs',
+            'apache-coyote',
+            'upnp/',
+            'openresty',
+            'tomcat'
+        ]
+
+        sin = 0
+        for k in keyword:
+            if k in content:
+                sin += 1
+
+        if sin >= 3:
+            logger.debug(f'honeypot: sin({sin}) >= 3')
+            is_honeypot = True
+
+        # maybe some false positives
+        elif len(re.findall('<title>(.*)</title>', content)) > 5:
+            logger.debug('honeypot: too many title')
+            is_honeypot = True
+
+        elif len(re.findall('basic realm=', content)) > 5:
+            logger.debug('honeypot: too many www-auth')
+            is_honeypot = True
+
+        elif len(re.findall('server: ', content)) > 5:
+            logger.debug('honeypot: too many server')
+            is_honeypot = True
+
+        if is_honeypot:
+            logger.warn(f'{self.url} is a honeypot.')
+
+        return not is_honeypot
+
     def _shell(self):
         """
         @function   以Poc的shell模式对urls进行检测(具有危险性)
@@ -252,7 +342,7 @@ class POCBase(object):
         """
         raise NotImplementedError
 
-    def parse_output(self, result):
+    def parse_output(self, result={}):
         output = Output(self)
         if result:
             output.success(result)

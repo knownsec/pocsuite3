@@ -1,3 +1,4 @@
+import sys
 import re
 import ast
 import base64
@@ -98,7 +99,7 @@ def generate_shellcode_list(listener_ip, listener_port, os_target=OS.WINDOWS, os
     filepath = os.path.join(paths.POCSUITE_TMP_PATH, filename)
     if os_target == OS.WINDOWS:
         filepath = os.path.join(paths.POCSUITE_TMP_PATH, filename) + '.exe'
-    shellcode = s.create_shellcode(
+    _ = s.create_shellcode(
         connection_type,
         encode='',
         make_exe=1,
@@ -268,3 +269,45 @@ def gen_cert(countryName='',
         hard_coded_cert = base64.b64decode(hard_coded_cert_base64)
         with open(filepath, "wb+") as fw:
             fw.write(hard_coded_cert)
+
+
+def minimum_version_required(ver):
+    from pocsuite3 import __version__
+    from pkg_resources import parse_version
+    v1, v2 = parse_version(ver), parse_version(__version__)
+    if v1 > v2:
+        logger.error(f'The minimum version required for this PoC plugin is {ver}, '
+                     f'you installed {__version__}, please upgrade pocsuite3 :)\n\n'
+                     '----[ 1.1 - Installtion & Upgrade Methods\n'
+                     '\n'
+                     'Python pip\n'
+                     '\n'
+                     '    $ pip3 install -U pocsuite3\n'
+                     '\n'
+                     '    $ use other pypi mirror\n'
+                     '    $ pip3 install -U -i https://pypi.tuna.tsinghua.edu.cn/simple pocsuite3\n'
+                     '\n'
+                     'MacOS\n'
+                     '\n'
+                     '    $ brew upgrade pocsuite3\n'
+                     '\n'
+                     'Kali, Ubuntu 22.04, Debian\n'
+                     '\n'
+                     '    $ sudo apt-get install pocsuite3\n'
+                     '\n'
+                     'Docker\n'
+                     '\n'
+                     '    $ docker run -it pocsuite3/pocsuite3\n'
+                     '\n'
+                     'ArchLinux\n'
+                     '\n'
+                     '    $ yay pocsuite3\n'
+                     '\n'
+                     'Install from source code\n'
+                     '\n'
+                     '    $ wget https://github.com/knownsec/pocsuite3/archive/master.zip\n'
+                     '    $ unzip master.zip\n'
+                     '    $ cd pocsuite3-master\n'
+                     '    $ pip3 install -r requirements.txt\n'
+                     '    $ python3 setup.py install\n')
+        sys.exit(-1)

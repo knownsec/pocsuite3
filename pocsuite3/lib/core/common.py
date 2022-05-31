@@ -1,3 +1,4 @@
+# pylint: disable=E1101
 import base64
 import hashlib
 import inspect
@@ -14,6 +15,7 @@ import time
 import collections
 import chardet
 import requests
+import ipaddress
 from collections import OrderedDict
 from functools import wraps
 from ipaddress import ip_address, ip_network
@@ -329,7 +331,7 @@ def get_md5(value):
 
 
 def extract_cookies(cookie):
-    cookies = dict([l.split("=", 1) for l in cookie.split("; ")])
+    cookies = dict([i.split("=", 1) for i in cookie.split("; ")])
     return cookies
 
 
@@ -495,6 +497,10 @@ def get_host_ip(dst='8.8.8.8'):
         <str>:  source ip address
     """
 
+    # maybe docker env
+    if dst == ['127.0.0.1', 'localhost']:
+        dst = '8.8.8.8'
+
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect((dst, 80))
@@ -504,6 +510,11 @@ def get_host_ip(dst='8.8.8.8'):
     finally:
         s.close()
 
+    if ipaddress.ip_address(ip).is_private:
+        logger.warn(
+            f'your wan ip {ip} is a private ip, '
+            'there may be some issues in the next stages of exploitation'
+        )
     return ip
 
 
@@ -929,7 +940,7 @@ def check_port(ip, port):
         s.connect(sa)
         s.shutdown(2)
         return True
-    except:
+    except socket.error:
         return False
     finally:
         s.close()
@@ -966,9 +977,9 @@ def desensitization(s):
     """
     s = str(s)
     return (
-            s[:len(s) // 4 if len(s) < 30 else 8] +
-            '***' +
-            s[len(s) * 3 // 4:]
+        s[:len(s) // 4 if len(s) < 30 else 8] +
+        '***' +
+        s[len(s) * 3 // 4:]
     )
 
 
