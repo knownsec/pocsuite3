@@ -1,4 +1,3 @@
-import sys
 import re
 import ast
 import base64
@@ -277,37 +276,8 @@ def minimum_version_required(ver):
     v1, v2 = parse_version(ver), parse_version(__version__)
     if v1 > v2:
         logger.error(f'The minimum version required for this PoC plugin is {ver}, '
-                     f'you installed {__version__}, please upgrade pocsuite3 :)\n\n'
-                     '----[ 1.1 - Installtion & Upgrade Methods\n'
-                     '\n'
-                     'Python pip\n'
-                     '\n'
-                     '    $ pip3 install -U pocsuite3\n'
-                     '\n'
-                     '    $ use other pypi mirror\n'
-                     '    $ pip3 install -U -i https://pypi.tuna.tsinghua.edu.cn/simple pocsuite3\n'
-                     '\n'
-                     'MacOS\n'
-                     '\n'
-                     '    $ brew upgrade pocsuite3\n'
-                     '\n'
-                     'Kali, Ubuntu 22.04, Debian\n'
-                     '\n'
-                     '    $ sudo apt-get install pocsuite3\n'
-                     '\n'
-                     'Docker\n'
-                     '\n'
-                     '    $ docker run -it pocsuite3/pocsuite3\n'
-                     '\n'
-                     'ArchLinux\n'
-                     '\n'
-                     '    $ yay pocsuite3\n'
-                     '\n'
-                     'Install from source code\n'
-                     '\n'
-                     '    $ wget https://github.com/knownsec/pocsuite3/archive/master.zip\n'
-                     '    $ unzip master.zip\n'
-                     '    $ cd pocsuite3-master\n'
-                     '    $ pip3 install -r requirements.txt\n'
-                     '    $ python3 setup.py install\n')
-        sys.exit(-1)
+                     f'you installed {__version__}, please upgrade pocsuite3 :)')
+        from pocsuite3.lib.core.data import conf
+        from pocsuite3.lib.core.update import update
+        conf.update_all = True
+        update()
