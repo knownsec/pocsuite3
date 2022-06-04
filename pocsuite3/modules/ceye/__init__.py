@@ -16,7 +16,9 @@ class CEye(object):
         self.url = 'http://api.ceye.io/v1'
         self.identify = ''
         self.headers = {'User-Agent': 'curl/7.80.0'}
-        self.token = token or conf.ceye_token
+        self.token = token
+        if 'ceye_token' in conf:
+            self.token = self.token or conf.ceye_token
         self.conf_path = conf_path
 
         if self.conf_path:
