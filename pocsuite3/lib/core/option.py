@@ -526,6 +526,8 @@ def _set_conf_attributes():
     conf.delay = 0
     conf.http_headers = {}
     conf.ceye_token = None
+    conf.oob_server = None
+    conf.oob_token = None
     conf.seebug_token = None
     conf.zoomeye_token = None
     conf.shodan_token = None

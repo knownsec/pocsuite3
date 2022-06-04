@@ -24,7 +24,7 @@ def cmd_line_parser(argv=None):
                             help="Show program's version number and exit")
 
         parser.add_argument("--update", dest="update_all", action="store_true",
-                            help="Update Pocsuite")
+                            help="Update Pocsuite3")
 
         parser.add_argument("-v", dest="verbose", type=int, default=1, choices=list(range(7)),
                             help="Verbosity level: 0-6 (default 1)")
@@ -65,6 +65,10 @@ def cmd_line_parser(argv=None):
         # Account options
         group = parser.add_argument_group("Account", "Account options")
         group.add_argument("--ceye-token", dest="ceye_token", help="CEye token")
+        group.add_argument("--oob-server", dest="oob_server",
+                           help="Interactsh server to use (default \"interact.sh\")")
+        group.add_argument("--oob-token", dest="oob_token",
+                           help="Authentication token to connect protected interactsh server")
         group.add_argument("--seebug-token", dest="seebug_token", help="Seebug token")
         group.add_argument("--zoomeye-token", dest="zoomeye_token", help="ZoomEye token")
         group.add_argument("--shodan-token", dest="shodan_token", help="Shodan token")

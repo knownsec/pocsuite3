@@ -18,7 +18,7 @@ usage: pocsuite [options]
 optional arguments:
   -h, --help            show this help message and exit
   --version             Show program's version number and exit
-  --update              Update Pocsuite
+  --update              Update Pocsuite3
   -v {0,1,2,3,4,5,6}    Verbosity level: 0-6 (default 1)
 
 Target:
@@ -59,6 +59,10 @@ Account:
 
   --ceye-token CEYE_TOKEN
                         CEye token
+  --oob-server OOB_SERVER
+                        Interactsh server to use (default "interact.sh")
+  --oob-token OOB_TOKEN
+                        Authentication token to connect protected interactsh server
   --seebug-token SEEBUG_TOKEN
                         Seebug token
   --zoomeye-token ZOOMEYE_TOKEN

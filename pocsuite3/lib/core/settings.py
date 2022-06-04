@@ -131,6 +131,8 @@ CMD_PARSE_WHITELIST = [
     "delay",
     "headers",
     "ceye-token",
+    "oob-server",
+    "oob-token",
     "seebug-token",
     "zoomeye-token",
     "shodan-token",

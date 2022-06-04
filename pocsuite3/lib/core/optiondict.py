@@ -27,6 +27,8 @@ optDict = {
     },
     'Account': {
         'ceye_token': 'string',
+        'oob_server': 'string',
+        'oob_token': 'string',
         'seebug_token': 'string',
         'zoomeye_token': 'string',
         'shodan_token': 'string',
