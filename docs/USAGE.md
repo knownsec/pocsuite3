@@ -19,6 +19,7 @@ optional arguments:
   -h, --help            show this help message and exit
   --version             Show program's version number and exit
   --update              Update Pocsuite3
+  -n, --new             Create a PoC template
   -v {0,1,2,3,4,5,6}    Verbosity level: 0-6 (default 1)
 
 Target:
