@@ -32,6 +32,7 @@ from pocsuite3.lib.core.register import load_file_to_module
 from pocsuite3.lib.core.settings import DEFAULT_LISTENER_PORT, CMD_PARSE_WHITELIST
 from pocsuite3.lib.core.statistics_comparison import StatisticsComparison
 from pocsuite3.lib.core.update import update
+from pocsuite3.lib.core.template import create_poc_plugin_template
 from pocsuite3.lib.parse.cmd import DIY_OPTIONS
 from pocsuite3.lib.parse.configfile import config_file_parser
 from pocsuite3.lib.parse.rules import regex_rule
@@ -556,6 +557,7 @@ def _set_conf_attributes():
     conf.check_requires = False
     conf.quiet = False
     conf.update_all = False
+    conf.new = False
     conf.verbose = 1
 
     conf.ipv6 = False
@@ -703,7 +705,7 @@ def _init_target_from_poc_dork():
         # find a available target source
         target_source = ''
         for i in ["zoomeye", "fofa", "shodan", "quake", "hunter", "censys"]:
-            if i in poc_class.dork.keys():
+            if i in poc_class.dork.keys() and poc_class.dork[i].strip() != '':
                 target_source = i
                 break
         # fetch target from target source, add it to kb.targets
@@ -748,6 +750,7 @@ def init():
     _basic_option_validation()
     _create_directory()
     _init_kb_comparison()
+    create_poc_plugin_template()
     update()
     _set_multiple_targets()
     _set_user_pocs_path()

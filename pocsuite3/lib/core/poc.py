@@ -6,7 +6,7 @@ import inspect
 from collections import OrderedDict
 
 from requests.exceptions import ConnectTimeout, ConnectionError, HTTPError, TooManyRedirects
-from pocsuite3.lib.core.common import parse_target_url, desensitization, check_port, OrderedSet
+from pocsuite3.lib.core.common import parse_target_url, desensitization, check_port, OrderedSet, get_host_ip
 from pocsuite3.lib.core.data import conf, logger
 from pocsuite3.lib.core.enums import OUTPUT_STATUS, CUSTOM_LOGGING, ERROR_TYPE_ID, POC_CATEGORY
 from pocsuite3.lib.core.exception import PocsuiteValidationException
@@ -30,6 +30,7 @@ class POCBase(object):
         self.expt = (0, 'None')
         self.current_protocol = getattr(self, "protocol", POC_CATEGORY.PROTOCOL.HTTP)
         self.pocDesc = getattr(self, "pocDesc", "Poc的作者好懒呀！")
+        self.host_ip = get_host_ip(check_private=False)
 
         # gloabl options init
         self.global_options = OrderedDict()

@@ -28,6 +28,8 @@ class TestCase(unittest.TestCase):
             parser.add_option("--update", dest="update_all", action="store_true",
                               help="Update Pocsuite3")
 
+            parser.add_option("-n", "--new", dest="new", action="store_true", help="Create a PoC template")
+
             parser.add_option("-v", dest="verbose", type="int", default=1,
                               help="Verbosity level: 0-6 (default 1)")
 

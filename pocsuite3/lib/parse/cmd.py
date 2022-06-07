@@ -26,6 +26,8 @@ def cmd_line_parser(argv=None):
         parser.add_argument("--update", dest="update_all", action="store_true",
                             help="Update Pocsuite3")
 
+        parser.add_argument("-n", "--new", dest="new", action="store_true", help="Create a PoC template")
+
         parser.add_argument("-v", dest="verbose", type=int, default=1, choices=list(range(7)),
                             help="Verbosity level: 0-6 (default 1)")
 

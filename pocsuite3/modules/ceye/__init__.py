@@ -140,7 +140,7 @@ class CEye(object):
         ranstr = random_str(4)
         domain = self.getsubdomain()
         url = ""
-        if type == "request":
+        if type in ["request", 'http']:
             url = "http://{}.{}/{}{}{}".format(ranstr, domain, ranstr, value, ranstr)
         elif type == "dns":
             url = "{}{}{}.{}".format(ranstr, re.sub(r"\W", "", value), ranstr, domain)

@@ -88,7 +88,7 @@ class Interactsh:
         plain_text = cryptor.decrypt(decode)
         return json.loads(plain_text[16:])
 
-    def build_request(self, length=10, method='https'):
+    def build_request(self, length=10, method='http'):
         """
         Generate the url and flag for verification
 

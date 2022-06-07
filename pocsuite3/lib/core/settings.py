@@ -113,6 +113,7 @@ CMD_PARSE_WHITELIST = [
     "help",
     "version",
     "update",
+    "new",
     "url",
     "url_file",
     "file",
