@@ -512,7 +512,7 @@ def get_host_ip(dst='8.8.8.8', check_private=True):
 
     if check_private and ipaddress.ip_address(ip).is_private:
         logger.warn(
-            f'your wan ip {ip} is a private ip, '
+            f'your wan ip {mosaic(ip)} is a private ip, '
             'there may be some issues in the next stages of exploitation'
         )
     return ip
@@ -981,6 +981,10 @@ def desensitization(s):
         '***' +
         s[len(s) * 3 // 4:]
     )
+
+
+def mosaic(s):
+    return desensitization(s) if 'ppt' in conf and conf.ppt else s
 
 
 def encoder_bash_payload(cmd: str) -> str:

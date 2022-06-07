@@ -4,7 +4,7 @@ import threading
 import time
 import os
 from pocsuite3.lib.utils import gen_cert
-from pocsuite3.lib.core.common import data_to_stdout, has_poll, get_unicode, desensitization
+from pocsuite3.lib.core.common import data_to_stdout, has_poll, get_unicode, mosaic
 from pocsuite3.lib.core.data import conf, kb, logger, paths
 from pocsuite3.lib.core.datatype import AttribDict
 from pocsuite3.lib.core.enums import AUTOCOMPLETE_TYPE, OS, CUSTOM_LOGGING
@@ -76,8 +76,7 @@ def listener_worker():
             client.conn = conn
             client.address = address
             kb.data.clients.append(client)
-            info_msg = "new connection established from {0}".format(
-                desensitization(address[0]) if conf.ppt else address[0])
+            info_msg = "new connection established from {0}".format(mosaic(address[0]))
             logger.log(CUSTOM_LOGGING.SUCCESS, info_msg)
         except Exception:
             pass
@@ -111,8 +110,7 @@ def list_clients():
             del kb.data.clients[i]
             continue
 
-        results += (f'{i}   ' + (desensitization(client.address[0]) if conf.ppt else str(client.address[0])) +
-                    f'     ({system})\n')
+        results += (f'{i}   ' + mosaic(client.address[0]) + f'     ({system})\n')
     data_to_stdout("----- Remote Clients -----" + "\n" + results)
 
 
@@ -121,8 +119,7 @@ def get_client(cmd):
         target = cmd.split(" ")[1]
         target = int(target)
         client = kb.data.clients[target]  # Connect to the selected clients
-        data_to_stdout("Now Connected: {0}\n".format(
-            desensitization(client.address[0]) if conf.ppt else client.address[0]))
+        data_to_stdout("Now Connected: {0}\n".format(mosaic(client.address[0])))
         return client
     except Exception:
         data_to_stdout("Invalid Client\n")
@@ -171,7 +168,7 @@ def send_shell_commands(client):
         cmd = None
         try:
             address = client.address[0]
-            cmd = input("{0}>: ".format(desensitization(address) if conf.ppt else address))
+            cmd = input("{0}>: ".format(mosaic(address)))
             if not cmd:
                 continue
 

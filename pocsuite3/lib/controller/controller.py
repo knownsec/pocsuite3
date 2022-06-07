@@ -1,7 +1,7 @@
 import copy
 import time
 from prettytable import PrettyTable
-from pocsuite3.lib.core.common import data_to_stdout, desensitization
+from pocsuite3.lib.core.common import data_to_stdout, mosaic
 from pocsuite3.lib.core.data import conf, cmd_line_options
 from pocsuite3.lib.core.data import kb
 from pocsuite3.lib.core.data import logger
@@ -36,8 +36,7 @@ def start():
         task_done()
 
     if conf.mode == "shell" and not conf.api:
-        info_msg = "connect back ip: {0}    port: {1}".format(
-            desensitization(conf.connect_back_host) if conf.ppt else conf.connect_back_host, conf.connect_back_port)
+        info_msg = "connect back ip: {0}    port: {1}".format(mosaic(conf.connect_back_host), conf.connect_back_port)
         logger.info(info_msg)
         info_msg = "watting for shell connect to pocsuite"
         logger.info(info_msg)
@@ -118,11 +117,7 @@ def task_run():
                 logger.warn("No libpcap is detected, and the poc will continue to execute without fetching the packet")
                 conf.pcap = False
 
-        # for hide some infomations
-        if conf.ppt:
-            info_msg = "running poc:'{0}' target '{1}'".format(poc_name, desensitization(target))
-        else:
-            info_msg = "running poc:'{0}' target '{1}'".format(poc_name, target)
+        info_msg = "running poc:'{0}' target '{1}'".format(poc_name, mosaic(target))
 
         logger.info(info_msg)
 
@@ -183,12 +178,9 @@ def task_run():
             kb.comparison.change_success(target, True)
 
         output = AttribDict(result.to_dict())
-        if conf.ppt:
-            # hide some information
-            target = desensitization(target)
 
         output.update({
-            'target': target,
+            'target': mosaic(target),
             'poc_name': poc_name,
             'created': time.strftime("%Y-%m-%d %X", time.localtime()),
             'status': result_status
