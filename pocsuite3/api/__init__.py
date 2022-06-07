@@ -4,6 +4,7 @@ from pocsuite3.lib.core.common import (encoder_bash_payload, check_port,
                                        get_host_ipv6, single_time_warn_message)
 from pocsuite3.lib.core.data import conf, kb, logger, paths
 from pocsuite3.lib.core.datatype import AttribDict
+from pocsuite3.lib.core.common import OrderedSet, OrderedDict
 from pocsuite3.lib.core.enums import PLUGIN_TYPE, POC_CATEGORY, VUL_TYPE
 from pocsuite3.lib.core.interpreter_option import (OptBool, OptDict, OptFloat,
                                                    OptInteger, OptIP, OptItems,
@@ -35,7 +36,7 @@ from pocsuite3.shellcodes import OSShellcodes, WebShell
 __all__ = ('requests', 'PluginBase', 'register_plugin', 'PLUGIN_TYPE',
            'POCBase', 'Output', 'AttribDict', 'POC_CATEGORY', 'VUL_TYPE',
            'register_poc', 'conf', 'kb', 'logger', 'paths', 'minimum_version_required',
-           'DEFAULT_LISTENER_PORT', 'load_file_to_module',
+           'DEFAULT_LISTENER_PORT', 'load_file_to_module', 'OrderedDict', 'OrderedSet',
            'load_string_to_module', 'single_time_warn_message', 'CEye',
            'Seebug', 'ZoomEye', 'Shodan', 'Fofa', 'Quake', 'Hunter', 'Censys',
            'PHTTPServer', 'REVERSE_PAYLOAD', 'get_listener_ip',

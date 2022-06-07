@@ -16,7 +16,9 @@ class CEye(object):
         self.url = 'http://api.ceye.io/v1'
         self.identify = ''
         self.headers = {'User-Agent': 'curl/7.80.0'}
-        self.token = token or conf.ceye_token
+        self.token = token
+        if 'ceye_token' in conf:
+            self.token = self.token or conf.ceye_token
         self.conf_path = conf_path
 
         if self.conf_path:
@@ -138,7 +140,7 @@ class CEye(object):
         ranstr = random_str(4)
         domain = self.getsubdomain()
         url = ""
-        if type == "request":
+        if type in ["request", 'http']:
             url = "http://{}.{}/{}{}{}".format(ranstr, domain, ranstr, value, ranstr)
         elif type == "dns":
             url = "{}{}{}.{}".format(ranstr, re.sub(r"\W", "", value), ranstr, domain)

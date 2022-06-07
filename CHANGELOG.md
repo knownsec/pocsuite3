@@ -322,3 +322,13 @@ Cross-platform shell code generation
 -----------------
 * add support for qianxin hunter cyberspace search engine
 * support self.rhost & self.rport in POCBase
+
+# version 1.9.4
+-----------------
+* support poc template generate { --new }
+* support custom interactsh server { --oob-server, --oob-token }
+* Switch the authentication method of ZoomEye and CEYE to API-KEY { --zoomeye-token, --ceye-token, --seebug-token }
+* support honeypot detect { _check() method in POCBase }
+* support http/https protocol autocorrect { _check() method in POCBase }
+* refactor --update
+* support version check { minimum_version_required() method }

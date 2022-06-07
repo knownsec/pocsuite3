@@ -26,7 +26,9 @@ class TestCase(unittest.TestCase):
                               help="Show program's version number and exit")
 
             parser.add_option("--update", dest="update_all", action="store_true",
-                              help="Update Pocsuite")
+                              help="Update Pocsuite3")
+
+            parser.add_option("-n", "--new", dest="new", action="store_true", help="Create a PoC template")
 
             parser.add_option("-v", dest="verbose", type="int", default=1,
                               help="Verbosity level: 0-6 (default 1)")
@@ -68,6 +70,10 @@ class TestCase(unittest.TestCase):
             # Account options
             account = OptionGroup(parser, "Account", "Account options")
             account.add_option("--ceye-token", dest="ceye_token", help="CEye token")
+            account.add_option("--oob-server", dest="oob_server",
+                               help="Interactsh server to use (default \"interact.sh\")")
+            account.add_option("--oob-token", dest="oob_token",
+                               help="Authentication token to connect protected interactsh server")
             account.add_option("--seebug-token", dest="seebug_token", help="Seebug token")
             account.add_option("--zoomeye-token", dest="zoomeye_token", help="ZooomEye token")
             account.add_option("--shodan-token", dest="shodan_token", help="Shodan token")

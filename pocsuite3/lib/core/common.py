@@ -456,7 +456,7 @@ def get_local_ip(all=True):
     """Fetches all the local network address
     """
     ips = OrderedSet()
-    wan_ipv4 = get_host_ip()
+    wan_ipv4 = get_host_ip(check_private=False)
     ips.add(wan_ipv4)
     if not all:
         return list(ips)
@@ -487,7 +487,7 @@ def get_local_ip(all=True):
     return list(ips)
 
 
-def get_host_ip(dst='8.8.8.8'):
+def get_host_ip(dst='8.8.8.8', check_private=True):
     """ Fetches source ipv4 address when connect to dst
 
     Args:
@@ -510,7 +510,7 @@ def get_host_ip(dst='8.8.8.8'):
     finally:
         s.close()
 
-    if ipaddress.ip_address(ip).is_private:
+    if check_private and ipaddress.ip_address(ip).is_private:
         logger.warn(
             f'your wan ip {ip} is a private ip, '
             'there may be some issues in the next stages of exploitation'

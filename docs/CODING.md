@@ -136,7 +136,7 @@ from pocsuite3.api import get_listener_ip, get_listener_port
 from pocsuite3.api import REVERSE_PAYLOAD
 from pocsuite3.lib.utils import random_str
 
-  class DemoPOC(POCBase):
+class DemoPOC(POCBase):
     ...
 ```
 
