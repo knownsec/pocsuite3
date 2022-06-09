@@ -6,7 +6,7 @@ import inspect
 from collections import OrderedDict
 
 from requests.exceptions import ConnectTimeout, ConnectionError, HTTPError, TooManyRedirects
-from pocsuite3.lib.core.common import parse_target_url, desensitization, check_port, OrderedSet, get_host_ip
+from pocsuite3.lib.core.common import parse_target_url, mosaic, check_port, OrderedSet, get_host_ip
 from pocsuite3.lib.core.data import conf, logger
 from pocsuite3.lib.core.enums import OUTPUT_STATUS, CUSTOM_LOGGING, ERROR_TYPE_ID, POC_CATEGORY
 from pocsuite3.lib.core.exception import PocsuiteValidationException
@@ -202,7 +202,7 @@ class POCBase(object):
                     logger.debug('POC: {0} time-out retry failed!'.format(self.name))
                 conf.retry -= 1
             else:
-                msg = "connect target '{0}' failed!".format(desensitization(target) if conf.ppt else target)
+                msg = "connect target '{0}' failed!".format(mosaic(target))
                 logger.error(msg)
                 output = Output(self)
 
@@ -213,7 +213,7 @@ class POCBase(object):
 
         except ConnectionError as e:
             self.expt = (ERROR_TYPE_ID.CONNECTIONERROR, e)
-            msg = "connect target '{0}' failed!".format(desensitization(target) if conf.ppt else target)
+            msg = "connect target '{0}' failed!".format(mosaic(target))
             logger.error(msg)
             output = Output(self)
 
@@ -236,7 +236,7 @@ class POCBase(object):
         u = urlparse(self.url)
         # the port closed
         if u.port and not check_port(u.hostname, u.port):
-            logger.debug(f'{self.url}, the port is closed.')
+            logger.debug(f'{mosaic(self.url)}, the port is closed.')
             return False
 
         if not is_http:
@@ -256,11 +256,11 @@ class POCBase(object):
                 if 'plain HTTP request was sent to HTTPS port' in res.text:
                     self.url = f'https://{netloc}'
                     res = requests.get(self.url, allow_redirects=allow_redirects)
-                    logger.warn(f'auto correct url to: {self.url}')
+                    logger.warn(f'auto correct url to: {mosaic(self.url)}')
                 # another protocol is access ok
                 elif url != self.url:
                     self.url = url
-                    logger.warn(f'auto correct url to: {self.url}')
+                    logger.warn(f'auto correct url to: {mosaic(self.url)}')
                 break
             except requests.ConnectionError:
                 pass
@@ -315,7 +315,7 @@ class POCBase(object):
             is_honeypot = True
 
         if is_honeypot:
-            logger.warn(f'{self.url} is a honeypot.')
+            logger.warn(f'{mosaic(self.url)} is a honeypot.')
 
         return not is_honeypot
 
@@ -401,12 +401,12 @@ class Output(object):
             for k, v in self.result.items():
                 if isinstance(v, dict):
                     for kk, vv in v.items():
-                        if (kk == "URL" or kk == "IP") and conf.ppt:
-                            vv = desensitization(vv)
+                        if (kk == "URL" or kk == "IP"):
+                            vv = mosaic(vv)
                         logger.log(CUSTOM_LOGGING.SUCCESS, "%s : %s" % (kk, vv))
                 else:
-                    if (k == "URL" or k == "IP") and conf.ppt:
-                        v = desensitization(v)
+                    if (k == "URL" or k == "IP"):
+                        v = mosaic(v)
                     logger.log(CUSTOM_LOGGING.SUCCESS, "%s : %s" % (k, v))
 
     def to_dict(self):

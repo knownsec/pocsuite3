@@ -512,7 +512,7 @@ def get_host_ip(dst='8.8.8.8', check_private=True):
 
     if check_private and ipaddress.ip_address(ip).is_private:
         logger.warn(
-            f'your wan ip {ip} is a private ip, '
+            f'your wan ip {mosaic(ip)} is a private ip, '
             'there may be some issues in the next stages of exploitation'
         )
     return ip
@@ -972,15 +972,38 @@ def exec_cmd(cmd, raw_data=True):
     return out_data
 
 
-def desensitization(s):
-    """ Hide sensitive information.
+def mosaic(s):
+    """ Replacing URL/IPv4/IPv6 Address with asterisk's
+
+    eg. A.B.C.D -> *.*.C.D
     """
+
     s = str(s)
-    return (
-        s[:len(s) // 4 if len(s) < 30 else 8] +
-        '***' +
-        s[len(s) * 3 // 4:]
-    )
+    if not ('ppt' in conf and conf.ppt):
+        return s
+
+    scheme = ''
+    t = s.split('://', 1)
+    if len(t) > 1:
+        scheme, s = f'{t[0]}://', t[1]
+
+    # URL/IPv4
+    if len(re.findall(r'\.', s)) >= 3:
+        t = s.split('.', 4)
+        t[0] = t[1] = '*'
+        s = '.'.join(t)
+
+    # URL/IPv6
+    elif len(re.findall(r':', s)) >= 3:
+        t = s.split(':')
+        for i in range(1, len(t) - 2):
+            if ']' in t[i]:
+                break
+            if t[i] != '':
+                t[i] = '*'
+        s = ':'.join(t)
+
+    return scheme + s
 
 
 def encoder_bash_payload(cmd: str) -> str:
