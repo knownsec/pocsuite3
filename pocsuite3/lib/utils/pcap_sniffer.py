@@ -1,6 +1,6 @@
 import os
 from threading import Thread, Event
-from pocsuite3.lib.core.common import data_to_stdout
+from pocsuite3.lib.core.common import data_to_stdout, mosaic
 from pocsuite3.lib.core.data import logger
 
 import logging
@@ -37,14 +37,14 @@ class Sniffer(Thread):
                 dev = IFACES[iface]
                 ifaces.append(dev.description)
                 message += "{0}   {1}    {2}\n".format(
-                    i, dev.description, dev.ip)
+                    i, dev.description, mosaic(dev.ip))
         else:
             if os.getuid() == 0:
                 self.is_admin = True
             ifaces = get_if_list()
             for i, iface in enumerate(ifaces):
                 ip = get_if_addr(iface)
-                message += "{0}   {1}    {2}\n".format(i, iface, ip)
+                message += "{0}   {1}    {2}\n".format(i, iface, mosaic(ip))
         data_to_stdout(message)
         choose = input('Choose>: ').strip()
         self.interface = ifaces[int(choose)]

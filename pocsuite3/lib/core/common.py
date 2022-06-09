@@ -972,19 +972,38 @@ def exec_cmd(cmd, raw_data=True):
     return out_data
 
 
-def desensitization(s):
-    """ Hide sensitive information.
-    """
-    s = str(s)
-    return (
-        s[:len(s) // 4 if len(s) < 30 else 8] +
-        '***' +
-        s[len(s) * 3 // 4:]
-    )
-
-
 def mosaic(s):
-    return desensitization(s) if 'ppt' in conf and conf.ppt else s
+    """ Replacing URL/IPv4/IPv6 Address with asterisk's
+
+    eg. A.B.C.D -> *.*.C.D
+    """
+
+    s = str(s)
+    if not ('ppt' in conf and conf.ppt):
+        return s
+
+    scheme = ''
+    t = s.split('://', 1)
+    if len(t) > 1:
+        scheme, s = f'{t[0]}://', t[1]
+
+    # URL/IPv4
+    if len(re.findall(r'\.', s)) >= 3:
+        t = s.split('.', 4)
+        t[0] = t[1] = '*'
+        s = '.'.join(t)
+
+    # URL/IPv6
+    elif len(re.findall(r':', s)) >= 3:
+        t = s.split(':')
+        for i in range(1, len(t) - 2):
+            if ']' in t[i]:
+                break
+            if t[i] != '':
+                t[i] = '*'
+        s = ':'.join(t)
+
+    return scheme + s
 
 
 def encoder_bash_payload(cmd: str) -> str:

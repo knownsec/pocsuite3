@@ -194,7 +194,7 @@ def task_run():
             sniffer.join(20)
             if not sniffer.is_alive():
                 filename = urlparse(target).hostname + time.strftime('_%Y_%m_%d_%H%M%S.pcap')
-                logger.info(f"pcap data has been saved in: {filename}")
+                logger.info(f"pcap data has been saved in: {mosaic(filename)}")
                 wrpcap(filename, sniffer.pcap.results)
             else:
                 logger.error("Thread terminates timeout. Failed to save pcap")
