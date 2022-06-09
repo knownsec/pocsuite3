@@ -107,7 +107,9 @@ def task_run():
             sniffer = Sniffer(urlparse(target).hostname)
             if sniffer.use_pcap:
                 if not sniffer.is_admin:
-                    logger.warn("Please use administrator privileges, and the poc will continue to execute without fetching the packet")
+                    logger.warn(
+                        "Please use administrator privileges, and the poc will continue to execute "
+                        "without fetching the packet")
                     conf.pcap = False
                 else:
                     sniffer.start()
@@ -133,8 +135,9 @@ def task_run():
             for opt, v in poc_module.options.items():
                 # check conflict in whitelist
                 if opt in CMD_PARSE_WHITELIST:
-                    info_msg = "Poc:'{0}' You can't customize this variable '{1}' because it is already taken up by the pocsuite.".format(
-                        poc_name, opt)
+                    info_msg = (
+                        "Poc:'{0}' You can't customize this variable '{1}' because it is already taken up "
+                        "by the pocsuite.").format(poc_name, opt)
                     logger.error(info_msg)
                     raise SystemExit
 
