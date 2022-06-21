@@ -116,6 +116,7 @@ CMD_PARSE_WHITELIST = [
     "new",
     "url",
     "url_file",
+    "ports",
     "file",
     "poc_keyword",
     "verify",

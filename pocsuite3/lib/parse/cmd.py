@@ -35,9 +35,11 @@ def cmd_line_parser(argv=None):
         target = parser.add_argument_group('Target', "At least one of these "
                                                      "options has to be provided to define the target(s)")
         target.add_argument("-u", "--url", dest="url", nargs='+',
-                            help="Target URL (e.g. \"http://www.site.com/vuln.php?id=1\")")
+                            help="Target URL/CIDR (e.g. \"http://www.site.com/vuln.php?id=1\")")
 
-        target.add_argument("-f", "--file", dest="url_file", help="Scan multiple targets given in a textual file")
+        target.add_argument("-f", "--file", dest="url_file",
+                            help="Scan multiple targets given in a textual file (one per line)")
+        target.add_argument("-p", "--ports", dest="ports", help="add additional port to each target (e.g. 8080,8443)")
         target.add_argument("-r", dest="poc", nargs='+', help="Load PoC file from local or remote from seebug website")
         target.add_argument("-k", dest="poc_keyword", help="Filter PoC by keyword, e.g. ecshop")
         target.add_argument("-c", dest="configFile", help="Load options from a configuration INI file")
@@ -62,7 +64,7 @@ def cmd_line_parser(argv=None):
         request.add_argument("--proxy-cred", dest="proxy_cred", help="Proxy authentication credentials (name:password)")
         request.add_argument("--timeout", dest="timeout", type=float, default=10,
                              help="Seconds to wait before timeout connection (default 10)")
-        request.add_argument("--retry", dest="retry", type=int, default=1, help="Time out retrials times (default 1)")
+        request.add_argument("--retry", dest="retry", type=int, default=0, help="Time out retrials times (default 0)")
         request.add_argument("--delay", dest="delay", help="Delay between two request of one thread")
         request.add_argument("--headers", dest="headers", help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
         # Account options

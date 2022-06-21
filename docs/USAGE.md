@@ -26,9 +26,11 @@ Target:
   At least one of these options has to be provided to define the target(s)
 
   -u URL [URL ...], --url URL [URL ...]
-                        Target URL (e.g. "http://www.site.com/vuln.php?id=1")
+                        Target URL/CIDR (e.g. "http://www.site.com/vuln.php?id=1")
   -f URL_FILE, --file URL_FILE
-                        Scan multiple targets given in a textual file
+                        Scan multiple targets given in a textual file (one per line)
+  -p PORTS, --ports PORTS
+                        add additional port to each target (e.g. 8080,8443)
   -r POC [POC ...]      Load PoC file from local or remote from seebug website
   -k POC_KEYWORD        Filter PoC by keyword, e.g. ecshop
   -c CONFIGFILE         Load options from a configuration INI file
@@ -51,7 +53,7 @@ Request:
   --proxy-cred PROXY_CRED
                         Proxy authentication credentials (name:password)
   --timeout TIMEOUT     Seconds to wait before timeout connection (default 10)
-  --retry RETRY         Time out retrials times (default 1)
+  --retry RETRY         Time out retrials times (default 0)
   --delay DELAY         Delay between two request of one thread
   --headers HEADERS     Extra headers (e.g. "key1: value1\nkey2: value2")
 

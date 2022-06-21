@@ -197,20 +197,14 @@ def _set_network_proxy():
 def _set_multiple_targets():
     # set multi targets to kb
     if conf.url:
-        targets = set()
         for url in conf.url:
-            parsed = parse_target(url)
-            if parsed:
-                targets.add(parsed)
-        if not targets:
-            err_msg = "incorrect target url or ip format!"
-            logger.error(err_msg)
-        for target in targets:
-            kb.targets.add(target)
+            for target in parse_target(url, conf.ports):
+                kb.targets.add(target)
 
     if conf.url_file:
         for line in get_file_items(conf.url_file, lowercase=False, unique=True):
-            kb.targets.add(line)
+            for target in parse_target(line, conf.ports):
+                kb.targets.add(target)
 
     if conf.dork:
         # enable plugin 'target_from_zoomeye' by default
@@ -436,6 +430,14 @@ def _cleanup_options():
             conf.url = [conf.url]
         conf.url = [x.strip() for x in conf.url]
 
+    if conf.ports:
+        if isinstance(conf.ports, str):
+            ports = OrderedSet()
+            for i in conf.ports.split(','):
+                if i.isdigit() and int(i) >= 0 and int(i) <= 65535:
+                    ports.add(int(i))
+            conf.ports = list(ports)
+
     if conf.poc:
         if isinstance(conf.poc, str):
             conf.poc = [conf.poc]
@@ -508,6 +510,7 @@ def _set_conf_attributes():
 
     conf.url = None
     conf.url_file = None
+    conf.ports = []
     conf.mode = 'verify'
     conf.poc = None
     conf.poc_keyword = None
@@ -520,7 +523,7 @@ def _set_conf_attributes():
     conf.proxy_cred = None
     conf.proxies = {}
     conf.timeout = 10
-    conf.retry = 1
+    conf.retry = 0
     conf.delay = 0
     conf.http_headers = {}
     conf.ceye_token = None

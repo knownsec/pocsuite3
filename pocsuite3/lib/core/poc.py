@@ -194,21 +194,21 @@ class POCBase(object):
         except ConnectTimeout as e:
             self.expt = (ERROR_TYPE_ID.CONNECTTIMEOUT, e)
             while conf.retry > 0:
-                logger.debug('POC: {0} timeout, start it over.'.format(self.name))
+                logger.debug('connect target {0} timeout, retry it.'.format(mosaic(target)))
                 try:
                     output = self._execute()
                     break
-                except ConnectTimeout:
-                    logger.debug('POC: {0} time-out retry failed!'.format(self.name))
+                except Exception:
+                    logger.debug('target {0} retry failed!'.format(mosaic(target)))
                 conf.retry -= 1
-            else:
+            if output is None:
                 msg = "connect target '{0}' failed!".format(mosaic(target))
                 logger.error(msg)
                 output = Output(self)
 
         except HTTPError as e:
             self.expt = (ERROR_TYPE_ID.HTTPERROR, e)
-            logger.warn('POC: {0} HTTPError occurs, start it over.'.format(self.name))
+            logger.warn('target {0} HTTPError occurs.'.format(mosaic(target)))
             output = Output(self)
 
         except ConnectionError as e:
@@ -265,6 +265,11 @@ class POCBase(object):
                 break
             except requests.ConnectionError:
                 pass
+
+        if not self.url.startswith(self.scheme):
+            self.scheme = 'https' if self.url.startswith('https') else 'http'
+            port = urlparse(self.url).port
+            self.rport = port if port else 443 if self.scheme.startswith('https') else 80
 
         if return_obj:
             return res

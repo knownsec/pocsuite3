@@ -45,10 +45,13 @@ Verbosity level: 0\-6 (default 1)
 At least one of these options has to be provided to define the target(s)
 .TP
 \fB\-u\fR URL [URL ...], \fB\-\-url\fR URL [URL ...]
-Target URL (e.g. "http://www.site.com/vuln.php?id=1")
+Target URL/CIDR (e.g. "http://www.site.com/vuln.php?id=1")
 .TP
 \fB\-f\fR URL_FILE, \fB\-\-file\fR URL_FILE
-Scan multiple targets given in a textual file
+Scan multiple targets given in a textual file (one per line)
+.TP
+\fB\-p\fR PORTS, \fB\-\-ports\fR PORTS
+add additional port to each target (e.g. 8080,8443)
 .TP
 \fB\-r\fR POC [POC ...]
 Load POC file from local or remote from seebug website
@@ -96,7 +99,7 @@ Proxy authentication credentials (name:password)
 Seconds to wait before timeout connection (default 10)
 .TP
 \fB\-\-retry\fR RETRY
-Time out retrials times (default 1)
+Time out retrials times (default 0)
 .TP
 \fB\-\-delay\fR DELAY
 Delay between two request of one thread

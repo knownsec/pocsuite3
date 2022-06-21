@@ -15,7 +15,7 @@ import time
 import collections
 import chardet
 import requests
-import ipaddress
+import urllib
 from collections import OrderedDict
 from functools import wraps
 from ipaddress import ip_address, ip_network
@@ -49,6 +49,22 @@ try:
     collectionsAbc = collections.abc
 except AttributeError:
     collectionsAbc = collections
+
+
+def urlparse(address):
+    # https://stackoverflow.com/questions/50499273/urlparse-fails-with-simple-url
+    try:
+        ip = ip_address(address)
+        if ip.version == 4:
+            return urllib.parse.urlparse(f'tcp://{address}')
+        elif ip.version == 6:
+            return urllib.parse.urlparse(f'tcp://[{address}]')
+    except ValueError:
+        pass
+
+    if not re.search(r'^[A-Za-z0-9+.\-]+://', address):
+        address = f'tcp://{address}'
+    return urllib.parse.urlparse(address)
 
 
 def read_binary(filename):
@@ -242,7 +258,8 @@ def parse_target_url(url):
         ret = "[" + ret + "]"
 
     if not re.search("^http[s]*://", ret, re.I) and not re.search("^ws[s]*://", ret, re.I) and '://' not in ret:
-        if re.search(":443[/]*$", ret):
+        port = urlparse(ret).port
+        if port and str(port).endswith('443'):
             ret = "https://" + ret
         else:
             ret = "http://" + ret
@@ -343,11 +360,10 @@ def get_file_items(filename, comment_prefix='#', unicode_=True, lowercase=False,
     try:
         with open(filename, 'r') as f:
             for line in f.readlines():
-                # xreadlines doesn't return unicode strings when codecs.open() is used
-                if comment_prefix and line.find(comment_prefix) != -1:
-                    line = line[:line.find(comment_prefix)]
-
                 line = line.strip()
+                # xreadlines doesn't return unicode strings when codecs.open() is used
+                if comment_prefix and line.startswith(comment_prefix):
+                    continue
 
                 if not unicode_:
                     try:
@@ -376,38 +392,41 @@ def get_file_items(filename, comment_prefix='#', unicode_=True, lowercase=False,
     return ret if not unique else ret.keys()
 
 
-def parse_target(address):
-    target = None
-    if is_domain_format(address) \
-            or is_url_format(address) \
-            or is_ip_address_with_port_format(address):
-        target = address
+def parse_target(address, additional_ports=[]):
+    # parse IPv4/IPv6 CIDR
+    targets = OrderedSet()
+    try:
+        for ip in ip_network(address, strict=False).hosts():
 
-    elif is_ipv6_url_format(address):
-        conf.ipv6 = True
-        target = address
+            if ip.version == 6:
+                conf.ipv6 = True
 
-    elif is_ip_address_format(address):
-        try:
-            ip = ip_address(address)
-            target = ip.exploded
-        except ValueError:
-            pass
-    else:
-        if is_ipv6_address_format(address):
+            targets.add(str(ip))
+
+            for port in additional_ports:
+                targets.add(f'[{ip}]:{port}' if conf.ipv6 else f'{ip}:{port}')
+
+        return targets
+
+    except ValueError:
+        pass
+
+    # URL
+    try:
+        if ip_address(urlparse(address).hostname).version == 6:
             conf.ipv6 = True
-            try:
-                ip = ip_address(address)
-                target = ip.exploded
-            except ValueError:
-                try:
-                    network = ip_network(address, strict=False)
-                    for host in network.hosts():
-                        target = host.exploded
-                except ValueError:
-                    pass
+    except ValueError:
+        pass
 
-    return target
+    targets.add(address)
+    pr = urlparse(address)
+    for port in additional_ports:
+        netloc = f'[{pr.hostname}]:{port}' if conf.ipv6 else f'{pr.hostname}:{port}'
+        t = pr._replace(netloc=netloc).geturl()
+        if t.startswith('tcp://'):
+            t = t.lstrip('tcp://')
+        targets.add(t)
+    return targets
 
 
 def single_time_log_message(message, level=logging.INFO, flag=None):
@@ -510,7 +529,7 @@ def get_host_ip(dst='8.8.8.8', check_private=True):
     finally:
         s.close()
 
-    if check_private and ipaddress.ip_address(ip).is_private:
+    if check_private and ip_address(ip).is_private:
         logger.warn(
             f'your wan ip {mosaic(ip)} is a private ip, '
             'there may be some issues in the next stages of exploitation'

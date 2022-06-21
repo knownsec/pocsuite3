@@ -6,6 +6,7 @@ optDict = {
     'Target': {
         'url': 'string',
         'url_file': 'string',
+        'ports': 'string',
         'poc': 'string',
         'poc_keyword': 'string',
         'configFile': 'string'
