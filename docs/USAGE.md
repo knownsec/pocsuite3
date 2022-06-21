@@ -119,7 +119,7 @@ Optimization:
   --plugins PLUGINS     Load plugins to execute
   --pocs-path POCS_PATH
                         User defined poc scripts path
-  --threads THREADS     Max number of concurrent network requests (default 1)
+  --threads THREADS     Max number of concurrent network requests (default 150)
   --batch BATCH         Automatically choose defaut choice without asking
   --requires            Check install_requires
   --quiet               Activate quiet mode, working without logger
@@ -182,7 +182,7 @@ $ pocsuite -r pocs/poc_example.py -u http://www.example.com/ --shell
 
 **--threads THREADS**
 
-Using multiple threads, the default number of threads is 1
+Using multiple threads, the default number of threads is 150
 
 ```
 $ pocsuite -r pocs/poc_example.py -f url.txt --verify --threads 10

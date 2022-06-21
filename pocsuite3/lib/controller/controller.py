@@ -27,6 +27,7 @@ def start():
     tasks_count = kb.task_queue.qsize()
     info_msg = "pocsusite got a total of {0} tasks".format(tasks_count)
     logger.info(info_msg)
+    conf.threads = min(conf.threads, tasks_count)
     logger.debug("pocsuite will open {} threads".format(conf.threads))
 
     try:

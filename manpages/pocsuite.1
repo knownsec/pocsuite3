@@ -204,7 +204,7 @@ Load plugins to execute
 User defined poc scripts path
 .TP
 \fB\-\-threads\fR THREADS
-Max number of concurrent network requests (default 1)
+Max number of concurrent network requests (default 150)
 .TP
 \fB\-\-batch\fR BATCH
 Automatically choose defalut choice without asking
@@ -257,7 +257,7 @@ Run poc with shell mode, if executed successfully, pocsuite will drop into inter
 \fI% pocsuite -r poc_example.py -u http://example.com/ --shell\fR
 .PP
 .br
-Using multiple threads, the default number of threads is 1.
+Using multiple threads, the default number of threads is 150.
 .PP
 .br
 \fI% pocsuite -r poc_example.py -u http://example.com/ --verify --threads 20\fR

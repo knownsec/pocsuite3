@@ -95,7 +95,7 @@ POC_REQUIRES_REGEX = r"install_requires\s*=\s*\[(?P<result>.*?)\]"
 
 POC_NAME_REGEX = r"""(?sm)POCBase\):.*?name\s*=\s*['"](?P<result>.*?)['"]"""
 
-MAX_NUMBER_OF_THREADS = 20
+MAX_NUMBER_OF_THREADS = 200
 
 DEFAULT_LISTENER_PORT = 6666
 

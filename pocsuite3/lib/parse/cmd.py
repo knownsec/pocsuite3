@@ -124,8 +124,8 @@ def cmd_line_parser(argv=None):
                                   help="Load plugins to execute")
         optimization.add_argument("--pocs-path", dest="pocs_path", action="store", default=None,
                                   help="User defined poc scripts path")
-        optimization.add_argument("--threads", dest="threads", type=int, default=1,
-                                  help="Max number of concurrent network requests (default 1)")
+        optimization.add_argument("--threads", dest="threads", type=int, default=150,
+                                  help="Max number of concurrent network requests (default 150)")
         optimization.add_argument("--batch", dest="batch",
                                   help="Automatically choose defaut choice without asking")
         optimization.add_argument("--requires", dest="check_requires", action="store_true", default=False,

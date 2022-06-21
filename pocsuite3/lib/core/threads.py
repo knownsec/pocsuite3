@@ -39,7 +39,7 @@ def run_threads(num_threads, thread_function, args: tuple = (), forward_exceptio
                 logger.info(info_msg)
 
             if num_threads > MAX_NUMBER_OF_THREADS:
-                warn_msg = "starting {0} threads, more than MAX_NUMBER_OF_THREADS:{1}".format(num_threads, MAX_NUMBER_OF_THREADS)
+                warn_msg = f"starting {num_threads} threads, more than MAX_NUMBER_OF_THREADS: {MAX_NUMBER_OF_THREADS}"
                 logger.warn(warn_msg)
 
         else:

@@ -273,7 +273,7 @@ def _check_zoomeye():
 
 def _set_threads():
     if not isinstance(conf.threads, int) or conf.threads <= 0:
-        conf.threads = 1
+        conf.threads = 150
 
 
 def _set_connect_back():
@@ -549,7 +549,7 @@ def _set_conf_attributes():
     conf.vul_keyword = None
     conf.ssvid = None
     conf.plugins = []
-    conf.threads = 1
+    conf.threads = 150
     conf.batch = False
     conf.check_requires = False
     conf.quiet = False

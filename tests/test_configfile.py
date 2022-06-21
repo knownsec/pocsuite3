@@ -126,8 +126,8 @@ class TestCase(unittest.TestCase):
                                     help="Load plugins to execute")
             optimization.add_option("--pocs-path", dest="pocs_path", action="store", default=None,
                                     help="User defined poc scripts path")
-            optimization.add_option("--threads", dest="threads", type=int, default=1,
-                                    help="Max number of concurrent network requests (default 1)")
+            optimization.add_option("--threads", dest="threads", type=int, default=150,
+                                    help="Max number of concurrent network requests (default 150)")
             optimization.add_option("--batch", dest="batch",
                                     help="Automatically choose defaut choice without asking")
             optimization.add_option("--requires", dest="check_requires", action="store_true", default=False,
