@@ -702,6 +702,12 @@ def _init_target_from_poc_dork():
     for poc_module, poc_class in kb.registered_pocs.items():
         if not hasattr(poc_class, 'dork'):
             continue
+
+        # local mode, do not need any targets. e.g. LPE
+        if 'local' in poc_class.dork.keys():
+            kb.targets.add('localhost')
+            return
+
         # find a available target source
         target_source = ''
         for i in ["zoomeye", "fofa", "shodan", "quake", "hunter", "censys"]:
