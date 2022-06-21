@@ -20,8 +20,8 @@ optDict = {
         'agent': 'string',
         'proxy': 'string',
         'proxy_cred': 'string',
-        'timeout': 'string',
-        'retry': 'float',
+        'timeout': 'float',
+        'retry': 'integer',
         'delay': 'string',
         'headers': 'string'
     },

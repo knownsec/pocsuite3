@@ -60,8 +60,9 @@ def cmd_line_parser(argv=None):
         request.add_argument("--user-agent", dest="agent", help="HTTP User-Agent header value (default random)")
         request.add_argument("--proxy", dest="proxy", help="Use a proxy to connect to the target URL")
         request.add_argument("--proxy-cred", dest="proxy_cred", help="Proxy authentication credentials (name:password)")
-        request.add_argument("--timeout", dest="timeout", help="Seconds to wait before timeout connection (default 10)")
-        request.add_argument("--retry", dest="retry", default=False, help="Time out retrials times")
+        request.add_argument("--timeout", dest="timeout", type=float, default=10,
+                             help="Seconds to wait before timeout connection (default 10)")
+        request.add_argument("--retry", dest="retry", type=int, default=1, help="Time out retrials times (default 1)")
         request.add_argument("--delay", dest="delay", help="Delay between two request of one thread")
         request.add_argument("--headers", dest="headers", help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
         # Account options

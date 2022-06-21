@@ -51,7 +51,7 @@ Request:
   --proxy-cred PROXY_CRED
                         Proxy authentication credentials (name:password)
   --timeout TIMEOUT     Seconds to wait before timeout connection (default 10)
-  --retry RETRY         Time out retrials times
+  --retry RETRY         Time out retrials times (default 1)
   --delay DELAY         Delay between two request of one thread
   --headers HEADERS     Extra headers (e.g. "key1: value1\nkey2: value2")
 

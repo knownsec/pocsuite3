@@ -520,7 +520,7 @@ def _set_conf_attributes():
     conf.proxy_cred = None
     conf.proxies = {}
     conf.timeout = 10
-    conf.retry = 0
+    conf.retry = 1
     conf.delay = 0
     conf.http_headers = {}
     conf.ceye_token = None
