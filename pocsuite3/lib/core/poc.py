@@ -41,7 +41,7 @@ class POCBase(object):
             self.global_options["referer"] = OptString("", "HTTP Referer header value")
             self.global_options["agent"] = OptString("", "HTTP User-Agent header value")
             self.global_options["proxy"] = OptString("", "Use a proxy to connect to the target URL")
-            self.global_options["timeout"] = OptInteger(30, "Seconds to wait before timeout connection (default 30)")
+            self.global_options["timeout"] = OptInteger(10, "Seconds to wait before timeout connection (default 10)")
         else:
             self.global_options["rhost"] = OptString('', require=True)
             self.global_options["rport"] = OptPort('', require=True)

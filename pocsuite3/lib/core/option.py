@@ -124,7 +124,7 @@ def _set_network_timeout():
 
             conf.timeout = 3.0
     else:
-        conf.timeout = 30.0
+        conf.timeout = 10
 
     socket.setdefaulttimeout(conf.timeout)
 
@@ -519,7 +519,7 @@ def _set_conf_attributes():
     conf.proxy = None
     conf.proxy_cred = None
     conf.proxies = {}
-    conf.timeout = 30
+    conf.timeout = 10
     conf.retry = 0
     conf.delay = 0
     conf.http_headers = {}

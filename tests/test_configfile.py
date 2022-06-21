@@ -63,7 +63,7 @@ class TestCase(unittest.TestCase):
             request.add_option("--proxy-cred", dest="proxy_cred",
                                help="Proxy authentication credentials (name:password)")
             request.add_option("--timeout", dest="timeout",
-                               help="Seconds to wait before timeout connection (default 30)")
+                               help="Seconds to wait before timeout connection (default 10)")
             request.add_option("--retry", dest="retry", default=False, help="Time out retrials times")
             request.add_option("--delay", dest="delay", help="Delay between two request of one thread")
             request.add_option("--headers", dest="headers", help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
