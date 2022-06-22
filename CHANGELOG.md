@@ -332,3 +332,14 @@ Cross-platform shell code generation
 * support http/https protocol autocorrect { _check() method in POCBase }
 * refactor --update
 * support version check { minimum_version_required() method }
+
+# version 1.9.5
+----------------
+* refactor --ppt, optimize mosaic for url
+* optimize poc template
+* optimize pocsuite command default prompt message
+* adjust the default timeout to 10 seconds
+* adjust the default number of threads to 150
+* target url support cidr, user can use -p provide additional ports
+* support local mode, local mode do not need any targets, e.g. LPE
+* bug fixes
