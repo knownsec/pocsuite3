@@ -26,9 +26,11 @@ Target:
   At least one of these options has to be provided to define the target(s)
 
   -u URL [URL ...], --url URL [URL ...]
-                        Target URL (e.g. "http://www.site.com/vuln.php?id=1")
+                        Target URL/CIDR (e.g. "http://www.site.com/vuln.php?id=1")
   -f URL_FILE, --file URL_FILE
-                        Scan multiple targets given in a textual file
+                        Scan multiple targets given in a textual file (one per line)
+  -p PORTS, --ports PORTS
+                        add additional port to each target (e.g. 8080,8443)
   -r POC [POC ...]      Load PoC file from local or remote from seebug website
   -k POC_KEYWORD        Filter PoC by keyword, e.g. ecshop
   -c CONFIGFILE         Load options from a configuration INI file
@@ -50,8 +52,8 @@ Request:
   --proxy PROXY         Use a proxy to connect to the target URL
   --proxy-cred PROXY_CRED
                         Proxy authentication credentials (name:password)
-  --timeout TIMEOUT     Seconds to wait before timeout connection (default 30)
-  --retry RETRY         Time out retrials times
+  --timeout TIMEOUT     Seconds to wait before timeout connection (default 10)
+  --retry RETRY         Time out retrials times (default 0)
   --delay DELAY         Delay between two request of one thread
   --headers HEADERS     Extra headers (e.g. "key1: value1\nkey2: value2")
 
@@ -119,7 +121,7 @@ Optimization:
   --plugins PLUGINS     Load plugins to execute
   --pocs-path POCS_PATH
                         User defined poc scripts path
-  --threads THREADS     Max number of concurrent network requests (default 1)
+  --threads THREADS     Max number of concurrent network requests (default 150)
   --batch BATCH         Automatically choose defaut choice without asking
   --requires            Check install_requires
   --quiet               Activate quiet mode, working without logger
@@ -182,7 +184,7 @@ $ pocsuite -r pocs/poc_example.py -u http://www.example.com/ --shell
 
 **--threads THREADS**
 
-Using multiple threads, the default number of threads is 1
+Using multiple threads, the default number of threads is 150
 
 ```
 $ pocsuite -r pocs/poc_example.py -f url.txt --verify --threads 10

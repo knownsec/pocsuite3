@@ -64,8 +64,6 @@ def new_poc():
             oobServer = 'interactsh' if oobServer.lower().startswith('i') else 'ceye'
 
     pocName = [vendorName, appName]
-    if len(appVersion) < 20:
-        pocName.append(appVersion)
     if needAuth:
         pocName.append('Post-Auth')
     else:
@@ -78,7 +76,7 @@ def new_poc():
 
     codes = OrderedDict([
         (0, '#!/usr/bin/env python3'),
-        (1, '# -*- coding: utf-8 -*_'),
+        (1, '# -*- coding: utf-8 -*-'),
         (2, ''),
         (3, 'from pocsuite3.api import ('),
         (4, '    minimum_version_required, POCBase, register_poc, requests, logger,'),
@@ -148,10 +146,10 @@ def new_poc():
         (99, "        param = '/etc/passwd'"),
         (66, '        res = self._exploit(param)'),
         (67, '        if res:'),
-        (68, '        if flag in res:'),
+        (68, '        if res and flag in res:'),
         (69, '        if oob.verify(flag):'),
         (70, '        if oob.verify_request(flag):'),
-        (98, "        if ':/bin/' in res:"),
+        (98, "        if res and ':/bin/' in res:"),
         (71, "            result['VerifyInfo'] = {}"),
         (72, "            result['VerifyInfo']['URL'] = self.url"),
         (73, "            result['VerifyInfo'][param] = res"),
@@ -214,8 +212,8 @@ def new_poc():
     for _, c in codes.items():
         poc_codes += f'{c}\n'
 
-    chars = '()<>='
-    filepath = f'./{pocName}.py'.replace(' ', '_').lower()
+    chars = '()'
+    filepath = f'./{vulDate.replace("-", "")}_{pocName}.py'.replace(' ', '_').lower()
     for c in chars:
         filepath = filepath.replace(c, '')
     filepath = input(f'Filepath in which to save the poc [{filepath}]') or filepath

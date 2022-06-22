@@ -8,6 +8,7 @@ import random
 from faker import Faker
 from socket import gethostbyname
 import urllib.parse
+from ipaddress import ip_address
 from pocsuite3.lib.core.data import logger, paths
 from pocsuite3.lib.core.enums import (
     CUSTOM_LOGGING, OS, OS_ARCH, SHELLCODE_CONNECTION
@@ -18,8 +19,18 @@ from pocsuite3.shellcodes import OSShellcodes
 
 
 def urlparse(address):
+    # https://stackoverflow.com/questions/50499273/urlparse-fails-with-simple-url
+    try:
+        ip = ip_address(address)
+        if ip.version == 4:
+            return urllib.parse.urlparse(f'tcp://{address}')
+        elif ip.version == 6:
+            return urllib.parse.urlparse(f'tcp://[{address}]')
+    except ValueError:
+        pass
+
     if not re.search(r'^[A-Za-z0-9+.\-]+://', address):
-        address = 'tcp://{0}'.format(address)
+        address = f'tcp://{address}'
     return urllib.parse.urlparse(address)
 
 

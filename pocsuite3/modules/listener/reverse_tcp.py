@@ -217,7 +217,7 @@ def poll_cmd_execute(client, timeout=3):
 
                 ready = event & select.POLLPRI or event & select.POLLIN
                 if not ready:
-                    ret = "execute command timeout\n"
+                    ret = "Command has no result or filtered by firewall\n"
                     break
                 else:
                     time.sleep(0.05)
@@ -229,7 +229,7 @@ def poll_cmd_execute(client, timeout=3):
                         continue
                     break
                 elif count > timeout:
-                    ret = "execute command timeout\n"
+                    ret = "Command has no result or filtered by firewall\n"
                     break
                 else:
                     data_to_stdout(".")
@@ -254,7 +254,7 @@ def poll_cmd_execute(client, timeout=3):
                         continue
                     break
                 elif count > timeout:
-                    ret = "execute command timeout\n"
+                    ret = "Command has no result or filtered by firewall\n"
                 else:
                     data_to_stdout('.')
                     read_again = False

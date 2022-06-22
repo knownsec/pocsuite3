@@ -21,7 +21,7 @@ long_description = (
 
 setup(
     name='pocsuite3',
-    version='1.9.4',
+    version='1.9.5',
     url='https://pocsuite.org',
     description='Open-sourced remote vulnerability testing framework.',
     long_description=long_description,

@@ -17,9 +17,9 @@ from pocsuite3.modules.listener.reverse_tcp import handle_listener_connection_fo
 
 def runtime_check():
     if not kb.registered_pocs:
-        error_msg = "no PoC loaded, please check your PoC file"
-        logger.error(error_msg)
-        raise PocsuiteSystemException(error_msg)
+        msg = "try 'pocsuite -h' or 'pocsuite --help' for more information"
+        logger.warn(msg)
+        raise PocsuiteSystemException(msg)
 
 
 def start():
@@ -27,6 +27,7 @@ def start():
     tasks_count = kb.task_queue.qsize()
     info_msg = "pocsusite got a total of {0} tasks".format(tasks_count)
     logger.info(info_msg)
+    conf.threads = min(conf.threads, tasks_count)
     logger.debug("pocsuite will open {} threads".format(conf.threads))
 
     try:

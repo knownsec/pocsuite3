@@ -124,7 +124,7 @@ def _set_network_timeout():
 
             conf.timeout = 3.0
     else:
-        conf.timeout = 30.0
+        conf.timeout = 10
 
     socket.setdefaulttimeout(conf.timeout)
 
@@ -197,20 +197,14 @@ def _set_network_proxy():
 def _set_multiple_targets():
     # set multi targets to kb
     if conf.url:
-        targets = set()
         for url in conf.url:
-            parsed = parse_target(url)
-            if parsed:
-                targets.add(parsed)
-        if not targets:
-            err_msg = "incorrect target url or ip format!"
-            logger.error(err_msg)
-        for target in targets:
-            kb.targets.add(target)
+            for target in parse_target(url, conf.ports):
+                kb.targets.add(target)
 
     if conf.url_file:
         for line in get_file_items(conf.url_file, lowercase=False, unique=True):
-            kb.targets.add(line)
+            for target in parse_target(line, conf.ports):
+                kb.targets.add(target)
 
     if conf.dork:
         # enable plugin 'target_from_zoomeye' by default
@@ -273,7 +267,7 @@ def _check_zoomeye():
 
 def _set_threads():
     if not isinstance(conf.threads, int) or conf.threads <= 0:
-        conf.threads = 1
+        conf.threads = 150
 
 
 def _set_connect_back():
@@ -436,6 +430,14 @@ def _cleanup_options():
             conf.url = [conf.url]
         conf.url = [x.strip() for x in conf.url]
 
+    if conf.ports:
+        if isinstance(conf.ports, str):
+            ports = OrderedSet()
+            for i in conf.ports.split(','):
+                if i.isdigit() and int(i) >= 0 and int(i) <= 65535:
+                    ports.add(int(i))
+            conf.ports = list(ports)
+
     if conf.poc:
         if isinstance(conf.poc, str):
             conf.poc = [conf.poc]
@@ -508,6 +510,7 @@ def _set_conf_attributes():
 
     conf.url = None
     conf.url_file = None
+    conf.ports = []
     conf.mode = 'verify'
     conf.poc = None
     conf.poc_keyword = None
@@ -519,7 +522,7 @@ def _set_conf_attributes():
     conf.proxy = None
     conf.proxy_cred = None
     conf.proxies = {}
-    conf.timeout = 30
+    conf.timeout = 10
     conf.retry = 0
     conf.delay = 0
     conf.http_headers = {}
@@ -549,7 +552,7 @@ def _set_conf_attributes():
     conf.vul_keyword = None
     conf.ssvid = None
     conf.plugins = []
-    conf.threads = 1
+    conf.threads = 150
     conf.batch = False
     conf.check_requires = False
     conf.quiet = False
@@ -699,6 +702,12 @@ def _init_target_from_poc_dork():
     for poc_module, poc_class in kb.registered_pocs.items():
         if not hasattr(poc_class, 'dork'):
             continue
+
+        # local mode, do not need any targets. e.g. LPE
+        if 'local' in poc_class.dork.keys():
+            kb.targets.add('localhost')
+            return
+
         # find a available target source
         target_source = ''
         for i in ["zoomeye", "fofa", "shodan", "quake", "hunter", "censys"]:

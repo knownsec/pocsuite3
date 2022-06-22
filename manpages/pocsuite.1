@@ -45,10 +45,13 @@ Verbosity level: 0\-6 (default 1)
 At least one of these options has to be provided to define the target(s)
 .TP
 \fB\-u\fR URL [URL ...], \fB\-\-url\fR URL [URL ...]
-Target URL (e.g. "http://www.site.com/vuln.php?id=1")
+Target URL/CIDR (e.g. "http://www.site.com/vuln.php?id=1")
 .TP
 \fB\-f\fR URL_FILE, \fB\-\-file\fR URL_FILE
-Scan multiple targets given in a textual file
+Scan multiple targets given in a textual file (one per line)
+.TP
+\fB\-p\fR PORTS, \fB\-\-ports\fR PORTS
+add additional port to each target (e.g. 8080,8443)
 .TP
 \fB\-r\fR POC [POC ...]
 Load POC file from local or remote from seebug website
@@ -93,10 +96,10 @@ Use a proxy to connect to the target URL
 Proxy authentication credentials (name:password)
 .TP
 \fB\-\-timeout\fR TIMEOUT
-Seconds to wait before timeout connection (default 30)
+Seconds to wait before timeout connection (default 10)
 .TP
 \fB\-\-retry\fR RETRY
-Time out retrials times
+Time out retrials times (default 0)
 .TP
 \fB\-\-delay\fR DELAY
 Delay between two request of one thread
@@ -204,7 +207,7 @@ Load plugins to execute
 User defined poc scripts path
 .TP
 \fB\-\-threads\fR THREADS
-Max number of concurrent network requests (default 1)
+Max number of concurrent network requests (default 150)
 .TP
 \fB\-\-batch\fR BATCH
 Automatically choose defalut choice without asking
@@ -257,7 +260,7 @@ Run poc with shell mode, if executed successfully, pocsuite will drop into inter
 \fI% pocsuite -r poc_example.py -u http://example.com/ --shell\fR
 .PP
 .br
-Using multiple threads, the default number of threads is 1.
+Using multiple threads, the default number of threads is 150.
 .PP
 .br
 \fI% pocsuite -r poc_example.py -u http://example.com/ --verify --threads 20\fR
@@ -277,7 +280,7 @@ is maintained at:
 .I https://github.com/knownsec/pocsuite3/blob/master/docs/USAGE.md
 .PP
 .SH VERSION
-This manual page documents pocsuite3 version 1.9.4
+This manual page documents pocsuite3 version 1.9.5
 .SH AUTHOR
 .br
 (c) 2014-2022 by Knownsec 404 Team

@@ -50,12 +50,16 @@ class Interactsh:
             "secret-key": self.secret,
             "correlation-id": self.correlation_id
         }
-        res = self.session.post(
-            f"https://{self.server}/register", headers=self.headers, json=data, verify=False)
-        if res.status_code == 401:
-            logger.error("[PLUGIN] Interactsh: auth error")
-        elif 'success' not in res.text:
-            logger.error("[PLUGIN] Interactsh: {}".format(res.text))
+        msg = f"[PLUGIN] Interactsh: Can not initiate {self.server} DNS callback client"
+        try:
+            res = self.session.post(
+                f"https://{self.server}/register", headers=self.headers, json=data, verify=False)
+            if res.status_code == 401:
+                logger.error("[PLUGIN] Interactsh: auth error")
+            elif 'success' not in res.text:
+                logger.error(msg)
+        except requests.exceptions.RequestException:
+            logger.error(msg)
 
     def poll(self):
         count = 3

@@ -36,9 +36,12 @@ class TestCase(unittest.TestCase):
             # Target options
             target = OptionGroup(parser, "Target", "At least one of these "
                                                    "options has to be provided to define the target(s)")
-            target.add_option("-u", "--url", dest="url", help="Target URL (e.g. \"http://www.site.com/vuln.php?id=1\")")
+            target.add_option("-u", "--url", dest="url",
+                              help="Target URL/CIDR (e.g. \"http://www.site.com/vuln.php?id=1\")")
 
-            target.add_option("-f", "--file", dest="url_file", help="Scan multiple targets given in a textual file")
+            target.add_option("-f", "--file", dest="url_file",
+                              help="Scan multiple targets given in a textual file (one per line)")
+            target.add_option("-p", "--ports", dest="ports", help="add additional port to each target (e.g. 8080,8443)")
             target.add_option("-r", dest="poc", help="Load PoC file from local or remote from seebug website")
             target.add_option("-k", dest="poc_keyword", help="Filter PoC by keyword, e.g. ecshop")
             target.add_option("-c", dest="configFile", help="Load options from a configuration INI file")
@@ -62,9 +65,9 @@ class TestCase(unittest.TestCase):
             request.add_option("--proxy", dest="proxy", help="Use a proxy to connect to the target URL")
             request.add_option("--proxy-cred", dest="proxy_cred",
                                help="Proxy authentication credentials (name:password)")
-            request.add_option("--timeout", dest="timeout",
-                               help="Seconds to wait before timeout connection (default 30)")
-            request.add_option("--retry", dest="retry", default=False, help="Time out retrials times")
+            request.add_option("--timeout", dest="timeout", type=float, default=10,
+                               help="Seconds to wait before timeout connection (default 10)")
+            request.add_option("--retry", dest="retry", type=int, default=0, help="Time out retrials times (default 0)")
             request.add_option("--delay", dest="delay", help="Delay between two request of one thread")
             request.add_option("--headers", dest="headers", help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
             # Account options
@@ -126,8 +129,8 @@ class TestCase(unittest.TestCase):
                                     help="Load plugins to execute")
             optimization.add_option("--pocs-path", dest="pocs_path", action="store", default=None,
                                     help="User defined poc scripts path")
-            optimization.add_option("--threads", dest="threads", type=int, default=1,
-                                    help="Max number of concurrent network requests (default 1)")
+            optimization.add_option("--threads", dest="threads", type=int, default=150,
+                                    help="Max number of concurrent network requests (default 150)")
             optimization.add_option("--batch", dest="batch",
                                     help="Automatically choose defaut choice without asking")
             optimization.add_option("--requires", dest="check_requires", action="store_true", default=False,
