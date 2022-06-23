@@ -208,7 +208,7 @@ $ pocsuite --dork 'port:6379' --vul-keyword 'redis' --max-page 2
  Search libssh server  with  `libssh` keyword.
 
  ```
- pocsuite -r pocs/libssh_auth_bypass.py --dork-shodan libssh --thread 10
+ pocsuite -r pocs/libssh_auth_bypass.py --dork-shodan libssh --threads 10
  ```
 
 **--dork-fofa DORK**
@@ -219,7 +219,7 @@ $ pocsuite --dork 'port:6379' --vul-keyword 'redis' --max-page 2
 
 
  ```
- $ pocsuite -r pocs/check_http_status.py --dork-fofa 'body="thinkphp"' --search-type web --thread 10
+ $ pocsuite -r pocs/check_http_status.py --dork-fofa 'body="thinkphp"' --search-type web --threads 10
  ```
 
 **--dork-quake DORK**
@@ -230,7 +230,7 @@ $ pocsuite --dork 'port:6379' --vul-keyword 'redis' --max-page 2
 
 
  ```
- $ pocsuite -r pocs/check_http_status.py --dork-quake 'app:"ThinkPHP"' --thread 10
+ $ pocsuite -r pocs/check_http_status.py --dork-quake 'app:"ThinkPHP"' --threads 10
  ```
 
 **--dork-b64**
@@ -271,7 +271,7 @@ cli mode
 	# run poc with shell mode
 	pocsuite -u http://example.com -r example.py -v 2 --shell
 
-	# search for the target of redis service from ZoomEye and perform batch detection of vulnerabilities. The thread is set to 20
+	# search for the target of redis service from ZoomEye and perform batch detection of vulnerabilities. The threads is set to 20
 	pocsuite -r redis.py --dork service:redis --threads 20
 
 	# load all poc in the poc directory and save the result as html
