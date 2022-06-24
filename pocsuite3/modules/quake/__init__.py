@@ -69,7 +69,7 @@ class Quake():
                 time.sleep(1)
                 data['start'] = page
                 url = "https://quake.360.cn/api/v3/search/quake_service"
-                resp = requests.post(url, json=data, headers=self.headers, timeout=80)
+                resp = requests.post(url, json=data, headers=self.headers, timeout=60)
                 if resp and resp.status_code == 200 and resp.json()['code'] == 0:
                     content = resp.json()
                     for match in content['data']:

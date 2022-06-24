@@ -72,7 +72,7 @@ class ZoomEye():
             for page in range(1, pages + 1):
                 time.sleep(1)
                 url = f'{self.url}/{resource}/search?query={dork}&page={page}'
-                resp = requests.get(url, headers=self.headers)
+                resp = requests.get(url, headers=self.headers, timeout=60)
                 if resp and resp.status_code == 200 and 'matches' in resp.text:
                     content = resp.json()
 
