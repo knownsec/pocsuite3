@@ -1,6 +1,6 @@
 from pocsuite3.lib.core.data import conf
 from pocsuite3.lib.core.enums import HTTP_HEADER
-from pocsuite3.lib.utils import generate_random_user_agent
+from pocsuite3.lib.utils import generate_random_user_agent, urlparse
 from requests.models import Request
 from requests.sessions import Session
 from requests.sessions import merge_cookies
@@ -39,6 +39,11 @@ def session_request(self, method, url,
                                    cookies or (conf.cookie if 'cookie' in conf else None))
     if not conf.agent and HTTP_HEADER.USER_AGENT not in conf.http_headers:
         conf.http_headers[HTTP_HEADER.USER_AGENT] = generate_random_user_agent()
+
+    # Fix no connection adapters were found
+    pr = urlparse(url)
+    if pr.scheme.lower() not in ['http', 'https']:
+        url = pr._replace(scheme='https' if str(pr.port).endswith('443') else 'http').geturl()
 
     req = Request(
         method=method.upper(),

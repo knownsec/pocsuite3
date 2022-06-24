@@ -252,19 +252,10 @@ def parse_target_url(url):
     """
     Parse target URL
     """
-    ret = url
-
-    if conf.ipv6 and is_ipv6_address_format(url):
-        ret = "[" + ret + "]"
-
-    if not re.search("^http[s]*://", ret, re.I) and not re.search("^ws[s]*://", ret, re.I) and '://' not in ret:
-        port = urlparse(ret).port
-        if port and str(port).endswith('443'):
-            ret = "https://" + ret
-        else:
-            ret = "http://" + ret
-
-    return ret
+    pr = urlparse(url)
+    if pr.scheme.lower() not in ['http', 'https', 'ws', 'wss']:
+        url = pr._replace(scheme='https' if str(pr.port).endswith('443') else 'http').geturl()
+    return url
 
 
 def is_url_format(value):

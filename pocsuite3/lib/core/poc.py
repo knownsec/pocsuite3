@@ -263,7 +263,7 @@ class POCBase(object):
                     self.url = url
                     logger.warn(f'auto correct url to: {mosaic(self.url)}')
                 break
-            except requests.ConnectionError:
+            except requests.RequestException:
                 pass
 
         if not self.url.startswith(self.scheme):
