@@ -7,6 +7,7 @@ class AttribDict(OrderedDict):
     Items starting with __ or _OrderedDict__ can't be accessed as attributes.
     """
     __exclude_keys__ = set()
+    registered_pocs = dict()
 
     def __getattr__(self, name):
         if (name.startswith('__')
