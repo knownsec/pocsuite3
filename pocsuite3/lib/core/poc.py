@@ -143,10 +143,13 @@ class POCBase(object):
 
     def build_url(self):
         target = parse_target_url(self.target)
-        pr = urlparse(target)
-        self.scheme = 'https' if pr.scheme.startswith('https') else 'http'
-        self.rhost = pr.hostname
-        self.rport = pr.port if pr.port else 443 if pr.scheme.startswith('https') else 80
+        try:
+            pr = urlparse(target)
+            self.scheme = 'https' if pr.scheme.startswith('https') else 'http'
+            self.rhost = pr.hostname
+            self.rport = pr.port if pr.port else 443 if pr.scheme.startswith('https') else 80
+        except ValueError:
+            pass
         if self.target and self.current_protocol != POC_CATEGORY.PROTOCOL.HTTP and not conf.console_mode:
             self.setg_option("rport", self.rport)
             self.setg_option("rhost", self.rhost)

@@ -252,9 +252,13 @@ def parse_target_url(url):
     """
     Parse target URL
     """
-    pr = urlparse(url)
-    if pr.scheme.lower() not in ['http', 'https', 'ws', 'wss']:
-        url = pr._replace(scheme='https' if str(pr.port).endswith('443') else 'http').geturl()
+    try:
+        pr = urlparse(url)
+        if pr.scheme.lower() not in ['http', 'https', 'ws', 'wss']:
+            url = pr._replace(scheme='https' if str(pr.port).endswith('443') else 'http').geturl()
+    except ValueError:
+        pass
+
     return url
 
 
@@ -410,13 +414,18 @@ def parse_target(address, additional_ports=[]):
         pass
 
     targets.add(address)
-    pr = urlparse(address)
-    for port in additional_ports:
-        netloc = f'[{pr.hostname}]:{port}' if conf.ipv6 else f'{pr.hostname}:{port}'
-        t = pr._replace(netloc=netloc).geturl()
-        if t.startswith('tcp://'):
-            t = t.lstrip('tcp://')
-        targets.add(t)
+
+    try:
+        pr = urlparse(address)
+        for port in additional_ports:
+            netloc = f'[{pr.hostname}]:{port}' if conf.ipv6 else f'{pr.hostname}:{port}'
+            t = pr._replace(netloc=netloc).geturl()
+            if t.startswith('tcp://'):
+                t = t.lstrip('tcp://')
+            targets.add(t)
+    except ValueError:
+        pass
+
     return targets
 
 
