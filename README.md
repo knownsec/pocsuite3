@@ -130,7 +130,7 @@ cli mode
 	# run poc with shell mode
 	pocsuite -u http://example.com -r example.py -v 2 --shell
 
-	# search for the target of redis service from ZoomEye and perform batch detection of vulnerabilities. The thread is set to 20
+	# search for the target of redis service from ZoomEye and perform batch detection of vulnerabilities. The threads is set to 20
 	pocsuite -r redis.py --dork service:redis --threads 20
 
 	# load all poc in the poc directory and save the result as html

@@ -79,7 +79,7 @@ class Fofa():
                     f"{self.api_url}/search/all?email={self.user}&key={self.token}&qbase64={dork}&"
                     f"fields={resource}&page={page}"
                 )
-                resp = requests.get(url, timeout=80, headers=self.headers)
+                resp = requests.get(url, headers=self.headers, timeout=60)
                 if resp and resp.status_code == 200 and "results" in resp.json():
                     content = resp.json()
                     for match in content['results']:

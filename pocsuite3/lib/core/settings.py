@@ -160,6 +160,7 @@ CMD_PARSE_WHITELIST = [
     "tls",
     "comparison",
     "dork-b64",
+    "output_path",
     "plugins",
     "pocs-path",
     "threads",

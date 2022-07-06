@@ -343,3 +343,10 @@ Cross-platform shell code generation
 * target url support cidr, user can use -p provide additional ports
 * support local mode, local mode do not need any targets, e.g. LPE
 * bug fixes
+
+# version 1.9.6
+----------------
+* support -o parameter, save the result in json lines format
+* optimize timeout for cyberspace search engine plugins
+* optimize the handling of the url protocol
+* docs update

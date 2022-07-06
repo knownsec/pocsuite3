@@ -452,6 +452,9 @@ def _cleanup_options():
         conf.plugins = [i.strip() for i in conf.plugins]
         conf.plugins = list(set(conf.plugins))
 
+    if conf.output_path and 'file_record' not in conf.plugins:
+        conf.plugins.append('file_record')
+
     if conf.connect_back_port:
         conf.connect_back_port = int(conf.connect_back_port)
 

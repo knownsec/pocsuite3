@@ -60,7 +60,8 @@ def cmd_line_parser(argv=None):
         request.add_argument("--host", dest="host", help="HTTP Host header value")
         request.add_argument("--referer", dest="referer", help="HTTP Referer header value")
         request.add_argument("--user-agent", dest="agent", help="HTTP User-Agent header value (default random)")
-        request.add_argument("--proxy", dest="proxy", help="Use a proxy to connect to the target URL")
+        request.add_argument("--proxy", dest="proxy",
+                             help="Use a proxy to connect to the target URL (protocol://host:port)")
         request.add_argument("--proxy-cred", dest="proxy_cred", help="Proxy authentication credentials (name:password)")
         request.add_argument("--timeout", dest="timeout", type=float, default=10,
                              help="Seconds to wait before timeout connection (default 10)")
@@ -123,6 +124,7 @@ def cmd_line_parser(argv=None):
 
         # Optimization options
         optimization = parser.add_argument_group("Optimization", "Optimization options")
+        optimization.add_argument("-o", "--output", dest="output_path", help="Output file to write (JSON Lines format)")
         optimization.add_argument("--plugins", dest="plugins", action="store", default=None,
                                   help="Load plugins to execute")
         optimization.add_argument("--pocs-path", dest="pocs_path", action="store", default=None,

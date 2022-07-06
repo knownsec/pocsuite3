@@ -40,7 +40,8 @@ class POCBase(object):
                                                       require=True)
             self.global_options["referer"] = OptString("", "HTTP Referer header value")
             self.global_options["agent"] = OptString("", "HTTP User-Agent header value")
-            self.global_options["proxy"] = OptString("", "Use a proxy to connect to the target URL")
+            self.global_options["proxy"] = OptString(
+                "", "Use a proxy to connect to the target URL (protocol://host:port)")
             self.global_options["timeout"] = OptInteger(10, "Seconds to wait before timeout connection (default 10)")
         else:
             self.global_options["rhost"] = OptString('', require=True)
@@ -143,10 +144,13 @@ class POCBase(object):
 
     def build_url(self):
         target = parse_target_url(self.target)
-        pr = urlparse(target)
-        self.scheme = 'https' if pr.scheme.startswith('https') else 'http'
-        self.rhost = pr.hostname
-        self.rport = pr.port if pr.port else 443 if pr.scheme.startswith('https') else 80
+        try:
+            pr = urlparse(target)
+            self.scheme = 'https' if pr.scheme.startswith('https') else 'http'
+            self.rhost = pr.hostname
+            self.rport = pr.port if pr.port else 443 if pr.scheme.startswith('https') else 80
+        except ValueError:
+            pass
         if self.target and self.current_protocol != POC_CATEGORY.PROTOCOL.HTTP and not conf.console_mode:
             self.setg_option("rport", self.rport)
             self.setg_option("rhost", self.rhost)
@@ -263,7 +267,7 @@ class POCBase(object):
                     self.url = url
                     logger.warn(f'auto correct url to: {mosaic(self.url)}')
                 break
-            except requests.ConnectionError:
+            except requests.RequestException:
                 pass
 
         if not self.url.startswith(self.scheme):

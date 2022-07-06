@@ -4,18 +4,18 @@ import json
 from pocsuite3.api import PLUGIN_TYPE
 from pocsuite3.api import PluginBase
 from pocsuite3.api import logger
-from pocsuite3.api import register_plugin, paths
+from pocsuite3.api import register_plugin, paths, conf
 
 
 class FileRecord(PluginBase):
     category = PLUGIN_TYPE.RESULTS
-    filename = os.path.join(paths.POCSUITE_OUTPUT_PATH, "{}.txt".format(int(time.time())))
+    filename = conf.output_path or os.path.join(paths.POCSUITE_OUTPUT_PATH, "{}.txt".format(int(time.time())))
     file = None
 
     def init(self):
         debug_msg = "[PLUGIN] file_record plugin init..."
         logger.debug(debug_msg)
-        logger.info("[PLUGIN] The data will be recorded in {}".format(self.filename))
+        logger.info("[PLUGIN] The result will be recorded in {}".format(self.filename))
         if os.path.exists(self.filename):
             raise Exception("The {} has existed".format(self.filename))
         self.file = open(self.filename, 'a+')
@@ -26,7 +26,13 @@ class FileRecord(PluginBase):
             poc_name = output.get("poc_name")
             target = output.get("target")
             created = output.get("created")
-            msg = {"target": target, "poc_name": poc_name, "created_time": created}
+            result = output.get("result")
+            msg = {
+                "target": target,
+                "poc_name": poc_name,
+                "result": result,
+                "created_time": created
+            }
             self.file.write(json.dumps(msg) + '\n')
 
     def start(self):

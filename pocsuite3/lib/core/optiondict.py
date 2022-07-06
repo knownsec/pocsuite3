@@ -59,6 +59,7 @@ optDict = {
         'dork_b64': 'boolean'
     },
     'Optimization': {
+        'output_path': 'string',
         'plugins': 'string',
         'pocs_path': 'string',
         'threads': 'integer',

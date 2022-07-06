@@ -252,19 +252,14 @@ def parse_target_url(url):
     """
     Parse target URL
     """
-    ret = url
+    try:
+        pr = urlparse(url)
+        if pr.scheme.lower() not in ['http', 'https', 'ws', 'wss']:
+            url = pr._replace(scheme='https' if str(pr.port).endswith('443') else 'http').geturl()
+    except ValueError:
+        pass
 
-    if conf.ipv6 and is_ipv6_address_format(url):
-        ret = "[" + ret + "]"
-
-    if not re.search("^http[s]*://", ret, re.I) and not re.search("^ws[s]*://", ret, re.I) and '://' not in ret:
-        port = urlparse(ret).port
-        if port and str(port).endswith('443'):
-            ret = "https://" + ret
-        else:
-            ret = "http://" + ret
-
-    return ret
+    return url
 
 
 def is_url_format(value):
@@ -419,13 +414,18 @@ def parse_target(address, additional_ports=[]):
         pass
 
     targets.add(address)
-    pr = urlparse(address)
-    for port in additional_ports:
-        netloc = f'[{pr.hostname}]:{port}' if conf.ipv6 else f'{pr.hostname}:{port}'
-        t = pr._replace(netloc=netloc).geturl()
-        if t.startswith('tcp://'):
-            t = t.lstrip('tcp://')
-        targets.add(t)
+
+    try:
+        pr = urlparse(address)
+        for port in additional_ports:
+            netloc = f'[{pr.hostname}]:{port}' if conf.ipv6 else f'{pr.hostname}:{port}'
+            t = pr._replace(netloc=netloc).geturl()
+            if t.startswith('tcp://'):
+                t = t.lstrip('tcp://')
+            targets.add(t)
+    except ValueError:
+        pass
+
     return targets
 
 

@@ -1,6 +1,6 @@
-.TH POCSUITE "1" "May 2022" "Manual page for pocsuite"
+.TH POCSUITE "1" "July 2022" "Manual page for pocsuite"
 .\"
-.\" 24st May 2022
+.\" July 6, 2022
 .\" Man page author:
 .\"   Tian Qiao <abcnsxyz@gmail.com>
 .\"
@@ -90,7 +90,7 @@ HTTP Referer header value
 HTTP User\-Agent header value (default random)
 .TP
 \fB\-\-proxy\fR PROXY
-Use a proxy to connect to the target URL
+Use a proxy to connect to the target URL (protocol://host:port)
 .TP
 \fB\-\-proxy\-cred\fR PROXY_CRED
 Proxy authentication credentials (name:password)
@@ -200,6 +200,9 @@ Whether dork is in base64 format
 .IP
 Optimization options
 .TP
+\fB\-o\fR OUTPUT_PATH, \fB\-\-output\fR OUTPUT_PATH
+Output file to write (JSON Lines format)
+.TP
 \fB\-\-plugins\fR PLUGINS
 Load plugins to execute
 .TP
@@ -280,7 +283,7 @@ is maintained at:
 .I https://github.com/knownsec/pocsuite3/blob/master/docs/USAGE.md
 .PP
 .SH VERSION
-This manual page documents pocsuite3 version 1.9.5
+This manual page documents pocsuite3 version 1.9.6
 .SH AUTHOR
 .br
 (c) 2014-2022 by Knownsec 404 Team

@@ -78,7 +78,8 @@ class Censys():
                 }
                 if cursor:
                     data['cursor'] = cursor
-                resp = requests.get(url, params=data, auth=(self.uid, self.secret), headers=self.headers)
+                resp = requests.get(url, params=data, auth=(self.uid, self.secret),
+                                    headers=self.headers, timeout=60)
                 if resp and resp.status_code == 200 and 'result' in resp.json():
                     results = resp.json()['result']['hits']
                     cursor = resp.json()['result']['links']['next']
