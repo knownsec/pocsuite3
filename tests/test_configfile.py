@@ -62,7 +62,8 @@ class TestCase(unittest.TestCase):
             request.add_option("--host", dest="host", help="HTTP Host header value")
             request.add_option("--referer", dest="referer", help="HTTP Referer header value")
             request.add_option("--user-agent", dest="agent", help="HTTP User-Agent header value (default random)")
-            request.add_option("--proxy", dest="proxy", help="Use a proxy to connect to the target URL")
+            request.add_option("--proxy", dest="proxy",
+                               help="Use a proxy to connect to the target URL (protocol://host:port)")
             request.add_option("--proxy-cred", dest="proxy_cred",
                                help="Proxy authentication credentials (name:password)")
             request.add_option("--timeout", dest="timeout", type=float, default=10,

@@ -49,7 +49,7 @@ Request:
   --host HOST           HTTP Host header value
   --referer REFERER     HTTP Referer header value
   --user-agent AGENT    HTTP User-Agent header value (default random)
-  --proxy PROXY         Use a proxy to connect to the target URL
+  --proxy PROXY         Use a proxy to connect to the target URL (protocol://host:port)
   --proxy-cred PROXY_CRED
                         Proxy authentication credentials (name:password)
   --timeout TIMEOUT     Seconds to wait before timeout connection (default 10)
