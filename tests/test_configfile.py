@@ -125,6 +125,8 @@ class TestCase(unittest.TestCase):
 
             # Optimization options
             optimization = OptionGroup(parser, "Optimization", "Optimization options")
+            optimization.add_option("-o", "--output", dest="output_path",
+                                    help="Output file to write (JSON Lines format)")
             optimization.add_option("--plugins", dest="plugins", action="store", default=None,
                                     help="Load plugins to execute")
             optimization.add_option("--pocs-path", dest="pocs_path", action="store", default=None,

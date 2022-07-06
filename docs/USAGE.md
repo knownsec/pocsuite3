@@ -118,6 +118,8 @@ Modules:
 Optimization:
   Optimization options
 
+  -o OUTPUT_PATH, --output OUTPUT_PATH
+                        Output file to write (JSON Lines format)
   --plugins PLUGINS     Load plugins to execute
   --pocs-path POCS_PATH
                         User defined poc scripts path

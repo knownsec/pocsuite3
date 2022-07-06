@@ -17,7 +17,7 @@ from pocsuite3.modules.listener.reverse_tcp import handle_listener_connection_fo
 
 def runtime_check():
     if not kb.registered_pocs:
-        msg = "try 'pocsuite -h' or 'pocsuite --help' for more information"
+        msg = "No poc specified, try 'pocsuite -h' or 'pocsuite --help' for more information"
         logger.warn(msg)
         raise PocsuiteSystemException(msg)
 

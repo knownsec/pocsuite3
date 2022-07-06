@@ -123,6 +123,7 @@ def cmd_line_parser(argv=None):
 
         # Optimization options
         optimization = parser.add_argument_group("Optimization", "Optimization options")
+        optimization.add_argument("-o", "--output", dest="output_path", help="Output file to write (JSON Lines format)")
         optimization.add_argument("--plugins", dest="plugins", action="store", default=None,
                                   help="Load plugins to execute")
         optimization.add_argument("--pocs-path", dest="pocs_path", action="store", default=None,
