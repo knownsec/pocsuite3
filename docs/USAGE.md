@@ -1,3 +1,5 @@
+# This document has stopped maintenance, please move to https://pocsuite.org
+
 # Usage
 
 - **pocsuite**: a cool and hackable command line program

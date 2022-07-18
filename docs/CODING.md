@@ -1,3 +1,5 @@
+# This document has stopped maintenance, please move to https://pocsuite.org
+
 Pocsuite3 开发文档及 PoC 编写规范及要求说明
 ---
 * [概述](#overview)
