@@ -74,3 +74,28 @@ jobs:
           git push origin master
         env:
           GH_REF: ${{ github.ref }}
+
+  dockerhub:
+    runs-on: ubuntu-latest
+    needs:
+      - pypi
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Build
+      env:
+        GH_REF: ${{ github.ref }}
+      run: |
+        export VERSION=$(echo $GH_REF | sed 's:refs/tags/v::')
+        docker build --build-arg version=${VERSION} \
+        --tag pocsuite3/pocsuite3:v${VERSION} \
+        --tag pocsuite3/pocsuite3:latest \
+        .
+    - name: Login
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}      
+    - name: Push
+      run: |
+        docker push -a pocsuite3/pocsuite3
