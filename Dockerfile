@@ -1,6 +1,7 @@
 FROM ubuntu:22.04
 MAINTAINER Knownsec 404 Team
 
+ARG version
 env DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
@@ -31,7 +32,7 @@ RUN sh -c "$(wget -O- https://raw.githubusercontent.com/13ph03nix/zsh-in-docker/
     && sudo apt-get clean -y \
     && sudo rm -rf /var/lib/apt/lists/*
 
-RUN sudo pip3 install --upgrade pip && sudo pip3 install --upgrade pocsuite3==1.9.6
+RUN sudo pip3 install --upgrade pip && sudo pip3 install --upgrade pocsuite3$([ -n "$version" ] && echo "=="${version})
 
 WORKDIR /home/pocsuite3
 CMD ["zsh"]
