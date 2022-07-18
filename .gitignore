@@ -59,6 +59,14 @@ env/
 .env
 venv36/
 venv/
+
+# vscode
+.vscode/
+
+# wakatime
+.wakatime-project
+
+# other
 build/
 dist/
 *.egg-info

@@ -10,6 +10,9 @@ cc <s1@seebug.org>
 w7ay <https://github.com/boy-hack>
 * for contributing core code
 
+fenix <https://github.com/13ph03nix>
+* for contributing core code
+
 phithon <root(at)leavesongs.com>
 * for suggesting a couple of features
 
@@ -43,7 +46,10 @@ hex0wn <https://github.com/hex0wn>
 * bugfix #139
 
 MrMetatron <https://github.com/MrMetatron>
-* console模式，添加系统命令执行，添加pocsuite3命令clear清除屏幕功能
+* console 模式，添加系统命令执行，添加 pocsuite3 命令 clear 清除屏幕功能
 
 z3r0yu <https://github.com/zer0yu>
 * Add quake dork for pocsuite3
+
+Rook1e <https://github.com/0x2E>
+* Add CI to build and push Docker image to DockerHub
