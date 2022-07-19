@@ -9,8 +9,19 @@ def get_redirect_target(self, resp):
         location = resp.headers['location']
         if is_py3:
             location = location.encode('latin1')
-        encoding = resp.encoding if resp.encoding else 'utf-8'
-        return to_native_string(location, encoding)
+
+        # fix https://github.com/psf/requests/issues/4926
+        encoding_list = ['utf-8']
+        if resp.apparent_encoding and resp.apparent_encoding not in encoding_list:
+            encoding_list.append(resp.apparent_encoding)
+        if resp.encoding and resp.encoding not in encoding_list:
+            encoding_list.append(resp.encoding)
+
+        for encoding in encoding_list:
+            try:
+                return to_native_string(location, encoding)
+            except Exception:
+                pass
     return None
 
 
