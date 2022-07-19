@@ -3,7 +3,7 @@ name: Release Package
 on:
   push:
     tags:
-    - v*
+      - v*
 
 jobs:
   pypi:
