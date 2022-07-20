@@ -12,10 +12,11 @@ def get_redirect_target(self, resp):
 
         # fix https://github.com/psf/requests/issues/4926
         encoding_list = ['utf-8']
-        if resp.apparent_encoding and resp.apparent_encoding not in encoding_list:
-            encoding_list.append(resp.apparent_encoding)
         if resp.encoding and resp.encoding not in encoding_list:
             encoding_list.append(resp.encoding)
+        if resp.apparent_encoding and resp.apparent_encoding not in encoding_list:
+            encoding_list.append(resp.apparent_encoding)
+        encoding_list.append('latin1')
 
         for encoding in encoding_list:
             try:
