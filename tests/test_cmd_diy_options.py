@@ -23,7 +23,7 @@ class TestCase(unittest.TestCase):
         eval_path = os.path.join(path, "../pocsuite3/cli.py")
         poc_path = os.path.join(path, "login_demo.py")
         command = (
-            f'python3 {eval_path} -u http://www.baidu.com -r {poc_path} --verify -v 2  --password mypass123 '
+            f'python3 {eval_path} -u https://example.com -r {poc_path} --verify -v 2  --password mypass123 '
             '--username "asd asd" --testt abctest'
         )
         pipeline = os.popen(command)
