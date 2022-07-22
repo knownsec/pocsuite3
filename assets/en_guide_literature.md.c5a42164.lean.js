@@ -1,0 +1,1 @@
+import{_ as e,j as r,g as a,H as t}from"./chunks/framework.8815fd6f.js";const f=JSON.parse('{"title":"Paper","description":"","frontmatter":{},"headers":[],"relativePath":"en/guide/literature.md","lastUpdated":null}'),n={name:"en/guide/literature.md"},p=t("",2),_=[p];function l(i,o,s,c,d,h){return a(),r("div",null,_)}var g=e(n,[["render",l]]);export{f as __pageData,g as default};

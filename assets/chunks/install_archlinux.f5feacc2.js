@@ -1,0 +1,1 @@
+var s="/assets/install_pypi.09927f47.png",a="/assets/install_macos.769046ce.png",t="/assets/install_debian.dc82bb19.png",_="/assets/install_docker.58782708.png",i="/assets/install_archlinux.4db42c10.png";export{s as _,a,t as b,_ as c,i as d};
