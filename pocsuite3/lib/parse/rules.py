@@ -1,6 +1,7 @@
 import re
 from pocsuite3.lib.core.data import conf
 from pocsuite3.lib.core.data import logger
+from pocsuite3.lib.core.common import get_file_text
 
 
 def regex_rule(files):
@@ -8,11 +9,11 @@ def regex_rule(files):
         conf.rule_filename = "rule.rule"
     for file_name in files:
         regx_rules = ["name = '(.*)'",
-                      "suricata_request = '''([\s\S]*?)'''",
-                      "references = \['(.*)'\]", "createDate = '(.*)'", "updateDate = '(.*)'",
+                      r"suricata_request = '''([\s\S]*?)'''",
+                      r"references = \['(.*)'\]", "createDate = '(.*)'", "updateDate = '(.*)'",
                       "vulID = '(.*)'",
                       "version = '(.*)'",
-                      "suricata_response = '''([\s\S]*?)'''",
+                      r"suricata_response = '''([\s\S]*?)'''",
                       ]
 
         information_list = {"name": "0",
@@ -25,8 +26,7 @@ def regex_rule(files):
                             "suricata_response": "7",
                             "flowbits": ""}
 
-        f = open(file_name, "r", encoding="utf-8")
-        st = f.read()
+        st = get_file_text(file_name)
         for key, value in information_list.items():
             if value:
                 pattern = re.compile(regx_rules[int(value)])

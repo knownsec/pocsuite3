@@ -347,24 +347,21 @@ def extract_cookies(cookie):
     return cookies
 
 
-def get_file_items(filename, comment_prefix='#', unicode_=True, lowercase=False, unique=False):
+def get_file_items(filename, comment_prefix='#', unicode=True, lowercase=False, unique=False):
     ret = list() if not unique else OrderedDict()
 
     check_file(filename)
 
     try:
-        with open(filename, 'r') as f:
+        with open(filename, 'rb') as f:
             for line in f.readlines():
                 line = line.strip()
-                # xreadlines doesn't return unicode strings when codecs.open() is used
+                if unicode:
+                    encoding = chardet.detect(line)['encoding'] or 'utf-8'
+                    line = line.decode(encoding)
+
                 if comment_prefix and line.startswith(comment_prefix):
                     continue
-
-                if not unicode_:
-                    try:
-                        line = str.encode(line)
-                    except UnicodeDecodeError:
-                        continue
 
                 if line:
                     if lowercase:
@@ -1006,14 +1003,8 @@ def mosaic(s):
     if len(t) > 1:
         scheme, s = f'{t[0]}://', t[1]
 
-    # URL/IPv4
-    if len(re.findall(r'\.', s)) >= 3:
-        t = s.split('.', 4)
-        t[0] = t[1] = '*'
-        s = '.'.join(t)
-
     # URL/IPv6
-    elif len(re.findall(r':', s)) >= 3:
+    if len(re.findall(r':', s)) >= 3:
         t = s.split(':')
         for i in range(1, len(t) - 2):
             if ']' in t[i]:
@@ -1022,6 +1013,17 @@ def mosaic(s):
                 t[i] = '*'
         s = ':'.join(t)
 
+    # URL/IPv4
+    elif len(re.findall(r'\.', s)) >= 3:
+        t = s.split('.', 4)
+        t[0] = t[1] = '*'
+        s = '.'.join(t)
+
+    elif '.' in s:
+        t = s.split('.')
+        for i in range(0, len(t) - 1):
+            t[i] = '*'
+        s = '.'.join(t)
     return scheme + s
 
 
@@ -1079,6 +1081,13 @@ class OrderedSet(collections.OrderedDict, collectionsAbc.MutableSet):
 
     def __str__(self):
         return '{%s}' % (', '.join(map(repr, self.keys())))
+
+
+def get_file_text(filepath):
+    with open(filepath, 'rb') as f:
+        content = f.read()
+        encoding = chardet.detect(content)['encoding'] or 'utf-8'
+        return content.decode(encoding)
 
 
 if __name__ == '__main__':

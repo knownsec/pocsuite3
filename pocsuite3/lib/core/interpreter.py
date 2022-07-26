@@ -11,7 +11,7 @@ from termcolor import colored
 
 from pocsuite3.lib.controller.controller import start
 from pocsuite3.lib.core.common import banner, index_modules, data_to_stdout, module_required, \
-    get_poc_name, stop_after, get_local_ip, is_ipv6_address_format, rtrim, ltrim, exec_cmd
+    get_poc_name, stop_after, get_local_ip, is_ipv6_address_format, rtrim, ltrim, exec_cmd, get_file_text
 from pocsuite3.lib.core.data import logger, paths, kb, conf
 from pocsuite3.lib.core.enums import POC_CATEGORY, AUTOCOMPLETE_TYPE
 from pocsuite3.lib.core.exception import PocsuiteBaseException, PocsuiteShellQuitException
@@ -447,8 +447,7 @@ class PocsuiteInterpreter(BaseInterpreter):
         index = 0
         for tmp_module in self.main_modules_dirs:
             found = os.path.join(self.module_parent_directory, tmp_module + ".py")
-            with open(found, encoding='utf-8') as f:
-                code = f.read()
+            code = get_file_text(found)
             name = get_poc_name(code)
             tb.add_row([str(index), tmp_module, name])
             search_result.append(tmp_module)
