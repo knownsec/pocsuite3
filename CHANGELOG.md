@@ -1,3 +1,9 @@
+# version 1.9.7
+----------------
+* improve encoding compatibility #305
+* obfuscate REVERSE_PAYLOAD to evade windows defender #306
+* improve --ppt
+
 # version 1.9.6
 ----------------
 * support -o parameter, save the result in json lines format
