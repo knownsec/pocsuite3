@@ -1003,14 +1003,8 @@ def mosaic(s):
     if len(t) > 1:
         scheme, s = f'{t[0]}://', t[1]
 
-    # URL/IPv4
-    if len(re.findall(r'\.', s)) >= 3:
-        t = s.split('.', 4)
-        t[0] = t[1] = '*'
-        s = '.'.join(t)
-
     # URL/IPv6
-    elif len(re.findall(r':', s)) >= 3:
+    if len(re.findall(r':', s)) >= 3:
         t = s.split(':')
         for i in range(1, len(t) - 2):
             if ']' in t[i]:
@@ -1019,6 +1013,17 @@ def mosaic(s):
                 t[i] = '*'
         s = ':'.join(t)
 
+    # URL/IPv4
+    elif len(re.findall(r'\.', s)) >= 3:
+        t = s.split('.', 4)
+        t[0] = t[1] = '*'
+        s = '.'.join(t)
+
+    elif '.' in s:
+        t = s.split('.')
+        for i in range(0, len(t) - 1):
+            t[i] = '*'
+        s = '.'.join(t)
     return scheme + s
 
 
