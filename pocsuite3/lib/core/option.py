@@ -17,7 +17,7 @@ from pocsuite3.lib.core.common import boldify_message, check_file, get_file_item
 from pocsuite3.lib.core.common import check_path, extract_cookies
 from pocsuite3.lib.core.common import get_local_ip, mosaic, get_host_ip
 from pocsuite3.lib.core.common import single_time_warn_message
-from pocsuite3.lib.core.common import OrderedSet
+from pocsuite3.lib.core.common import OrderedSet, get_file_text
 from pocsuite3.lib.core.convert import stdout_encode
 from pocsuite3.lib.core.data import conf, cmd_line_options
 from pocsuite3.lib.core.data import kb
@@ -350,7 +350,7 @@ def _set_pocs_modules():
                         _pocs.extend(map(lambda x: os.path.join(root, x), files))
 
                 for p in _pocs:
-                    file_content = open(p, encoding='utf-8').read()
+                    file_content = get_file_text(p)
                     if 'register_poc' not in file_content:
                         continue
                     if conf.poc_keyword:
