@@ -70,11 +70,13 @@ class Fofa():
             resource = 'protocol,ip,port'
         else:
             resource = 'protocol,host'
+
+        dork = b64encode(dork.encode()).decode()
         search_result = set()
+
         try:
             for page in range(1, pages + 1):
                 time.sleep(1)
-                dork = b64encode(dork.encode()).decode()
                 url = (
                     f"{self.api_url}/search/all?email={self.user}&key={self.token}&qbase64={dork}&"
                     f"fields={resource}&page={page}"
@@ -102,7 +104,7 @@ class Fofa():
 
 if __name__ == "__main__":
     fa = Fofa()
-    z = fa.search('body="thinkphp"')
+    z = fa.search('body="thinkphp"', pages=2)
     print(z)
     z = fa.search('body="thinkphp"', resource='web')
     print(z)
