@@ -351,11 +351,10 @@ def _set_pocs_modules():
 
                 for p in _pocs:
                     file_content = get_file_text(p)
-                    if 'register_poc' not in file_content:
+                    if not re.search(r'register_poc', file_content):
                         continue
                     if conf.poc_keyword:
-                        attr_field = re.search(r'vulID.*?def .*?\(', file_content, re.DOTALL)
-                        if attr_field and conf.poc_keyword.lower() not in attr_field.group().lower():
+                        if not re.search(conf.poc_keyword, file_content, re.I | re.M):
                             continue
                     info_msg = "loading PoC script '{0}'".format(p)
                     logger.info(info_msg)
