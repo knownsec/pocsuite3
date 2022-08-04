@@ -17,6 +17,26 @@ from pocsuite3.lib.utils import urlparse
 
 class POCBase(object):
     def __init__(self):
+        # PoC attributes
+        self.vulID = getattr(self, 'vulID', '0')
+        self.version = getattr(self, 'version', '1')
+        self.author = getattr(self, 'author', '')
+        self.vulDate = getattr(self, 'vulDate', '')
+        self.createDate = getattr(self, 'createDate', '')
+        self.updateDate = getattr(self, 'updateDate', '')
+        self.references = getattr(self, 'references', [])
+        self.name = getattr(self, 'name', '')
+        self.appPowerLink = getattr(self, 'appPowerLink', '')
+        self.appName = getattr(self, 'appName', '')
+        self.appVersion = getattr(self, 'appVersion', '')
+        self.vulType = getattr(self, 'vulType', '')
+        self.desc = getattr(self, 'desc', '')
+        self.samples = getattr(self, 'samples', [])
+        self.install_requires = getattr(self, 'install_requires', [])
+        self.dork = getattr(self, 'dork', {})
+        self.suricata_request = getattr(self, 'suricata_request', '')
+        self.suricata_response = getattr(self, 'suricata_response', '')
+        #
         self.type = None
         self.target = None
         self.headers = None
