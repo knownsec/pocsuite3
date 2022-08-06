@@ -1,3 +1,10 @@
+# version 1.9.8
+----------------
+* support full PoC search by regex keyword #312
+* set default value for PoC in POCBase #312
+* add bind/reverse shell payload #311
+* fix fofa query over multiple pages #310
+
 # version 1.9.7
 ----------------
 * improve encoding compatibility #305
