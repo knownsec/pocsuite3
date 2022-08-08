@@ -44,6 +44,7 @@ class POCBase(object):
         self.scheme = None
         self.rhost = None
         self.rport = None
+        self.netloc = None
         self.mode = None
         self.params = None
         self.verbose = None
@@ -169,13 +170,14 @@ class POCBase(object):
             self.scheme = 'https' if pr.scheme.startswith('https') else 'http'
             self.rhost = pr.hostname
             self.rport = pr.port if pr.port else 443 if pr.scheme.startswith('https') else 80
+            self.netloc = pr.netloc
         except ValueError:
             pass
         if self.target and self.current_protocol != POC_CATEGORY.PROTOCOL.HTTP and not conf.console_mode:
             self.setg_option("rport", self.rport)
             self.setg_option("rhost", self.rhost)
             self.setg_option("ssl", self.scheme == 'https')
-        return target
+        return target.rstrip('/')
 
     def _execute(self):
         if self.mode == 'shell':
@@ -257,7 +259,6 @@ class POCBase(object):
         return output
 
     def _check(self, dork='', allow_redirects=False, return_obj=False, is_http=True, honeypot_check=True):
-        self.url = self.url.rstrip('/')
         u = urlparse(self.url)
         # the port closed
         if u.port and not check_port(u.hostname, u.port):
@@ -268,6 +269,14 @@ class POCBase(object):
             return True
 
         res = None
+        corrected = False
+        # this only covers most cases
+        redirect_https_keyword = [
+            # https://www.zoomeye.org/searchResult?q=%22request%20was%20sent%20to%20HTTPS%20port%22
+            'request was sent to https port',
+            # https://www.zoomeye.org/searchResult?q=%22running%20in%20SSL%20mode.%20Try%22
+            'running in ssl mode. try'
+        ]
         netloc = self.url.split('://', 1)[-1]
         urls = OrderedSet()
         urls.add(self.url)
@@ -278,19 +287,22 @@ class POCBase(object):
                 time.sleep(0.5)
                 res = requests.get(url, allow_redirects=allow_redirects)
                 # access ok, the url need to be correct
-                if 'plain HTTP request was sent to HTTPS port' in res.text:
-                    self.url = f'https://{netloc}'
-                    res = requests.get(self.url, allow_redirects=allow_redirects)
-                    logger.warn(f'auto correct url to: {mosaic(self.url)}')
+                for k in redirect_https_keyword:
+                    if k.lower() in res.text.lower():
+                        self.url = f'https://{netloc}'
+                        res = requests.get(self.url, allow_redirects=allow_redirects)
+                        logger.warn(f'auto correct url to: {mosaic(self.url)}')
+                        corrected = True
+                        break
                 # another protocol is access ok
-                elif url != self.url:
+                if not corrected and url != self.url:
                     self.url = url
                     logger.warn(f'auto correct url to: {mosaic(self.url)}')
                 break
             except requests.RequestException:
                 pass
 
-        if not self.url.startswith(self.scheme):
+        if self.url.split('://')[0] != self.scheme:
             self.scheme = 'https' if self.url.startswith('https') else 'http'
             port = urlparse(self.url).port
             self.rport = port if port else 443 if self.scheme.startswith('https') else 80
