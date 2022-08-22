@@ -204,8 +204,9 @@ class POCBase(object):
                 if self.scheme not in ['http', 'https']:
                     self.scheme = 'https' if str(self.rport).endswith('443') else 'http'
                 self.rport = self.rport if self.rport else 443 if self.scheme.startswith('https') else 80
+                self.netloc = f'{self.rhost}:{self.rport}'
             pr = pr._replace(scheme=self.scheme)
-            pr = pr._replace(netloc=f'{self.rhost}:{self.rport}')
+            pr = pr._replace(netloc=self.netloc)
             target = pr.geturl()
         except ValueError:
             pass
