@@ -316,6 +316,7 @@ class POCBase(object):
             # https://www.zoomeye.org/searchResult?q=%22running%20in%20SSL%20mode.%20Try%22
             'running in ssl mode. try'
         ]
+        origin_url = self.url
         netloc = self.url.split('://', 1)[-1]
         urls = OrderedSet()
         urls.add(self.url)
@@ -330,13 +331,13 @@ class POCBase(object):
                     if k.lower() in res.text.lower():
                         self.url = f'https://{netloc}'
                         res = requests.get(self.url, allow_redirects=allow_redirects)
-                        logger.warn(f'auto correct url: {mosaic(self.target)} -> {mosaic(self.url)}')
+                        logger.warn(f'auto correct url: {mosaic(origin_url)} -> {mosaic(self.url)}')
                         corrected = True
                         break
                 # another protocol is access ok
                 if not corrected and url != self.url:
                     self.url = url
-                    logger.warn(f'auto correct url: {mosaic(self.target)} -> {mosaic(self.url)}')
+                    logger.warn(f'auto correct url: {mosaic(origin_url)} -> {mosaic(self.url)}')
                 break
             except requests.RequestException:
                 pass
