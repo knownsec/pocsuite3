@@ -1,3 +1,9 @@
+# version 1.9.9
+----------------
+* auto correct url based on poc's protocol attribute #316
+* fix Colorizing doesn't work on Windows with poc-console #318
+* trail slash at the end of url #314
+
 # version 1.9.8
 ----------------
 * support full PoC search by regex keyword #312
