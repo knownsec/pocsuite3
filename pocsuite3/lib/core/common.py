@@ -132,9 +132,9 @@ def banner():
     Function prints pocsuite banner with its version
     """
     _ = BANNER
-    if not getattr(LOGGER_HANDLER, "is_tty", False):
-        _ = clear_colors(_)
-    elif IS_WIN:
+    # if not getattr(LOGGER_HANDLER, "is_tty", False):
+    #     _ = clear_colors(_)
+    if IS_WIN:
         coloramainit()
 
     data_to_stdout(_)
