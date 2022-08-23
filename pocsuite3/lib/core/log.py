@@ -50,12 +50,6 @@ FORMATTER = colorlog.LevelFormatter(
     style='%'
 )
 
-disableColor = "disable-col" in ' '.join(sys.argv)
-if disableColor:
-    FORMATTER = logging.Formatter(
-        "[%(asctime)s] [%(levelname)s] %(message)s", "%H:%M:%S")
-
-
 LOGGER_HANDLER.setFormatter(FORMATTER)
 LOGGER.addHandler(LOGGER_HANDLER)
 LOGGER.setLevel(logging.INFO)

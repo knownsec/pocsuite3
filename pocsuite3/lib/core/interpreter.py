@@ -80,6 +80,19 @@ class BaseInterpreter(object):
 
         while True:
             try:
+                '''
+                # BUG
+                https://github.com/knownsec/pocsuite3/issues/317
+                https://stackoverflow.com/questions/52102240/how-to-apply-coloring-formatting-to-the-displayed-text-in-input-function-simi
+
+                colorama works by replacing sys.stdout and sys.stderr with versions that interpret ISO 6429 sequences,
+                make appropriate Win32 calls to implement them,
+                and send the rest of the characters on to the underlying stream.
+                This explains your observations: input doesn’t use the Python-level sys.stdout.write,
+                and Spyder interprets the sequences itself but is unaffected by the Win32 calls.
+
+                The only reasonable fix seems to be to use input with no prompt :(
+                '''
                 self.input_command, self.input_args = self.parse_line(input(self.prompt))
                 command = self.input_command.lower()
                 if not command:
@@ -206,10 +219,11 @@ class PocsuiteInterpreter(BaseInterpreter):
         self.__parse_prompt()
 
     def __parse_prompt(self):
-        raw_prompt_default_template = "\001\033[4m\002{host}\001\033[0m\002 > "
-        self.raw_prompt_template = raw_prompt_default_template
-        module_prompt_default_template = "\001\033[4m\002{host}\001\033[0m\002 (\001\033[91m\002{module}\001\033[0m\002) > "
-        self.module_prompt_template = module_prompt_default_template
+        host_colorizing = colored("{host}", attrs=['underline'])
+        self.raw_prompt_template = f'{host_colorizing} > '
+
+        # LIGHTRED_EX=91 are fairly well supported, but not part of the standard.
+        self.module_prompt_template = host_colorizing + " (\033[91m{module}\033[0m) > "
 
     @property
     def module_metadata(self):

