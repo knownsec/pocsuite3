@@ -1,3 +1,7 @@
+# version 1.9.10
+----------------
+fix different python versions have different behaviors on ipaddress library #319
+
 # version 1.9.9
 ----------------
 * auto correct url based on poc's protocol attribute #316
