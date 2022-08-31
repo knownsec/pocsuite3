@@ -387,16 +387,31 @@ def get_file_items(filename, comment_prefix='#', unicode=True, lowercase=False, 
 def parse_target(address, additional_ports=[]):
     # parse IPv4/IPv6 CIDR
     targets = OrderedSet()
+    is_ipv6 = False
     try:
-        for ip in ip_network(address, strict=False).hosts():
+        hosts = list(ip_network(address, strict=False).hosts())
+        '''
+        fix https://github.com/knownsec/pocsuite3/issues/319
+        different python versions have different behaviors on ipaddress library
+        '''
+        try:
+            t = ip_address(address.replace('/32', '').replace('/128', ''))
+            if t not in hosts:
+                hosts.append(t)
+        except ValueError:
+            pass
+
+        for ip in hosts:
 
             if ip.version == 6:
+                is_ipv6 = True
+            if is_ipv6 and 'ipv6' in conf:
                 conf.ipv6 = True
 
             targets.add(str(ip))
 
             for port in additional_ports:
-                targets.add(f'[{ip}]:{port}' if conf.ipv6 else f'{ip}:{port}')
+                targets.add(f'[{ip}]:{port}' if is_ipv6 else f'{ip}:{port}')
 
         return targets
 
@@ -406,6 +421,8 @@ def parse_target(address, additional_ports=[]):
     # URL
     try:
         if ip_address(urlparse(address).hostname).version == 6:
+            is_ipv6 = True
+        if is_ipv6 and 'ipv6' in conf:
             conf.ipv6 = True
     except ValueError:
         pass
@@ -415,7 +432,7 @@ def parse_target(address, additional_ports=[]):
     try:
         pr = urlparse(address)
         for port in additional_ports:
-            netloc = f'[{pr.hostname}]:{port}' if conf.ipv6 else f'{pr.hostname}:{port}'
+            netloc = f'[{pr.hostname}]:{port}' if is_ipv6 else f'{pr.hostname}:{port}'
             t = pr._replace(netloc=netloc).geturl()
             if t.startswith('tcp://'):
                 t = t.lstrip('tcp://')
