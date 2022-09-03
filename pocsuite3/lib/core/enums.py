@@ -148,6 +148,7 @@ class POC_CATEGORY:
     PROTOCOL.WINBOX = 'Winbox'
     PROTOCOL.MEMCACHED = 'Memcached'
     PROTOCOL.BACNET = 'BACnet'
+    PROTOCOL.T3 = 'T3'
 
 
 class OPTION_TYPE:

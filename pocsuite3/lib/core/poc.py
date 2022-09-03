@@ -184,7 +184,8 @@ class POCBase(object):
             POC_CATEGORY.PROTOCOL.XMPP: 5222,
             POC_CATEGORY.PROTOCOL.WINBOX: 8291,
             POC_CATEGORY.PROTOCOL.MEMCACHED: 11211,
-            POC_CATEGORY.PROTOCOL.BACNET: 47808
+            POC_CATEGORY.PROTOCOL.BACNET: 47808,
+            POC_CATEGORY.PROTOCOL.T3: 7001,
         }
 
         if self.current_protocol_port:
