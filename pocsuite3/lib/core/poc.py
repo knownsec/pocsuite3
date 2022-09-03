@@ -50,6 +50,7 @@ class POCBase(object):
         self.verbose = None
         self.expt = (0, 'None')
         self.current_protocol = getattr(self, "protocol", POC_CATEGORY.PROTOCOL.HTTP)
+        self.current_protocol_port = getattr(self, "protocol_default_port", 0)
         self.pocDesc = getattr(self, "pocDesc", "Poc的作者好懒呀！")
         self.host_ip = get_host_ip(check_private=False)
 
@@ -185,6 +186,9 @@ class POCBase(object):
             POC_CATEGORY.PROTOCOL.MEMCACHED: 11211,
             POC_CATEGORY.PROTOCOL.BACNET: 47808
         }
+
+        if self.current_protocol_port:
+            protocol_default_port_map[self.current_protocol] = self.current_protocol_port
 
         try:
             pr = urlparse(target)
