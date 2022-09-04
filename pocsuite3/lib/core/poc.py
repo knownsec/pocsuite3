@@ -195,21 +195,22 @@ class POCBase(object):
             pr = urlparse(target)
             self.scheme = pr.scheme
             self.rhost = pr.hostname
-            self.rport = pr.port
-            self.netloc = pr.netloc
+            self.rport = pr.port or self.current_protocol_port
 
-            if self.current_protocol in protocol_default_port_map:
+            # if protocol is not provided and the port endswith 443, we adjust the protocol to https
+            if (self.current_protocol not in protocol_default_port_map or
+                    self.current_protocol == POC_CATEGORY.PROTOCOL.HTTP):
+                if self.scheme not in ['http', 'https']:
+                    self.scheme = 'https' if str(self.rport).endswith('443') else 'http'
+                self.rport = self.rport if self.rport else 443 if self.scheme == 'https' else 80
+
+            else:
                 # adjust protocol
                 self.scheme = self.current_protocol.lower()
                 # adjust port
                 if not self.rport:
                     self.rport = protocol_default_port_map[self.current_protocol]
-                    self.netloc = f'{self.rhost}:{self.rport}'
-            else:
-                if self.scheme not in ['http', 'https']:
-                    self.scheme = 'https' if str(self.rport).endswith('443') else 'http'
-                self.rport = self.rport if self.rport else 443 if self.scheme.startswith('https') else 80
-                self.netloc = f'{self.rhost}:{self.rport}'
+            self.netloc = f'{self.rhost}:{self.rport}'
             pr = pr._replace(scheme=self.scheme)
             pr = pr._replace(netloc=self.netloc)
             target = pr.geturl()
