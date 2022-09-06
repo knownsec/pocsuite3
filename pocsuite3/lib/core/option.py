@@ -198,12 +198,12 @@ def _set_multiple_targets():
     # set multi targets to kb
     if conf.url:
         for url in conf.url:
-            for target in parse_target(url, conf.ports):
+            for target in parse_target(url, conf.ports, conf.skip_target_port):
                 kb.targets.add(target)
 
     if conf.url_file:
         for line in get_file_items(conf.url_file, lowercase=False, unique=True):
-            for target in parse_target(line, conf.ports):
+            for target in parse_target(line, conf.ports, conf.skip_target_port):
                 kb.targets.add(target)
 
     if conf.dork:
@@ -518,6 +518,7 @@ def _set_conf_attributes():
     conf.url = None
     conf.url_file = None
     conf.ports = []
+    conf.skip_target_port = False
     conf.mode = 'verify'
     conf.poc = None
     conf.poc_keyword = None

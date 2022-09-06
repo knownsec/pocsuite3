@@ -25,12 +25,11 @@ class TestCase(unittest.TestCase):
 
     def test_domain_url_with_additional_ports(self):
         result = OrderedSet()
-        result.add('https://example.com/cgi-bin/test.cgi?a=b&c=d')
         result.add('https://example.com:8080/cgi-bin/test.cgi?a=b&c=d')
         result.add('https://example.com:8443/cgi-bin/test.cgi?a=b&c=d')
         result.add('http://example.com:10000/cgi-bin/test.cgi?a=b&c=d')
         self.assertEqual(parse_target('https://example.com/cgi-bin/test.cgi?a=b&c=d',
-                                      [8080, 8443, 'http:10000']), result)
+                                      [8080, 8443, 'http:10000'], True), result)
 
     def test_ipv4_url(self):
         result = OrderedSet()
@@ -60,16 +59,14 @@ class TestCase(unittest.TestCase):
 
     def test_ipv4_with_additional_ports(self):
         result = OrderedSet()
-        result.add('172.16.218.0')
         result.add('172.16.218.0:8080')
         result.add('172.16.218.0:8443')
         result.add('https://172.16.218.0:10000')
-        result.add('172.16.218.1')
         result.add('172.16.218.1:8080')
         result.add('172.16.218.1:8443')
         result.add('172.16.218.1:8443')
         result.add('https://172.16.218.1:10000')
-        self.assertEqual(parse_target('172.16.218.1/31', [8080, 8443, 'https:10000']), result)
+        self.assertEqual(parse_target('172.16.218.1/31', [8080, 8443, 'https:10000'], True), result)
 
     def test_ipv6(self):
         result = OrderedSet()

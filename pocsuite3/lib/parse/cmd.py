@@ -41,6 +41,8 @@ def cmd_line_parser(argv=None):
                             help="Scan multiple targets given in a textual file (one per line)")
         target.add_argument("-p", "--ports", dest="ports",
                             help="add additional port to each target ([proto:]port, e.g. 8080,https:10000)")
+        target.add_argument("-s", dest="skip_target_port", action="store_true",
+                            help="Skip target's port, only use additional port")
         target.add_argument("-r", dest="poc", nargs='+', help="Load PoC file from local or remote from seebug website")
         target.add_argument("-k", dest="poc_keyword", help="Filter PoC by keyword, e.g. ecshop")
         target.add_argument("-c", dest="configFile", help="Load options from a configuration INI file")
