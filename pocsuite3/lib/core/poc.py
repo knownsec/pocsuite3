@@ -310,7 +310,7 @@ class POCBase(object):
             logger.debug(f'{mosaic(self.url)}, the port is closed.')
             return False
 
-        if not is_http:
+        if is_http is False or self.current_protocol != POC_CATEGORY.PROTOCOL.HTTP:
             return True
 
         res = None
