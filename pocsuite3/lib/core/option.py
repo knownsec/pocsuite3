@@ -432,9 +432,14 @@ def _cleanup_options():
     if conf.ports:
         if isinstance(conf.ports, str):
             ports = OrderedSet()
-            for i in conf.ports.split(','):
-                if i.isdigit() and int(i) >= 0 and int(i) <= 65535:
-                    ports.add(int(i))
+            for probe in conf.ports.split(','):
+                # [proto:]port
+                probe = probe.replace(' ', '')
+                if len(probe.split(':')) > 2:
+                    continue
+                port = probe.split(':')[-1]
+                if port.isdigit() and int(port) >= 0 and int(port) <= 65535:
+                    ports.add(probe)
             conf.ports = list(ports)
 
     if conf.poc:

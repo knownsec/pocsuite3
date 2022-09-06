@@ -410,8 +410,16 @@ def parse_target(address, additional_ports=[]):
 
             targets.add(str(ip))
 
-            for port in additional_ports:
-                targets.add(f'[{ip}]:{port}' if is_ipv6 else f'{ip}:{port}')
+            for probe in additional_ports:
+                # [proto:]port
+                scheme, port = '', probe
+                if len(probe.split(':')) == 2:
+                    scheme, port = probe.split(':')
+
+                if scheme:
+                    targets.add(f'{scheme}://[{ip}]:{port}' if is_ipv6 else f'{scheme}://{ip}:{port}')
+                else:
+                    targets.add(f'[{ip}]:{port}' if is_ipv6 else f'{ip}:{port}')
 
         return targets
 
@@ -431,9 +439,18 @@ def parse_target(address, additional_ports=[]):
 
     try:
         pr = urlparse(address)
-        for port in additional_ports:
+        for probe in additional_ports:
+            # [proto:]port
+            scheme, port = '', probe
+            if len(probe.split(':')) == 2:
+                scheme, port = probe.split(':')
+
             netloc = f'[{pr.hostname}]:{port}' if is_ipv6 else f'{pr.hostname}:{port}'
-            t = pr._replace(netloc=netloc).geturl()
+            t = pr._replace(netloc=netloc)
+            if scheme:
+                t = t._replace(scheme=scheme)
+
+            t = t.geturl()
             if t.startswith('tcp://'):
                 t = t.lstrip('tcp://')
             targets.add(t)

@@ -28,7 +28,9 @@ class TestCase(unittest.TestCase):
         result.add('https://example.com/cgi-bin/test.cgi?a=b&c=d')
         result.add('https://example.com:8080/cgi-bin/test.cgi?a=b&c=d')
         result.add('https://example.com:8443/cgi-bin/test.cgi?a=b&c=d')
-        self.assertEqual(parse_target('https://example.com/cgi-bin/test.cgi?a=b&c=d', [8080, 8443]), result)
+        result.add('http://example.com:10000/cgi-bin/test.cgi?a=b&c=d')
+        self.assertEqual(parse_target('https://example.com/cgi-bin/test.cgi?a=b&c=d',
+                                      [8080, 8443, 'http:10000']), result)
 
     def test_ipv4_url(self):
         result = OrderedSet()
@@ -61,10 +63,13 @@ class TestCase(unittest.TestCase):
         result.add('172.16.218.0')
         result.add('172.16.218.0:8080')
         result.add('172.16.218.0:8443')
+        result.add('https://172.16.218.0:10000')
         result.add('172.16.218.1')
         result.add('172.16.218.1:8080')
         result.add('172.16.218.1:8443')
-        self.assertEqual(parse_target('172.16.218.1/31', [8080, 8443]), result)
+        result.add('172.16.218.1:8443')
+        result.add('https://172.16.218.1:10000')
+        self.assertEqual(parse_target('172.16.218.1/31', [8080, 8443, 'https:10000']), result)
 
     def test_ipv6(self):
         result = OrderedSet()
@@ -88,13 +93,16 @@ class TestCase(unittest.TestCase):
         result.add('fd12:3456:789a:1::1')
         result.add('[fd12:3456:789a:1::1]:8080')
         result.add('[fd12:3456:789a:1::1]:8443')
+        result.add('https://[fd12:3456:789a:1::1]:10000')
         result.add('fd12:3456:789a:1::2')
         result.add('[fd12:3456:789a:1::2]:8080')
         result.add('[fd12:3456:789a:1::2]:8443')
+        result.add('https://[fd12:3456:789a:1::2]:10000')
         result.add('fd12:3456:789a:1::3')
         result.add('[fd12:3456:789a:1::3]:8080')
         result.add('[fd12:3456:789a:1::3]:8443')
-        self.assertEqual(parse_target('fd12:3456:789a:1::/126', [8080, 8443]), result)
+        result.add('https://[fd12:3456:789a:1::3]:10000')
+        self.assertEqual(parse_target('fd12:3456:789a:1::/126', [8080, 8443, 'https:10000']), result)
 
     def test_localhost(self):
         result = OrderedSet()

@@ -41,7 +41,8 @@ class TestCase(unittest.TestCase):
 
             target.add_option("-f", "--file", dest="url_file",
                               help="Scan multiple targets given in a textual file (one per line)")
-            target.add_option("-p", "--ports", dest="ports", help="add additional port to each target (e.g. 8080,8443)")
+            target.add_option("-p", "--ports", dest="ports",
+                              help="add additional port to each target ([proto:]port, e.g. 8080,https:10000)")
             target.add_option("-r", dest="poc", help="Load PoC file from local or remote from seebug website")
             target.add_option("-k", dest="poc_keyword", help="Filter PoC by keyword, e.g. ecshop")
             target.add_option("-c", dest="configFile", help="Load options from a configuration INI file")
