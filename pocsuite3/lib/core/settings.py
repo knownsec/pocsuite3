@@ -117,6 +117,7 @@ CMD_PARSE_WHITELIST = [
     "url",
     "url_file",
     "ports",
+    "skip_target_port",
     "file",
     "poc_keyword",
     "verify",

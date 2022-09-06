@@ -7,6 +7,7 @@ optDict = {
         'url': 'string',
         'url_file': 'string',
         'ports': 'string',
+        'skip_target_port': 'boolean',
         'poc': 'string',
         'poc_keyword': 'string',
         'configFile': 'string'

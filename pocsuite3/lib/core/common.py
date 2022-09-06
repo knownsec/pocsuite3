@@ -384,7 +384,7 @@ def get_file_items(filename, comment_prefix='#', unicode=True, lowercase=False, 
     return ret if not unique else ret.keys()
 
 
-def parse_target(address, additional_ports=[]):
+def parse_target(address, additional_ports=[], skip_target_port=False):
     # parse IPv4/IPv6 CIDR
     targets = OrderedSet()
     is_ipv6 = False
@@ -408,9 +408,11 @@ def parse_target(address, additional_ports=[]):
             if is_ipv6 and 'ipv6' in conf:
                 conf.ipv6 = True
 
-            targets.add(str(ip))
+            if not skip_target_port:
+                targets.add(str(ip))
 
             for probe in additional_ports:
+                probe = str(probe)
                 # [proto:]port
                 scheme, port = '', probe
                 if len(probe.split(':')) == 2:
@@ -435,11 +437,13 @@ def parse_target(address, additional_ports=[]):
     except ValueError:
         pass
 
-    targets.add(address)
+    if not skip_target_port:
+        targets.add(address)
 
     try:
         pr = urlparse(address)
         for probe in additional_ports:
+            probe = str(probe)
             # [proto:]port
             scheme, port = '', probe
             if len(probe.split(':')) == 2:
