@@ -172,7 +172,7 @@ def data_to_stdout(data, bold=False):
     """
     Writes text to the stdout (console) stream
     """
-    if 'quiet' not in conf or not conf.quiet:
+    if not conf.get('quiet', False):
         message = ""
 
         if isinstance(data, str):
@@ -387,7 +387,6 @@ def get_file_items(filename, comment_prefix='#', unicode=True, lowercase=False, 
 def parse_target(address, additional_ports=[], skip_target_port=False):
     # parse IPv4/IPv6 CIDR
     targets = OrderedSet()
-    is_ipv6 = False
     try:
         hosts = list(ip_network(address, strict=False).hosts())
         '''
@@ -404,8 +403,6 @@ def parse_target(address, additional_ports=[], skip_target_port=False):
         for ip in hosts:
 
             if ip.version == 6:
-                is_ipv6 = True
-            if is_ipv6 and 'ipv6' in conf:
                 conf.ipv6 = True
 
             if not skip_target_port:
@@ -419,9 +416,9 @@ def parse_target(address, additional_ports=[], skip_target_port=False):
                     scheme, port = probe.split(':')
 
                 if scheme:
-                    targets.add(f'{scheme}://[{ip}]:{port}' if is_ipv6 else f'{scheme}://{ip}:{port}')
+                    targets.add(f'{scheme}://[{ip}]:{port}' if conf.get('ipv6', False) else f'{scheme}://{ip}:{port}')
                 else:
-                    targets.add(f'[{ip}]:{port}' if is_ipv6 else f'{ip}:{port}')
+                    targets.add(f'[{ip}]:{port}' if conf.get('ipv6', False) else f'{ip}:{port}')
 
         return targets
 
@@ -431,8 +428,6 @@ def parse_target(address, additional_ports=[], skip_target_port=False):
     # URL
     try:
         if ip_address(urlparse(address).hostname).version == 6:
-            is_ipv6 = True
-        if is_ipv6 and 'ipv6' in conf:
             conf.ipv6 = True
     except ValueError:
         pass
@@ -449,7 +444,7 @@ def parse_target(address, additional_ports=[], skip_target_port=False):
             if len(probe.split(':')) == 2:
                 scheme, port = probe.split(':')
 
-            netloc = f'[{pr.hostname}]:{port}' if is_ipv6 else f'{pr.hostname}:{port}'
+            netloc = f'[{pr.hostname}]:{port}' if conf.get('ipv6', False) else f'{pr.hostname}:{port}'
             t = pr._replace(netloc=netloc)
             if scheme:
                 t = t._replace(scheme=scheme)
@@ -1033,7 +1028,7 @@ def mosaic(s):
     """
 
     s = str(s)
-    if not ('ppt' in conf and conf.ppt):
+    if not conf.get('ppt', False):
         return s
 
     scheme = ''
