@@ -66,15 +66,14 @@ class POCBase(object):
                 "", "Use a proxy to connect to the target URL (protocol://host:port)")
             self.global_options["timeout"] = OptInteger(10, "Seconds to wait before timeout connection (default 10)")
         else:
-            self.global_options["rhost"] = OptString('', require=True)
-            self.global_options["rport"] = OptPort('', require=True)
-            self.global_options["ssl"] = OptBool(default=False)
+            self.global_options["rhost"] = OptString('', 'The target host', require=True)
+            self.global_options["rport"] = OptPort('', 'The target port', require=True)
 
         # payload options for exploit
         self.payload_options = OrderedDict()
         if hasattr(self, "_shell"):
-            self.payload_options["lhost"] = OptString('', "Connect back ip", require=True)
-            self.payload_options["lport"] = OptPort(10086, "Connect back port")
+            self.payload_options["lhost"] = OptString(self.host_ip, "The listen address")
+            self.payload_options["lport"] = OptPort(6666, "The listen port")
 
         self.options = OrderedDict()
         # module options init
@@ -216,10 +215,9 @@ class POCBase(object):
             target = pr.geturl()
         except ValueError:
             pass
-        if self.target and self.current_protocol != POC_CATEGORY.PROTOCOL.HTTP and not conf.console_mode:
-            self.setg_option("rport", self.rport)
+        if self.target and self.current_protocol != POC_CATEGORY.PROTOCOL.HTTP and conf.console_mode:
             self.setg_option("rhost", self.rhost)
-            self.setg_option("ssl", self.scheme == 'https')
+            self.setg_option("rport", self.rport)
         return target.rstrip('/')
 
     def _execute(self):
