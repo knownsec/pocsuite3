@@ -35,9 +35,12 @@ def session_request(self, method, url,
         return merged_setting
 
     # Create the Request.
+    if conf.get('http_headers', {}) == {}:
+        conf.http_headers = {}
+
     merged_cookies = merge_cookies(merge_cookies(RequestsCookieJar(), self.cookies),
-                                   cookies or (conf.cookie if 'cookie' in conf else None))
-    if not conf.agent and HTTP_HEADER.USER_AGENT not in conf.http_headers:
+                                   cookies or conf.get('cookie', None))
+    if not conf.get('agent', '') and HTTP_HEADER.USER_AGENT not in conf.get('http_headers', {}):
         conf.http_headers[HTTP_HEADER.USER_AGENT] = generate_random_user_agent()
 
     # Fix no connection adapters were found
@@ -48,7 +51,7 @@ def session_request(self, method, url,
     req = Request(
         method=method.upper(),
         url=url,
-        headers=_merge_retain_none(headers, conf.http_headers if 'http_headers' in conf else {}),
+        headers=_merge_retain_none(headers, conf.get('http_headers', {})),
         files=files,
         data=data or {},
         json=json,
@@ -59,15 +62,14 @@ def session_request(self, method, url,
     )
     prep = self.prepare_request(req)
 
-    # proxies = proxies or (conf.proxies if 'proxies' in conf else {})
     if proxies is None:
-        proxies = conf.proxies if 'proxies' in conf else {}
+        proxies = conf.get('proxies', {})
 
     settings = self.merge_environment_settings(
         prep.url, proxies, stream, verify, cert
     )
 
-    timeout = timeout or conf.get("timeout", None)
+    timeout = timeout or conf.get("timeout", 10)
     if timeout:
         timeout = float(timeout)
 
