@@ -66,7 +66,7 @@ class OptPort(Option):
     def __init__(self, default, description="", require=False):
         super().__init__(default, description, require)
         if description == "":
-            self.description = "Target HTTP port"
+            self.description = "The target port"
         self.type = "Port"
 
     def __set__(self, instance, value):

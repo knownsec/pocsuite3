@@ -376,8 +376,7 @@ class PocsuiteInterpreter(BaseInterpreter):
         else:
             rhost = self.current_module.getg_option("rhost")
             rport = self.current_module.getg_option("rport")
-            ssl = self.current_module.getg_option("ssl")
-            target = f"https://{rhost}:{rport}" if ssl else f"{rhost}:{rport}"
+            target = f"{rhost}:{rport}"
         conf.mode = mod
         kb.task_queue.put((target, self.current_module))
         try:
@@ -526,7 +525,7 @@ class PocsuiteInterpreter(BaseInterpreter):
                 if opt.require and value == "":
                     value = colored("*require*", "red")
                 tb3.add_row([name, value, opt.type, opt.description])
-            data_to_stdout("\nExploit payloads(using reverse tcp):\n")
+            data_to_stdout("\nPayload options (reverse_tcp):\n")
             data_to_stdout(tb3.get_string())
             data_to_stdout("\n")
 
