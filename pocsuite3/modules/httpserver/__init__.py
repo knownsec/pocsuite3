@@ -102,6 +102,7 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
             gen_cert(filepath=certfile)
         else:
             self.scheme = 'http'
+
         self.certfile = certfile
         self.server_locked = False  # Avoid call start method muti-times
         self.server_started = False  # Aviod start server mutl-times
@@ -119,6 +120,10 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
             self.host_ip = get_host_ip()
             self.httpserver = HTTPServerV4
 
+        self.url = f'{self.scheme}://{self.bind_ip}:{self.bind_port}'
+        if self.is_ipv6:
+            self.url = f'{self.scheme}://[{self.bind_ip}]:{self.bind_port}'
+
         self.__flag = threading.Event()  # The identifier used to pause the thread
         self.__flag.set()  # set flag True
         self.__running = threading.Event()  # The identifier used to stop the thread
@@ -127,11 +132,20 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
     def start(self, daemon=True):
         # Http server can only allow start once in pocsuite3, avoid muti-threading start muti-times
         if self.server_locked:
-            logger.info(
-                'Httpd serve has been started on {}://{}:{}, '.format(self.scheme, self.bind_ip, self.bind_port))
+            logger.info(f'Httpd serve has been started on {self.url}')
             return
 
-        if check_port(self.host_ip, self.bind_port):
+        '''
+        fix httpserver module hangs on macos platform
+        https://github.com/knownsec/pocsuite3/issues/325
+        '''
+        self.check_ip = self.host_ip
+        if self.bind_ip == '0.0.0.0':
+            self.check_ip = '127.0.0.1'
+        elif self.bind_ip == '::':
+            self.check_ip = '::1'
+
+        if check_port(self.check_ip, self.bind_port):
             logger.error('Port {} has been occupied, start Httpd serve failed!'.format(self.bind_port))
             return
 
@@ -143,7 +157,7 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
         detect_count = 10
         while detect_count:
             try:
-                if check_port(self.host_ip, self.bind_port):
+                if check_port(self.check_ip, self.bind_port):
                     break
             except Exception as ex:
                 logger.error(str(ex))
@@ -157,7 +171,7 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
                 self.__flag.wait()
                 if not self.server_started:
                     self.httpd = self.httpserver((self.bind_ip, self.bind_port), self.requestHandler)
-                    logger.info("Starting httpd on {}://{}:{}".format(self.scheme, self.bind_ip, self.bind_port))
+                    logger.info(f"Starting httpd on {self.url}")
                     if self.https:
                         if self.certfile:
                             self.httpd.socket = ssl.wrap_socket(self.httpd.socket, certfile=self.certfile,
@@ -172,7 +186,7 @@ class PHTTPServer(threading.Thread, metaclass=PHTTPSingleton):
                     self.__flag.clear()
             self.httpd.shutdown()
             self.httpd.server_close()
-            logger.info('Stop httpd server on {}://{}:{}'.format(self.scheme, self.bind_ip, self.bind_port))
+            logger.info(f'Stop httpd server on {self.url}')
         except Exception as ex:
             self.httpd.shutdown()
             self.httpd.server_close()
