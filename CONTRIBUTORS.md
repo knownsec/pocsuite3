@@ -53,3 +53,6 @@ z3r0yu <https://github.com/zer0yu>
 
 Rook1e <https://github.com/0x2E>
 * Add CI to build and push Docker image to DockerHub
+
+ekszz <https://github.com/ekszz>
+* contributing to customize poc protocol and default port #321

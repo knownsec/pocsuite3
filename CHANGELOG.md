@@ -1,3 +1,11 @@
+# version 1.9.11
+----------------
+* support customize poc protocol and default port #321
+* -p option support optional protocol field, [proto:]port #323
+* add -s option to skip target default port #323
+* poc-console optimization
+* some bug fixes & improvements
+
 # version 1.9.10
 ----------------
 fix different python versions have different behaviors on ipaddress library #319
