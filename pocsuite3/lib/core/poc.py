@@ -10,7 +10,7 @@ from pocsuite3.lib.core.common import mosaic, check_port, OrderedSet, get_host_i
 from pocsuite3.lib.core.data import conf, logger
 from pocsuite3.lib.core.enums import OUTPUT_STATUS, CUSTOM_LOGGING, ERROR_TYPE_ID, POC_CATEGORY
 from pocsuite3.lib.core.exception import PocsuiteValidationException
-from pocsuite3.lib.core.interpreter_option import OptString, OptInteger, OptPort, OptBool
+from pocsuite3.lib.core.interpreter_option import OptString, OptInteger, OptPort
 from pocsuite3.lib.request import requests
 from pocsuite3.lib.utils import urlparse
 
@@ -215,7 +215,7 @@ class POCBase(object):
             target = pr.geturl()
         except ValueError:
             pass
-        if self.target and self.current_protocol != POC_CATEGORY.PROTOCOL.HTTP and conf.console_mode:
+        if self.target and self.current_protocol != POC_CATEGORY.PROTOCOL.HTTP and not conf.console_mode:
             self.setg_option("rhost", self.rhost)
             self.setg_option("rport", self.rport)
         return target.rstrip('/')
