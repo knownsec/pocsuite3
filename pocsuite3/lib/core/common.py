@@ -39,7 +39,6 @@ from pocsuite3.lib.core.settings import IPV6_ADDRESS_REGEX
 from pocsuite3.lib.core.settings import IP_ADDRESS_REGEX
 from pocsuite3.lib.core.settings import OLD_VERSION_CHARACTER
 from pocsuite3.lib.core.settings import POCSUITE_VERSION_CHARACTER
-from pocsuite3.lib.core.settings import POC_NAME_REGEX
 from pocsuite3.lib.core.settings import POC_REQUIRES_REGEX
 from pocsuite3.lib.core.settings import UNICODE_ENCODING
 from pocsuite3.lib.core.settings import URL_ADDRESS_REGEX
@@ -576,7 +575,11 @@ def get_poc_requires(code):
 
 
 def get_poc_name(code):
-    return extract_regex_result(POC_NAME_REGEX, code)
+    if re.search(r'register_poc', code):
+        return extract_regex_result(r"""(?sm)POCBase\):.*?name\s*=\s*['"](?P<result>.*?)['"]""", code)
+    elif re.search(r'matchers:\s*-', code):
+        return extract_regex_result(r"""(?sm)\s*name\s*:\s*(?P<result>[^\n]*).*matchers:""", code)
+    return ''
 
 
 def is_os_64bit():
@@ -897,7 +900,7 @@ def index_modules(modules_directory):
 
     modules = []
     for root, _, files in os.walk(modules_directory):
-        files = filter(lambda x: not x.startswith("__") and x.endswith(".py"), files)
+        files = filter(lambda x: not x.startswith("__") and x.endswith(".py") or x.endswith(".yaml"), files)
         modules.extend(map(lambda x: os.path.join(root, os.path.splitext(x)[0]), files))
 
     return modules
