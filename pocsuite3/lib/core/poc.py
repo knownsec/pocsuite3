@@ -312,7 +312,7 @@ class POCBase(object):
             return True
 
         res = None
-        corrected = False
+        https_res = None
         # this only covers most cases
         redirect_https_keyword = [
             # https://www.zoomeye.org/searchResult?q=%22request%20was%20sent%20to%20HTTPS%20port%22
@@ -320,6 +320,7 @@ class POCBase(object):
             # https://www.zoomeye.org/searchResult?q=%22running%20in%20SSL%20mode.%20Try%22
             'running in ssl mode. try'
         ]
+        redirect_https_keyword_found = False
         origin_url = self.url
         netloc = self.url.split('://', 1)[-1]
         urls = OrderedSet()
@@ -330,23 +331,38 @@ class POCBase(object):
             try:
                 time.sleep(0.5)
                 res = requests.get(url, allow_redirects=allow_redirects)
-                # access ok, the url need to be correct
+                if url.startswith('https'):
+                    https_res = res
+
+                # redirect to https keyword found, continue to next loop
                 for k in redirect_https_keyword:
                     if k.lower() in res.text.lower():
-                        self.url = f'https://{netloc}'
-                        res = requests.get(self.url, allow_redirects=allow_redirects)
-                        logger.warn(f'auto correct url: {mosaic(origin_url)} -> {mosaic(self.url)}')
-                        corrected = True
+                        redirect_https_keyword_found = True
+                        res = https_res
                         break
-                # another protocol is access ok
-                if not corrected and url != self.url:
-                    self.url = url
-                    logger.warn(f'auto correct url: {mosaic(origin_url)} -> {mosaic(self.url)}')
+                if redirect_https_keyword_found:
+                    continue
+
+                """
+                https://github.com/knownsec/pocsuite3/issues/330
+                status_code:
+                    - 30x
+                    - 50x
+                """
+                if not str(res.status_code).startswith('20'):
+                    continue
+
                 break
             except requests.RequestException:
                 pass
 
+        if not isinstance(res, requests.Response):
+            return False
+
+        self.url = res.request.url.rstrip('/')
+
         if self.url.split('://')[0] != self.scheme:
+            logger.warn(f'auto correct url: {mosaic(origin_url)} -> {mosaic(self.url)}')
             self.scheme = 'https' if self.url.startswith('https') else 'http'
             port = urlparse(self.url).port
             self.rport = port if port else 443 if self.scheme.startswith('https') else 80
@@ -354,9 +370,6 @@ class POCBase(object):
 
         if return_obj:
             return res
-
-        if res is None:
-            return False
 
         content = str(res.headers).lower() + res.text.lower()
         dork = dork.lower()
