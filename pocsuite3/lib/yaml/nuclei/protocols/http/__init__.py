@@ -112,30 +112,47 @@ class HttpRequest:
     digest_password: str = ''
 
 
-def getMatchPart(part: str, response: requests.Response, return_bytes: bool = False) -> str:
+def getMatchPart(part: str, response: requests.Response, interactsh, return_bytes: bool = False) -> str:
     result = b''
-    headers = '\n'.join(f'{k}: {v}' for k, v in response.headers.items()).encode('utf-8')
+    headers = b''
+    body = b''
+    if isinstance(response, requests.Response):
+        headers = '\n'.join(f'{k}: {v}' for k, v in response.headers.items()).encode('utf-8')
+        body = response.content
 
     if part == 'all':
-        result = headers + b'\n\n' + response.content
+        result = headers + b'\n\n' + body
     elif part in ['', 'body']:
-        result = response.content
+        result = body
     elif part in ['header', 'all_headers']:
         result = headers
+    elif part == 'interactsh_protocol':
+        interactsh.poll()
+        result = '\n'.join(interactsh.interactsh_protocol)
+    elif part == 'interactsh_request':
+        interactsh.poll()
+        result = '\n'.join(interactsh.interactsh_request)
+    elif part == 'interactsh_response':
+        interactsh.poll()
+        result = '\n'.join(interactsh.interactsh_response)
 
-    return result if return_bytes else result.decode('utf-8')
+    if return_bytes and not isinstance(result, bytes):
+        result = result.encode()
+    elif not return_bytes and isinstance(result, bytes):
+        result = result.decode()
+    return result
 
 
-def HttpMatch(request: HttpRequest, response: requests.Response):
+def HttpMatch(request: HttpRequest, response: requests.Response, interactsh):
     matchers = request.matchers
     matchers_result = []
 
     for i, matcher in enumerate(matchers):
         matcher_res = False
-        item = getMatchPart(matcher.part, response, return_bytes=matcher.type == MatcherType.BinaryMatcher)
+        item = getMatchPart(matcher.part, response, interactsh, return_bytes=matcher.type == MatcherType.BinaryMatcher)
 
         if matcher.type == MatcherType.StatusMatcher:
-            matcher_res = MatchStatusCode(matcher, response.status_code)
+            matcher_res = MatchStatusCode(matcher, response.status_code if response else 0)
             logger.debug(f'matcher: {matcher}, result: {matcher_res}')
 
         elif matcher.type == MatcherType.SizeMatcher:
@@ -187,7 +204,7 @@ def HttpExtract(request: HttpRequest, response: requests.Response):
             res = ExtractRegex(extractor, item)
             logger.debug(f'extractor: {extractor}, result: {res}')
         elif extractor.type == ExtractorType.KValExtractor:
-            res = ExtractKval(extractor, response.headers)
+            res = ExtractKval(extractor, response.headers if response else {})
             logger.debug(f'extractor: {extractor}, result: {res}')
         elif extractor.type == ExtractorType.XPathExtractor:
             res = ExtractXPath(extractor, item)

@@ -9,7 +9,6 @@ from pocsuite3.lib.core.common import (
 from pocsuite3.lib.core.data import kb
 from pocsuite3.lib.core.data import logger
 from pocsuite3.lib.core.settings import POC_IMPORTDICT
-from pocsuite3.lib.yaml.nuclei import Nuclei
 
 
 class PocLoader(Loader):
@@ -72,6 +71,7 @@ class PocLoader(Loader):
 
         # convert yaml template to pocsuite3 poc script
         if filename.endswith('.yaml') and re.search(r'matchers:\s+-', poc_code):
+            from pocsuite3.lib.yaml.nuclei import Nuclei
             poc_code = str(Nuclei(poc_code))
 
         self.check_requires(poc_code)

@@ -77,6 +77,7 @@ class Nuclei():
         self.execute_options = OrderedDict()
         self.execute_options['stop_at_first_match'] = self.template.stop_at_first_match
         self.execute_options['variables'] = self.template.variables
+        self.execute_options['interactsh'] = None
 
         self.requests = self.template.requests
 
@@ -103,15 +104,16 @@ class Nuclei():
                         logger.debug(dump.dump_all(response).decode('utf-8'))
                     except Exception as e1:
                         logger.debug(str(e1))
-                        continue
-                    match_res = HttpMatch(request, response)
+                        response = None
+                    match_res = HttpMatch(request, response, self.execute_options['interactsh'])
                     extractor_res = HttpExtract(request, response)
                     if match_res and extractor_res:
                         match_res = str(dict(extractor_res[0]))
                     if match_res and request.stop_at_first_match:
                         return match_res
                     results.append(match_res)
-                    response.close()
+                    if response:
+                        response.close()
             except Exception as e:
                 logger.debug(str(e))
         return results and any(results)
@@ -152,11 +154,9 @@ class Nuclei():
         with automatic Request correlation built in. It's as easy as writing {{interactsh-url}} anywhere in the request.
         """
         if '{{interactsh-url}}' in self.yaml_template or '§interactsh-url§' in self.yaml_template:
-            from pocsuite3.modules.interactsh import Interactsh
-            ish = Interactsh()
-            ish_url, ish_flag = ish.build_request(method='')
-            self.dynamic_values['interactsh-url'] = ish_url
-            self.execute_options['interactsh_client'] = ish
+            from pocsuite3.lib.yaml.nuclei.protocols.common.interactsh import InteractshClient
+            self.execute_options['interactsh'] = InteractshClient()
+            self.dynamic_values['interactsh-url'] = self.execute_options['interactsh'].client.domain
 
         results = []
         for request in self.requests:
