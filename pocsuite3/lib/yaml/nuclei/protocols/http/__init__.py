@@ -89,20 +89,17 @@ class HttpRequest:
     # MaxSize is the maximum size of http response body to read in bytes.
     max_size: int = 0
 
-    # TODO
-    # cookie-reuse accepts boolean input and false as default, This option not work on pocsuite3
     cookie_reuse: bool = False
 
     read_all: bool = False
     redirects: bool = False
+    host_redirects: bool = False
     pipeline: bool = False
     unsafe: bool = False
     race: bool = False
 
-    # TODO
     # Request condition allows checking for condition between multiple requests for writing complex checks and
     # exploits involving multiple HTTP request to complete the exploit chain.
-
     req_condition: bool = False
 
     stop_at_first_match: bool = True
@@ -112,20 +109,46 @@ class HttpRequest:
     digest_password: str = ''
 
 
-def getMatchPart(part: str, response: requests.Response, interactsh, return_bytes: bool = False) -> str:
-    result = b''
-    headers = b''
-    body = b''
-    if isinstance(response, requests.Response):
-        headers = '\n'.join(f'{k}: {v}' for k, v in response.headers.items()).encode('utf-8')
-        body = response.content
+def responseToDSLMap(resp: requests.Response):
+    """responseToDSLMap converts an HTTP response to a map for use in DSL matching
+    """
+    data = {}
+    if not isinstance(resp, requests.Response):
+        return data
 
-    if part == 'all':
-        result = headers + b'\n\n' + body
-    elif part in ['', 'body']:
-        result = body
-    elif part in ['header', 'all_headers']:
-        result = headers
+    for k, v in resp.cookies.items():
+        data[k.lower()] = v
+    for k, v in resp.headers.items():
+        data[k.lower().replace('-', '_')] = v
+
+    req_headers_raw = '\n'.join(f'{k}: {v}' for k, v in resp.request.headers.items())
+    req_body = resp.request.body
+    if not req_body:
+        req_body = b''
+    if not isinstance(req_body, bytes):
+        req_body = req_body.encode()
+    resp_headers_raw = '\n'.join(f'{k}: {v}' for k, v in resp.headers.items())
+    resp_body = resp.content
+
+    data['request'] = req_headers_raw.encode() + b'\n\n' + req_body
+    data['response'] = resp_headers_raw.encode() + b'\n\n' + resp_body
+    data['status_code'] = resp.status_code
+    data['body'] = resp_body
+    data['all_headers'] = resp_headers_raw
+    data['header'] = resp_headers_raw
+    data['kval_extractor_dict'] = {}
+    data['kval_extractor_dict'].update(resp.cookies)
+    data['kval_extractor_dict'].update(resp.headers)
+
+    return data
+
+
+def getMatchPart(part: str, resp_data: dict, interactsh=None, return_bytes: bool = False) -> str:
+    if part == '':
+        part = 'body'
+
+    if part in resp_data:
+        result = resp_data[part]
     elif part == 'interactsh_protocol':
         interactsh.poll()
         result = '\n'.join(interactsh.interactsh_protocol)
@@ -135,6 +158,8 @@ def getMatchPart(part: str, response: requests.Response, interactsh, return_byte
     elif part == 'interactsh_response':
         interactsh.poll()
         result = '\n'.join(interactsh.interactsh_response)
+    else:
+        result = ''
 
     if return_bytes and not isinstance(result, bytes):
         result = result.encode()
@@ -143,37 +168,37 @@ def getMatchPart(part: str, response: requests.Response, interactsh, return_byte
     return result
 
 
-def HttpMatch(request: HttpRequest, response: requests.Response, interactsh):
+def HttpMatch(request: HttpRequest, resp_data: dict, interactsh=None):
     matchers = request.matchers
     matchers_result = []
 
     for i, matcher in enumerate(matchers):
         matcher_res = False
-        item = getMatchPart(matcher.part, response, interactsh, return_bytes=matcher.type == MatcherType.BinaryMatcher)
+        item = getMatchPart(matcher.part, resp_data, interactsh, matcher.type == MatcherType.BinaryMatcher)
 
         if matcher.type == MatcherType.StatusMatcher:
-            matcher_res = MatchStatusCode(matcher, response.status_code if response else 0)
-            logger.debug(f'matcher: {matcher}, result: {matcher_res}')
+            matcher_res = MatchStatusCode(matcher, resp_data['status_code'])
+            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.SizeMatcher:
             matcher_res = MatchSize(matcher, len(item))
-            logger.debug(f'matcher: {matcher}, result: {matcher_res}')
+            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.WordsMatcher:
             matcher_res, _ = MatchWords(matcher, item, {})
-            logger.debug(f'matcher: {matcher}, result: {matcher_res}')
+            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.RegexMatcher:
             matcher_res, _ = MatchRegex(matcher, item)
-            logger.debug(f'matcher: {matcher}, result: {matcher_res}')
+            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.BinaryMatcher:
             matcher_res, _ = MatchBinary(matcher, item)
-            logger.debug(f'matcher: {matcher}, result: {matcher_res}')
+            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.DSLMatcher:
-            matcher_res = MatchDSL(matcher, {})
-            logger.debug(f'matcher: {matcher}, result: {matcher_res}')
+            matcher_res = MatchDSL(matcher, resp_data)
+            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         if not matcher_res:
             if request.matchers_condition == 'and':
@@ -192,32 +217,33 @@ def HttpMatch(request: HttpRequest, response: requests.Response, interactsh):
     return False
 
 
-def HttpExtract(request: HttpRequest, response: requests.Response):
+def HttpExtract(request: HttpRequest, resp_data: dict):
     extractors = request.extractors
-    extractors_result = []
+    extractors_result = {'internal': {}, 'external': {}, 'extraInfo': []}
 
     for extractor in extractors:
-        item = getMatchPart(extractor.part, response)
+        item = getMatchPart(extractor.part, resp_data)
 
         res = None
         if extractor.type == ExtractorType.RegexExtractor:
             res = ExtractRegex(extractor, item)
-            logger.debug(f'extractor: {extractor}, result: {res}')
+            logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.KValExtractor:
-            res = ExtractKval(extractor, response.headers if response else {})
-            logger.debug(f'extractor: {extractor}, result: {res}')
+            res = ExtractKval(extractor, resp_data['kval_extractor_dict'])
+            logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.XPathExtractor:
             res = ExtractXPath(extractor, item)
-            logger.debug(f'extractor: {extractor}, result: {res}')
+            logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.JSONExtractor:
             res = ExtractJSON(extractor, item)
-            logger.debug(f'extractor: {extractor}, result: {res}')
+            logger.debug(f'[+] {extractor} -> {res}')
         elif ExtractorType.type == ExtractorType.DSLExtractor:
             res = ExtractDSL(extractor, {})
-            logger.debug(f'extractor: {extractor}, result: {res}')
+            logger.debug(f'[+] {extractor} -> {res}')
 
-        if res:
-            extractors_result.append(res)
+        extractors_result['internal'].update(res['internal'])
+        extractors_result['external'].update(res['external'])
+        extractors_result['extraInfo'] += res['extraInfo']
     return extractors_result
 
 
@@ -248,11 +274,12 @@ def payloadGenerator(request: HttpRequest) -> OrderedDict:
 
 
 def httpRequestGenerator(request: HttpRequest, dynamic_values: OrderedDict):
+    request_count = len(request.path + request.raw)
     for payload_instance in payloadGenerator(request):
-        payload_instance.update(dynamic_values)
-
+        current_index = 0
+        dynamic_values.update(payload_instance)
         for path in request.path + request.raw:
-
+            current_index += 1
             method, url, headers, data, kwargs = '', '', '', '', OrderedDict()
             # base request
             if path.startswith('{{'):
@@ -287,4 +314,5 @@ def httpRequestGenerator(request: HttpRequest, dynamic_values: OrderedDict):
             kwargs.setdefault('data', data)
             kwargs.setdefault('headers', headers)
 
-            yield (method, marker_replace(url, payload_instance), marker_replace(kwargs, payload_instance))
+            yield (method, marker_replace(url, dynamic_values), marker_replace(kwargs, dynamic_values),
+                   payload_instance, request_count, current_index)

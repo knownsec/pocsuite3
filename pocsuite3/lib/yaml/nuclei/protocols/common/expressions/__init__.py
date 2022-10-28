@@ -18,7 +18,6 @@ import mmh3 as py_mmh3
 from pkg_resources import parse_version
 
 from pocsuite3.lib.core.log import LOGGER as logger
-from pocsuite3.lib.yaml.nuclei.protocols.common.replacer import Marker
 
 
 def aes_gcm(key: Union[bytes, str], plaintext: Union[bytes, str]) -> bytes:
@@ -741,8 +740,8 @@ def Evaluate(inp: str, dynamic_values: dict = {}) -> str:
 
     # find expression and execute
 
-    OpenMarker, CloseMarker = Marker.ParenthesisOpen, Marker.ParenthesisClose
-    exps = OrderedDict()
+    OpenMarker, CloseMarker = '{{', '}}'
+    exps = {}
     maxIterations, iterations = 250, 0
     data = inp
     vars().update(dynamic_values)
@@ -767,12 +766,16 @@ def Evaluate(inp: str, dynamic_values: dict = {}) -> str:
             indexCloseMarkerOffset = indexCloseMarker + len(CloseMarker)
             potentialMatch = innerData[indexOpenMarkerOffset:indexCloseMarker]
             try:
-                result = eval(potentialMatch)
+                try:
+                    result = eval(potentialMatch)
+                except SyntaxError:
+                    result = eval(potentialMatch.replace('&&', 'and').replace('||', 'or'))
                 exps[potentialMatch] = result
                 closeMarkerFound = True
                 shouldSearchCloseMarker = False
-            except Exception as e:
-                logger.debug(str(e))
+            except (SyntaxError, NameError):
+                import traceback
+                traceback.print_exc()
                 skip = indexCloseMarkerOffset
 
         if closeMarkerFound:
@@ -780,11 +783,11 @@ def Evaluate(inp: str, dynamic_values: dict = {}) -> str:
         else:
             data = data[indexOpenMarkerOffset:]
 
-    if exps:
-        logger.debug('Expressions: ' + str(exps))
     for k, v in exps.items():
-        inp = inp.replace(f'{OpenMarker}{k}{CloseMarker}', v)
-    return inp
+        logger.debug(f'[+] Expressions: {k} -> {v}')
+        inp = inp.replace(f'{OpenMarker}{k}{CloseMarker}', str(v))
+
+    return True if inp == 'True' else False if inp == 'False' else inp
 
 
 if __name__ == '__main__':

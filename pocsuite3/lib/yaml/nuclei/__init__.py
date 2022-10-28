@@ -1,3 +1,4 @@
+import binascii
 import re
 from collections import OrderedDict
 
@@ -15,7 +16,8 @@ from pocsuite3.lib.yaml.nuclei.protocols.common.expressions import Evaluate
 from pocsuite3.lib.yaml.nuclei.protocols.http import (AttackType, HttpExtract,
                                                       HttpMatch, HTTPMethod,
                                                       HttpRequest,
-                                                      httpRequestGenerator)
+                                                      httpRequestGenerator,
+                                                      responseToDSLMap)
 from pocsuite3.lib.yaml.nuclei.templates import Template
 
 
@@ -67,6 +69,10 @@ def expand_preprocessors(data: str) -> str:
 class Nuclei():
     def __init__(self, template, target=''):
         self.yaml_template = template
+        try:
+            self.yaml_template = binascii.unhexlify(self.yaml_template).decode()
+        except binascii.Error:
+            pass
         self.json_template = yaml.safe_load(expand_preprocessors(self.yaml_template))
         self.template = dacite.from_dict(
             Template, hyphen_to_underscore(self.json_template),
@@ -85,9 +91,11 @@ class Nuclei():
 
     def execute_request(self, request: HttpRequest) -> dict:
         results = []
+        resp_data_all = {}
         with requests.Session() as session:
             try:
-                for (method, url, kwargs) in httpRequestGenerator(request, self.dynamic_values):
+                for (method, url, kwargs, payload, request_count, current_index) in httpRequestGenerator(
+                        request, self.dynamic_values):
                     try:
                         """
                         Redirection conditions can be specified per each template. By default, redirects are not followed.
@@ -101,22 +109,58 @@ class Nuclei():
                         else:
                             session.max_redirects = 10
                         response = session.request(method=method, url=url, **kwargs)
-                        logger.debug(dump.dump_all(response).decode('utf-8'))
-                    except Exception as e1:
-                        logger.debug(str(e1))
+                        # for debug purpose
+                        try:
+                            logger.debug(dump.dump_all(response).decode('utf-8'))
+                        except UnicodeDecodeError:
+                            pass
+
+                    except Exception:
+                        import traceback
+                        traceback.print_exc()
                         response = None
-                    match_res = HttpMatch(request, response, self.execute_options['interactsh'])
-                    extractor_res = HttpExtract(request, response)
-                    if match_res and extractor_res:
-                        match_res = str(dict(extractor_res[0]))
-                    if match_res and request.stop_at_first_match:
-                        return match_res
-                    results.append(match_res)
+
+                    resp_data = responseToDSLMap(response)
                     if response:
                         response.close()
-            except Exception as e:
-                logger.debug(str(e))
-        return results and any(results)
+
+                    extractor_res = HttpExtract(request, resp_data)
+                    self.dynamic_values.update(extractor_res['internal'])
+
+                    if request.req_condition:
+                        resp_data_all.update(resp_data)
+                        for k, v in resp_data.items():
+                            resp_data_all[f'{k}_{current_index}'] = v
+                        if current_index == request_count:
+                            resp_data_all.update(self.dynamic_values)
+                            match_res = HttpMatch(request, resp_data_all, self.execute_options['interactsh'])
+                            resp_data_all = {}
+                            if match_res:
+                                output = {}
+                                output.update(extractor_res['external'])
+                                output.update(payload)
+                                output['extraInfo'] = extractor_res['extraInfo']
+                                results.append(output)
+                                if request.stop_at_first_match:
+                                    return results
+                    else:
+                        resp_data.update(self.dynamic_values)
+                        match_res = HttpMatch(request, resp_data, self.execute_options['interactsh'])
+                        if match_res:
+                            output = {}
+                            output.update(extractor_res['external'])
+                            output.update(payload)
+                            output['extraInfo'] = extractor_res['extraInfo']
+                            results.append(output)
+                            if request.stop_at_first_match:
+                                return results
+            except Exception:
+                import traceback
+                traceback.print_exc()
+            if results and any(results):
+                return results
+            else:
+                return False
 
     def execute_template(self):
         '''
@@ -154,17 +198,16 @@ class Nuclei():
         with automatic Request correlation built in. It's as easy as writing {{interactsh-url}} anywhere in the request.
         """
         if '{{interactsh-url}}' in self.yaml_template or '§interactsh-url§' in self.yaml_template:
-            from pocsuite3.lib.yaml.nuclei.protocols.common.interactsh import InteractshClient
+            from pocsuite3.lib.yaml.nuclei.protocols.common.interactsh import \
+                InteractshClient
             self.execute_options['interactsh'] = InteractshClient()
             self.dynamic_values['interactsh-url'] = self.execute_options['interactsh'].client.domain
 
-        results = []
         for request in self.requests:
             res = self.execute_request(request)
-            results.append(res)
-            if self.execute_options['stop_at_first_match'] and res:
+            if res:
                 return res
-        return all(results)
+        return False
 
     def run(self):
         return self.execute_template()
@@ -182,9 +225,7 @@ class Nuclei():
             if k in key_convert:
                 k = key_convert.get(k)
             if type(v) in [str]:
-                v = f'\'{v.strip()}\''
-            if k == 'desc':
-                v = f'\'\'{v}\'\''
+                v = f'\'\'\'{v.strip()}\'\'\''
 
             info.append(f'    {k} = {v}')
 
@@ -199,7 +240,7 @@ class Nuclei():
             '        result = {}\n',
             '        if not self._check():\n',
             '            return self.parse_output(result)\n',
-            "        template = '''%s'''\n" % self.yaml_template,
+            "        template = '%s'\n" % binascii.hexlify(self.yaml_template.encode()).decode(),
             '        res = Nuclei(template, self.url).run()\n',
             '        if res:\n',
             '            result["VerifyInfo"] = {}\n',
@@ -207,7 +248,7 @@ class Nuclei():
             '            result["VerifyInfo"]["Info"] = {}\n',
             '            result["VerifyInfo"]["Info"]["Severity"] = "%s"\n' % self.template.info.severity.value,
             '            if not isinstance(res, bool):\n'
-            '               result["VerifyInfo"]["Info"]["Result"] = {}\n',
+            '               result["VerifyInfo"]["Info"]["Result"] = res\n',
             '        return self.parse_output(result)\n',
             '\n',
             '\n',

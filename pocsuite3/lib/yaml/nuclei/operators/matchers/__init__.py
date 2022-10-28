@@ -150,5 +150,20 @@ def MatchDSL(matcher: Matcher, data: dict) -> bool:
     """MatchDSL matches on a generic map result
     """
 
-    # TODO
-    raise NotImplementedError
+    for i, expression in enumerate(matcher.dsl):
+        result = Evaluate('{{%s}}' % expression, data)
+        if not isinstance(result, bool):
+            if matcher.condition == 'and':
+                return False
+            elif matcher.condition == 'or':
+                continue
+
+        if result is False:
+            if matcher.condition == 'and':
+                return False
+            elif matcher.condition == 'or':
+                continue
+
+        if len(matcher.dsl) - 1 == i:
+            return True
+    return False

@@ -1,13 +1,12 @@
 import re
-from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
 
 import jq
 import lxml
-import requests
+from requests.structures import CaseInsensitiveDict
 
-from pocsuite3.lib.core.common import OrderedSet
+from pocsuite3.lib.yaml.nuclei.protocols.common.expressions import Evaluate
 
 
 class ExtractorType(Enum):
@@ -55,10 +54,10 @@ class Extractor:
     case_insensitive: bool = False
 
 
-def ExtractRegex(e: Extractor, corpus: str) -> defaultdict:
+def ExtractRegex(e: Extractor, corpus: str) -> dict:
     """Extract data from response based on a Regular Expression.
     """
-    results = defaultdict(OrderedSet)
+    results = {'internal': {}, 'external': {}, 'extraInfo': []}
     for regex in e.regex:
         matches = re.search(regex, corpus)
         if not matches:
@@ -72,16 +71,23 @@ def ExtractRegex(e: Extractor, corpus: str) -> defaultdict:
             continue
 
         if e.name:
-            results[e.name].add(res)
+            if e.internal:
+                results['internal'][e.name] = res
+            else:
+                results['external'][e.name] = res
+            return results
         else:
-            results['ExtraInfo'].add(res)
+            results['extraInfo'].append(res)
     return results
 
 
-def ExtractKval(e: Extractor, headers: requests.structures.CaseInsensitiveDict) -> defaultdict:
+def ExtractKval(e: Extractor, headers: CaseInsensitiveDict) -> dict:
     """Extract key: value/key=value formatted data from Response Header/Cookie
     """
-    results = defaultdict(OrderedSet)
+    if not isinstance(headers, CaseInsensitiveDict):
+        headers = CaseInsensitiveDict(headers)
+
+    results = {'internal': {}, 'external': {}, 'extraInfo': []}
     for k in e.kval:
         res = ''
         if k in headers:
@@ -93,16 +99,20 @@ def ExtractKval(e: Extractor, headers: requests.structures.CaseInsensitiveDict) 
             continue
 
         if e.name:
-            results[e.name].add(res)
+            if e.internal:
+                results['internal'][e.name] = res
+            else:
+                results['external'][e.name] = res
+            return results
         else:
-            results['ExtraInfo'].add(res)
+            results['extraInfo'].append(res)
     return results
 
 
-def ExtractXPath(e: Extractor, corpus: str) -> defaultdict:
+def ExtractXPath(e: Extractor, corpus: str) -> dict:
     """A xpath extractor example to extract value of href attribute from HTML response
     """
-    results = defaultdict(OrderedSet)
+    results = {'internal': {}, 'external': {}, 'extraInfo': []}
     if corpus.startswith('<?xml'):
         doc = lxml.etree.XML(corpus)
     else:
@@ -120,31 +130,50 @@ def ExtractXPath(e: Extractor, corpus: str) -> defaultdict:
                 continue
 
             if e.name:
-                results[e.name].add(res)
+                if e.internal:
+                    results['internal'][e.name] = res
+                else:
+                    results['external'][e.name] = res
+                return results
             else:
-                results['ExtraInfo'].add(res)
+                results['extraInfo'].append(res)
     return results
 
 
-def ExtractJSON(e: Extractor, corpus: str) -> defaultdict:
+def ExtractJSON(e: Extractor, corpus: str) -> dict:
     """Extract data from JSON based response in JQ like syntax
     """
-    results = defaultdict(OrderedSet)
+    results = {'internal': {}, 'external': {}, 'extraInfo': []}
     for j in e.json:
         res = jq.compile(j).input(corpus).all()
         if not res:
             continue
 
         if e.name:
-            results[e.name].add(res)
+            if e.internal:
+                results['internal'][e.name] = res
+            else:
+                results['external'][e.name] = res
+            return results
         else:
-            results['ExtraInfo'].add(res)
-
+            results['extraInfo'].append(res)
     return results
 
 
-def ExtractDSL(e: Extractor, data: dict) -> defaultdict:
+def ExtractDSL(e: Extractor, data: dict) -> dict:
     """Extract data from the response based on a DSL expressions
     """
-    # TODO
-    raise NotImplementedError
+    results = {'internal': {}, 'external': {}, 'extraInfo': []}
+    for expression in e.dsl:
+        res = Evaluate('{{%s}}' % expression, data)
+        if res == expression:
+            continue
+        if e.name:
+            if e.internal:
+                results['internal'][e.name] = res
+            else:
+                results['external'][e.name] = res
+            return results
+        else:
+            results['extraInfo'].append(res)
+    return results

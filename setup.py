@@ -53,7 +53,12 @@ setup(
         "colorlog",
         "scapy",
         "Faker",
-        "pycryptodomex"
+        "pycryptodomex",
+        "dacite",
+        "PyYAML",
+        "jq",
+        "lxml",
+        "mmh3"
     ],
     extras_require={
         'complete': [
