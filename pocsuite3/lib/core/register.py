@@ -68,6 +68,12 @@ class PocLoader(Loader):
     def exec_module(self, module):
         filename = self.get_filename(self.fullname)
         poc_code = self.get_data(filename)
+
+        # convert yaml template to pocsuite3 poc script
+        if filename.endswith('.yaml') and re.search(r'matchers:\s+-', poc_code):
+            from pocsuite3.lib.yaml.nuclei import Nuclei
+            poc_code = str(Nuclei(poc_code))
+
         self.check_requires(poc_code)
         obj = compile(poc_code, filename, 'exec', dont_inherit=True, optimize=-1)
         try:

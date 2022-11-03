@@ -5,12 +5,16 @@ import base64
 import json
 import random
 import time
-from uuid import uuid4
 from base64 import b64encode
+from uuid import uuid4
+
 from Cryptodome.Cipher import AES, PKCS1_OAEP
-from Cryptodome.PublicKey import RSA
 from Cryptodome.Hash import SHA256
-from pocsuite3.api import requests, logger, random_str, conf
+from Cryptodome.PublicKey import RSA
+
+from pocsuite3.lib.core.data import conf, logger
+from pocsuite3.lib.request import requests
+from pocsuite3.lib.utils import random_str
 
 
 class Interactsh:
@@ -53,12 +57,12 @@ class Interactsh:
         msg = f"[PLUGIN] Interactsh: Can not initiate {self.server} DNS callback client"
         try:
             res = self.session.post(
-                f"https://{self.server}/register", headers=self.headers, json=data, verify=False)
+                f"http://{self.server}/register", headers=self.headers, json=data, verify=False)
             if res.status_code == 401:
                 logger.error("[PLUGIN] Interactsh: auth error")
             elif 'success' not in res.text:
                 logger.error(msg)
-        except requests.exceptions.RequestException:
+        except requests.RequestException:
             logger.error(msg)
 
     def poll(self):
@@ -67,7 +71,7 @@ class Interactsh:
         while count:
 
             try:
-                url = f"https://{self.server}/poll?id={self.correlation_id}&secret={self.secret}"
+                url = f"http://{self.server}/poll?id={self.correlation_id}&secret={self.secret}"
                 res = self.session.get(url, headers=self.headers, verify=False).json()
                 aes_key, data_list = res['aes_key'], res['data']
                 for i in data_list:

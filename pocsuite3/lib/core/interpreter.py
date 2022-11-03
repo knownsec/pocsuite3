@@ -1,8 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# @Time    : 2018/12/25 上午10:58
-# @Author  : chenghs
-# @File    : interpreter.py
+# pylint: disable=E0202
 import os
 import re
 import chardet
@@ -325,19 +321,27 @@ class PocsuiteInterpreter(BaseInterpreter):
                 logger.warning("Index out of range")
                 return
             module_path = self.last_search[index]
-        if not module_path.endswith(".py"):
-            module_path = module_path + ".py"
-        if not os.path.exists(module_path):
-            module_path = os.path.join(self.module_parent_directory, module_path)
-            if not os.path.exists(module_path):
-                errMsg = "No such file: '{0}'".format(module_path)
-                logger.error(errMsg)
-                return
+
+        module_ext = ''
+        module_path_found = False
+        for module_ext in ['.py', '.yaml']:
+            if os.path.exists(module_path + module_ext):
+                module_path_found = True
+                break
+            elif os.path.exists(os.path.join(self.module_parent_directory, module_path + module_ext)):
+                module_path_found = True
+                module_path = os.path.join(self.module_parent_directory, module_path + module_ext)
+                break
+
+        if not module_path_found:
+            errMsg = "No such file: '{0}'".format(module_path)
+            logger.error(errMsg)
+            return
+
         try:
             load_file_to_module(module_path)
             self.current_module = kb.current_poc
-            self.current_module.pocsuite3_module_path = ltrim(
-                rtrim(module_path, ".py"), self.module_parent_directory)
+            self.current_module.pocsuite3_module_path = ltrim(rtrim(module_path, module_ext), self.module_parent_directory)
         except Exception as err:
             logger.error(str(err))
 
@@ -457,6 +461,8 @@ class PocsuiteInterpreter(BaseInterpreter):
         index = 0
         for tmp_module in self.main_modules_dirs:
             found = os.path.join(self.module_parent_directory, tmp_module + ".py")
+            if not os.path.exists(found):
+                found = os.path.join(self.module_parent_directory, tmp_module + ".yaml")
             code = get_file_text(found)
             name = get_poc_name(code)
             tb.add_row([str(index), tmp_module, name])
