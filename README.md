@@ -1,6 +1,6 @@
 # pocsuite3
 
-[![Python 3.x](https://img.shields.io/badge/python-3.x-yellow.svg)](https://www.python.org/) [![License](https://img.shields.io/badge/license-GPLv2-red.svg)](https://raw.githubusercontent.com/knownsec/Pocsuite/master/docs/COPYING) [![Twitter](https://img.shields.io/badge/twitter-@seebug-blue.svg)](https://twitter.com/seebug_team)
+[![Python 3.x](https://img.shields.io/badge/python-3.x-yellow.svg)](https://www.python.org/) [![License](https://img.shields.io/badge/license-GPLv2-red.svg)](https://raw.githubusercontent.com/knownsec/pocsuite3/master/COPYING) [![Twitter](https://img.shields.io/badge/twitter-@seebug-blue.svg)](https://twitter.com/seebug_team)
 
 ## Legal Disclaimer
 Usage of pocsuite3 for attacking targets without prior mutual consent is illegal.
@@ -18,14 +18,15 @@ It comes with a powerful proof-of-concept engine, many nice features for the ult
 ## Features
 * PoC scripts can running with `verify`, `attack`, `shell` mode in different way
 * Plugin ecosystem
-* Dynamic loading PoC script from any where (local file, redis, database, Seebug ...)
-* Load multi-target from any where (CIDR, local file, redis, database, Zoomeye, Shodan ...)
+* Dynamic loading PoC script from anywhere (local file, redis, database, Seebug ...)
+* Load multi-target from anywhere (CIDR, local file, redis, database, Zoomeye, Shodan ...)
 * Results can be easily exported
 * Dynamic patch and hook requests 
 * Both command line tool and python package import to use
 * IPv6 support
 * Global HTTP/HTTPS/SOCKS proxy support
 * Simple spider API for PoC script to use
+* YAML PoC support, compatible with [nuclei](https://github.com/projectdiscovery/nuclei)
 * Integrate with [Seebug](https://www.seebug.org) (for load PoC from Seebug website)
 * Integrate with [ZoomEye](https://www.zoomeye.org), [Shodan](https://www.shodan.io), etc.  (for load target use `Dork`)
 * Integrate with [Ceye](http://ceye.io/), [Interactsh](https://github.com/projectdiscovery/interactsh) (for verify blind DNS and HTTP request)
@@ -48,6 +49,9 @@ It comes with a powerful proof-of-concept engine, many nice features for the ult
 
 ### pocsuite3 load multi-target from Shodan
 [![asciicast](https://asciinema.org/a/207349.png)](https://asciinema.org/a/207349)
+
+### pocsuite3 load nuclei template
+![](./asset/img/yaml_poc_showcase.png)
 
 ## Requirements
 
