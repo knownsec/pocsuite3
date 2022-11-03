@@ -1,3 +1,9 @@
+# version 2.0.0
+----------------
+* yaml poc support, compatible with nuclei
+* fix httpserver module hangs on macos platform
+* auto correction of url protocol based on status code
+
 # version 1.9.11
 ----------------
 * support customize poc protocol and default port #321
