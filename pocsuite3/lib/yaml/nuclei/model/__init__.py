@@ -14,18 +14,20 @@ class Severify(Enum):
     Unknown = 'unknown'
 
 
-# Classification contains the vulnerability classification data for a template.
 @dataclass
 class Classification:
+    """Classification contains the vulnerability classification data for a template.
+    """
     cve_id: StrSlice = field(default_factory=list)
     cwe_id: StrSlice = field(default_factory=list)
     cvss_metrics: str = ''
     cvss_score: float = 0.0
 
 
-# Info contains metadata information abount a template
 @dataclass
 class Info:
+    """Info contains metadata information abount a template
+    """
     name: str = ''
     author: StrSlice = field(default_factory=list)
     tags: StrSlice = field(default_factory=list)

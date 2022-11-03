@@ -11,13 +11,24 @@ import string
 import time
 import urllib.parse
 import zlib as py_built_in_zlib
-from collections import OrderedDict
 from typing import Union
 
 import mmh3 as py_mmh3
 from pkg_resources import parse_version
 
 from pocsuite3.lib.core.log import LOGGER as logger
+from pocsuite3.lib.yaml.nuclei.protocols.common.expressions.safe_eval import safe_eval
+
+UNRESOLVED_VARIABLE = '---UNRESOLVED-VARIABLE---'
+
+
+class Marker:
+    # General marker (open/close)
+    General = "§"
+    # ParenthesisOpen marker - begin of a placeholder
+    ParenthesisOpen = "{{"
+    # ParenthesisClose marker - end of a placeholder
+    ParenthesisClose = "}}"
 
 
 def aes_gcm(key: Union[bytes, str], plaintext: Union[bytes, str]) -> bytes:
@@ -77,7 +88,7 @@ def concat(*arguments) -> str:
     return ''.join(map(str, arguments))
 
 
-def compare_versions(versionToCheck: str, *constraints: str) -> bool:
+def compare_versions(version_to_check: str, *constraints: str) -> bool:
     """
     Compares the first version argument with the provided constraints
 
@@ -85,7 +96,7 @@ def compare_versions(versionToCheck: str, *constraints: str) -> bool:
         Input: compare_versions('v1.0.0', '>v0.0.1', '<v1.0.1')
         Output: True
     """
-    v1 = parse_version(versionToCheck)
+    v1 = parse_version(version_to_check)
     for constraint in constraints:
         constraint = constraint.replace('==', '=')
         operator = re.findall(r'^[<>=]*', constraint)[0]
@@ -114,7 +125,7 @@ def contains(inp: str, substring: str) -> bool:
 
 def contains_all(inp: str, *substrings: str) -> bool:
     """
-    Verifies if any input contains all of the substrings
+    Verify if any input contains all the substrings
 
     Example:
         Input: contains_all("Hello everyone", "lo", "every")
@@ -147,7 +158,7 @@ def dec_to_hex(number: Union[str, int]) -> str:
     return hex(number)[2:]
 
 
-def hex_to_dec(hexNumber: Union[str, int]) -> int:
+def hex_to_dec(hex_number: Union[str, int]) -> int:
     """
     Transforms the input hexadecimal number into decimal format
 
@@ -156,10 +167,10 @@ def hex_to_dec(hexNumber: Union[str, int]) -> int:
                hex_to_dec("0xff")
         Output: 255
     """
-    return int(str(hexNumber), 16)
+    return int(str(hex_number), 16)
 
 
-def bin_to_dec(binaryNumber: Union[str, int]) -> int:
+def bin_to_dec(binary_number: Union[str, int]) -> int:
     """
     Transforms the input binary number into a decimal format
 
@@ -168,10 +179,10 @@ def bin_to_dec(binaryNumber: Union[str, int]) -> int:
                bin_to_dec(1010)
         Output: 10
     """
-    return int(str(binaryNumber), 2)
+    return int(str(binary_number), 2)
 
 
-def oct_to_dec(octalNumber: Union[str, int]) -> int:
+def oct_to_dec(octal_number: Union[str, int]) -> int:
     """
     Transforms the input octal number into a decimal format
 
@@ -180,7 +191,7 @@ def oct_to_dec(octalNumber: Union[str, int]) -> int:
                oct_to_dec(1234567)
         Output: 342391
     """
-    return int(str(octalNumber), 8)
+    return int(str(octal_number), 8)
 
 
 def generate_java_gadget(gadget: str, cmd: str, encoding: str) -> str:
@@ -326,7 +337,7 @@ def print_debug(*args) -> None:
     raise NotImplementedError
 
 
-def rand_base(length: int, optionalCharSet: str = string.ascii_letters+string.digits) -> str:
+def rand_base(length: int, optional_charset: str = string.ascii_letters+string.digits) -> str:
     """
     Generates a random sequence of given length string from an optional charset (defaults to letters and numbers)
 
@@ -334,10 +345,10 @@ def rand_base(length: int, optionalCharSet: str = string.ascii_letters+string.di
         Input: rand_base(5, "abc")
         Output: caccb
     """
-    return ''.join(random.choice(optionalCharSet) for _ in range(length))
+    return ''.join(random.choice(optional_charset) for _ in range(length))
 
 
-def rand_char(optionalCharSet: str = string.ascii_letters + string.digits) -> str:
+def rand_char(optional_charset: str = string.ascii_letters + string.digits) -> str:
     """
     Generates a random character from an optional character set (defaults to letters and numbers)
 
@@ -345,10 +356,10 @@ def rand_char(optionalCharSet: str = string.ascii_letters + string.digits) -> st
         Input: rand_char("abc")
         Output: a
     """
-    return random.choice(optionalCharSet)
+    return random.choice(optional_charset)
 
 
-def rand_int(optionalMin: int = 0, optionalMax: int = 2147483647) -> int:
+def rand_int(optional_min: int = 0, optional_max: int = 2147483647) -> int:
     """
     Generates a random integer between the given optional limits (defaults to 0 - MaxInt32)
 
@@ -356,10 +367,10 @@ def rand_int(optionalMin: int = 0, optionalMax: int = 2147483647) -> int:
         Input: rand_int(1, 10)
         Output: 6
     """
-    return random.randint(optionalMin, optionalMax)
+    return random.randint(optional_min, optional_max)
 
 
-def rand_text_alpha(length: int, optionalBadChars: str = '') -> str:
+def rand_text_alpha(length: int, optional_bad_chars: str = '') -> str:
     """
     Generates a random string of letters, of given length, excluding the optional cutset characters
 
@@ -367,11 +378,11 @@ def rand_text_alpha(length: int, optionalBadChars: str = '') -> str:
         Input: rand_text_alpha(10, "abc")
         Output: WKozhjJWlJ
     """
-    charset = ''.join(i if i not in optionalBadChars else '' for i in string.ascii_letters)
+    charset = ''.join(i if i not in optional_bad_chars else '' for i in string.ascii_letters)
     return ''.join(random.choice(charset) for _ in range(length))
 
 
-def rand_text_alphanumeric(length: int, optionalBadChars: str = '') -> str:
+def rand_text_alphanumeric(length: int, optional_bad_chars: str = '') -> str:
     """
     Generates a random alphanumeric string, of given length without the optional cutset characters
 
@@ -379,11 +390,11 @@ def rand_text_alphanumeric(length: int, optionalBadChars: str = '') -> str:
         Input: rand_text_alphanumeric(10, "ab12")
         Output: NthI0IiY8r
     """
-    charset = ''.join(i if i not in optionalBadChars else '' for i in string.ascii_letters + string.digits)
+    charset = ''.join(i if i not in optional_bad_chars else '' for i in string.ascii_letters + string.digits)
     return ''.join(random.choice(charset) for _ in range(length))
 
 
-def rand_text_numeric(length: int, optionalBadNumbers: str = '') -> str:
+def rand_text_numeric(length: int, optional_bad_numbers: str = '') -> str:
     """
     Generates a random numeric string of given length without the optional set of undesired numbers
 
@@ -391,7 +402,7 @@ def rand_text_numeric(length: int, optionalBadNumbers: str = '') -> str:
         Input: rand_text_numeric(10, 123)
         Output: 0654087985
     """
-    charset = ''.join(i if i not in optionalBadNumbers else '' for i in string.digits)
+    charset = ''.join(i if i not in optional_bad_numbers else '' for i in string.digits)
     return ''.join(random.choice(charset) for _ in range(length))
 
 
@@ -439,7 +450,7 @@ def replace(inp: str, old: str, new: str) -> str:
     return inp.replace(old, new)
 
 
-def replace_regex(source: str, regex: str, replacement: str) -> str:
+def replace_regex(source: str, pattern: str, replacement: str) -> str:
     """
     Replaces substrings matching the given regular expression in the input
 
@@ -447,7 +458,7 @@ def replace_regex(source: str, regex: str, replacement: str) -> str:
         Input: replace_regex("He123llo", "(\\d+)", "")
         Output: Hello
     """
-    return re.sub(regex, replacement, source)
+    return re.sub(pattern, replacement, source)
 
 
 def reverse(inp: str) -> str:
@@ -585,7 +596,7 @@ def trim_suffix(inp: str, suffix: str) -> str:
     return inp
 
 
-def unix_time(optionalSeconds: int = 0) -> int:
+def unix_time(optional_seconds: int = 0) -> int:
     """
     Returns the current Unix time (number of seconds elapsed since January 1, 1970 UTC) with the added optional seconds
 
@@ -593,7 +604,7 @@ def unix_time(optionalSeconds: int = 0) -> int:
         Input: unix_time(10)
         Output: 1639568278
     """
-    return int(time.time()) + optionalSeconds
+    return int(time.time()) + optional_seconds
 
 
 def url_decode(inp: str) -> str:
@@ -656,7 +667,7 @@ def hmac(algorithm: str, data: Union[bytes, str], secret: Union[bytes, str]) -> 
     return py_hmac.new(secret, data, algorithm).hexdigest()
 
 
-def date_time(dateTimeFormat: str, optionalUnixTime: int = int(time.time())) -> str:
+def date_time(date_time_format: str, optional_unix_time: int = int(time.time())) -> str:
     """
     Returns the formatted date time using simplified or go style layout for the current or the given unix time
 
@@ -665,7 +676,7 @@ def date_time(dateTimeFormat: str, optionalUnixTime: int = int(time.time())) -> 
                date_time("%Y-%m-%d %H:%M", 1654870680)
         Output: 2022-06-10 14:18
     """
-    return datetime.datetime.utcfromtimestamp(optionalUnixTime).strftime(dateTimeFormat)
+    return datetime.datetime.utcfromtimestamp(optional_unix_time).strftime(date_time_format)
 
 
 def to_unix_time(inp: str, layout: str = "%Y-%m-%d %H:%M:%S") -> int:
@@ -731,66 +742,137 @@ def line_ends_with(inp: str, *suffix: str) -> bool:
     return False
 
 
-def Evaluate(inp: str, dynamic_values: dict = {}) -> str:
+def evaluate(inp: str, dynamic_values: dict = None) -> str:
     """
-    Evaluate checks if the match contains a dynamic variable, for each
+    evaluate checks if the match contains a dynamic variable, for each
     found one we will check if it's an expression and can be compiled,
     it will be evaluated and the results will be returned.
     """
 
-    # find expression and execute
+    if dynamic_values is None:
+        dynamic_values = {}
 
-    OpenMarker, CloseMarker = '{{', '}}'
-    exps = {}
-    maxIterations, iterations = 250, 0
+    variables = {
+        'aes_gcm': aes_gcm,
+        'base64': base64,
+        'base64_decode': base64_decode,
+        'base64_py': base64_py,
+        'concat': concat,
+        'compare_versions': compare_versions,
+        'contains': contains,
+        'contains_all': contains_all,
+        'contains_any': contains_any,
+        'dec_to_hex': dec_to_hex,
+        'hex_to_dec': hex_to_dec,
+        'bin_to_dec': bin_to_dec,
+        'oct_to_dec': oct_to_dec,
+        'generate_java_gadget': generate_java_gadget,
+        'gzip': gzip,
+        'gzip_decode': gzip_decode,
+        'zlib': zlib,
+        'zlib_decode': zlib_decode,
+        'hex_decode': hex_decode,
+        'hex_encode': hex_encode,
+        'html_escape': html_escape,
+        'html_unescape': html_unescape,
+        'md5': md5,
+        'mmh3': mmh3,
+        'print_debug': print_debug,
+        'rand_base': rand_base,
+        'rand_char': rand_char,
+        'rand_int': rand_int,
+        'rand_text_alpha': rand_text_alpha,
+        'rand_text_alphanumeric': rand_text_alphanumeric,
+        'rand_text_numeric': rand_text_numeric,
+        'regex': regex,
+        'remove_bad_chars': remove_bad_chars,
+        'repeat': repeat,
+        'replace': replace,
+        'replace_regex': replace_regex,
+        'reverse': reverse,
+        'sha1': sha1,
+        'sha256': sha256,
+        'to_lower': to_lower,
+        'to_upper': to_upper,
+        'trim': trim,
+        'trim_left': trim_left,
+        'trim_prefix': trim_prefix,
+        'trim_right': trim_right,
+        'trim_space': trim_space,
+        'trim_suffix': trim_suffix,
+        'unix_time': unix_time,
+        'url_decode': url_decode,
+        'url_encode': url_encode,
+        'wait_for': wait_for,
+        'join': join,
+        'hmac': hmac,
+        'date_time': date_time,
+        'to_unix_time': to_unix_time,
+        'starts_with': starts_with,
+        'line_starts_with': line_starts_with,
+        'ends_with': ends_with,
+        'line_ends_with': line_ends_with,
+    }
+    variables.update(dynamic_values)
+    open_marker, close_marker = Marker.ParenthesisOpen, Marker.ParenthesisClose
+    expressions = {}
+    max_iterations, iterations = 250, 0
     data = inp
-    vars().update(dynamic_values)
 
-    while iterations <= maxIterations:
+    while iterations <= max_iterations:
         iterations += 1
-        indexOpenMarker = data.find(OpenMarker)
-        if indexOpenMarker < 0:
+        index_open_marker = data.find(open_marker)
+        if index_open_marker < 0:
             break
 
-        indexOpenMarkerOffset = indexOpenMarker + len(OpenMarker)
-        shouldSearchCloseMarker = True
-        closeMarkerFound = False
-        innerData = data
-        skip = indexOpenMarkerOffset
+        index_open_marker_offset = index_open_marker + len(open_marker)
+        should_search_close_marker = True
+        close_marker_found = False
+        inner_data = data
+        skip = index_open_marker_offset
 
-        while shouldSearchCloseMarker:
-            indexCloseMarker = innerData.find(CloseMarker, skip)
-            if indexCloseMarker < 0:
-                shouldSearchCloseMarker = False
+        while should_search_close_marker:
+            index_close_marker = inner_data.find(close_marker, skip)
+            if index_close_marker < 0:
+                should_search_close_marker = False
                 continue
-            indexCloseMarkerOffset = indexCloseMarker + len(CloseMarker)
-            potentialMatch = innerData[indexOpenMarkerOffset:indexCloseMarker]
+            index_close_marker_offset = index_close_marker + len(close_marker)
+            potential_match = inner_data[index_open_marker_offset:index_close_marker]
             try:
-                try:
-                    result = eval(potentialMatch)
-                except SyntaxError:
-                    result = eval(potentialMatch.replace('&&', 'and').replace('||', 'or'))
-                exps[potentialMatch] = result
-                closeMarkerFound = True
-                shouldSearchCloseMarker = False
-            except (SyntaxError, NameError):
+                result = safe_eval(potential_match, variables)
+
+                if UNRESOLVED_VARIABLE in str(result):
+                    return UNRESOLVED_VARIABLE
+                expressions[potential_match] = result
+                close_marker_found = True
+                should_search_close_marker = False
+            except Exception:
                 import traceback
                 traceback.print_exc()
-                skip = indexCloseMarkerOffset
+                skip = index_close_marker_offset
 
-        if closeMarkerFound:
-            data = data[indexCloseMarkerOffset:]
+        if close_marker_found:
+            data = data[index_close_marker_offset:]
         else:
-            data = data[indexOpenMarkerOffset:]
+            data = data[index_open_marker_offset:]
 
-    for k, v in exps.items():
+    result = inp
+    for k, v in expressions.items():
         logger.debug(f'[+] Expressions: {k} -> {v}')
-        inp = inp.replace(f'{OpenMarker}{k}{CloseMarker}', str(v))
-
-    return True if inp == 'True' else False if inp == 'False' else inp
+        k = f'{open_marker}{k}{close_marker}'
+        if k == inp:
+            return v
+        elif isinstance(v, bytes):
+            if not isinstance(result, bytes):
+                result = result.encode()
+            k = k.encode()
+            result = result.replace(k, v)
+        else:
+            result = result.replace(k, str(v))
+    return result
 
 
 if __name__ == '__main__':
-    print(Evaluate("{{to_lower(rand_base(5))}}"))
-    print(Evaluate("{{base64('World')}}"))
-    print(Evaluate("{{base64(Hello)}}", {'Hello': 'World'}))
+    print(evaluate("{{to_lower(rand_base(5))}}"))
+    print(evaluate("{{base64('World')}}"))
+    print(evaluate("{{base64(Hello)}}", {'Hello': 'World'}))

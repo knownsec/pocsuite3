@@ -1,15 +1,10 @@
 import json
 
-from pocsuite3.lib.yaml.nuclei.protocols.common.expressions import Evaluate
+from pocsuite3.lib.yaml.nuclei.protocols.common.expressions import evaluate, UNRESOLVED_VARIABLE, Marker
 
 
-class Marker:
-    # General marker (open/close)
-    General = "§"
-    # ParenthesisOpen marker - begin of a placeholder
-    ParenthesisOpen = "{{"
-    # ParenthesisClose marker - end of a placeholder
-    ParenthesisClose = "}}"
+class UnresolvedVariableException(Exception):
+    pass
 
 
 def marker_replace(data, dynamic_values):
@@ -21,6 +16,10 @@ def marker_replace(data, dynamic_values):
             data = data.replace(f'{Marker.General}{k}{Marker.General}', str(v))
             data = data.replace(f'{Marker.ParenthesisOpen}{k}{Marker.ParenthesisClose}', str(v))
 
-    data = Evaluate(data, dynamic_values)
-    # various helper functions
+    # execute various helper functions
+    data = evaluate(data, dynamic_values)
+
+    if UNRESOLVED_VARIABLE in data:
+        raise UnresolvedVariableException
+
     return json.loads(data)

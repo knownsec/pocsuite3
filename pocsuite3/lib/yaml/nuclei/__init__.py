@@ -4,20 +4,15 @@ from collections import OrderedDict
 
 import dacite
 import yaml
-from requests_toolbelt.utils import dump
 
 from pocsuite3.lib.core.common import urlparse
-from pocsuite3.lib.core.log import LOGGER as logger
-from pocsuite3.lib.request import requests
 from pocsuite3.lib.utils import random_str
 from pocsuite3.lib.yaml.nuclei.model import Severify
 from pocsuite3.lib.yaml.nuclei.operators import ExtractorType, MatcherType
-from pocsuite3.lib.yaml.nuclei.protocols.common.expressions import Evaluate
-from pocsuite3.lib.yaml.nuclei.protocols.http import (AttackType, HttpExtract,
-                                                      HttpMatch, HTTPMethod,
-                                                      HttpRequest,
-                                                      httpRequestGenerator,
-                                                      responseToDSLMap)
+from pocsuite3.lib.yaml.nuclei.protocols.common.expressions import evaluate, Marker
+from pocsuite3.lib.yaml.nuclei.protocols.common.generators import AttackType
+from pocsuite3.lib.yaml.nuclei.protocols.http import HTTPMethod, execute_http_request
+from pocsuite3.lib.yaml.nuclei.protocols.network import NetworkInputType, execute_network_request
 from pocsuite3.lib.yaml.nuclei.templates import Template
 
 
@@ -27,7 +22,7 @@ def hyphen_to_underscore(dictionary):
     :param dictionary:
     :return: the same object with all hyphens replaced by underscore
     """
-    # By default return the same object
+    # By default, return the same object
     final_dict = dictionary
 
     # for Array perform this method on every object
@@ -59,14 +54,15 @@ def expand_preprocessors(data: str) -> str:
     Ex. {{randstr_1}} which will remain same across the template.
     randstr is also supported within matchers and can be used to match the inputs.
     """
-    randstr_to_replace = set(m[0] for m in re.findall(r'({{randstr(_\w+)?}})', data))
+    randstr_to_replace = set(m[0] for m in re.findall(
+        fr'({Marker.ParenthesisOpen}randstr(_\w+)?{Marker.ParenthesisClose})', data))
     for s in randstr_to_replace:
         data = data.replace(s, random_str(27))
 
     return data
 
 
-class Nuclei():
+class Nuclei:
     def __init__(self, template, target=''):
         self.yaml_template = template
         try:
@@ -76,97 +72,15 @@ class Nuclei():
         self.json_template = yaml.safe_load(expand_preprocessors(self.yaml_template))
         self.template = dacite.from_dict(
             Template, hyphen_to_underscore(self.json_template),
-            config=dacite.Config(cast=[Severify, ExtractorType, MatcherType, HTTPMethod, AttackType]))
+            config=dacite.Config(cast=[Severify, ExtractorType, MatcherType, HTTPMethod, AttackType, NetworkInputType]))
 
         self.target = target
-
-        self.execute_options = OrderedDict()
-        self.execute_options['stop_at_first_match'] = self.template.stop_at_first_match
-        self.execute_options['variables'] = self.template.variables
-        self.execute_options['interactsh'] = None
-
-        self.requests = self.template.requests
-
+        self.interactsh = None
         self.dynamic_values = OrderedDict()
 
-    def execute_request(self, request: HttpRequest) -> dict:
-        results = []
-        resp_data_all = {}
-        with requests.Session() as session:
-            try:
-                for (method, url, kwargs, payload, request_count, current_index) in httpRequestGenerator(
-                        request, self.dynamic_values):
-                    try:
-                        """
-                        Redirection conditions can be specified per each template. By default, redirects are not followed.
-                        However, if desired, they can be enabled with redirects: true in request details.
-                        10 redirects are followed at maximum by default which should be good enough for most use cases.
-                        More fine grained control can be exercised over number of redirects followed by using max-redirects
-                        field.
-                        """
-                        if request.max_redirects:
-                            session.max_redirects = request.max_redirects
-                        else:
-                            session.max_redirects = 10
-                        response = session.request(method=method, url=url, **kwargs)
-                        # for debug purpose
-                        try:
-                            logger.debug(dump.dump_all(response).decode('utf-8'))
-                        except UnicodeDecodeError:
-                            pass
-
-                    except Exception:
-                        import traceback
-                        traceback.print_exc()
-                        response = None
-
-                    resp_data = responseToDSLMap(response)
-                    if response:
-                        response.close()
-
-                    extractor_res = HttpExtract(request, resp_data)
-                    self.dynamic_values.update(extractor_res['internal'])
-
-                    if request.req_condition:
-                        resp_data_all.update(resp_data)
-                        for k, v in resp_data.items():
-                            resp_data_all[f'{k}_{current_index}'] = v
-                        if current_index == request_count:
-                            resp_data_all.update(self.dynamic_values)
-                            match_res = HttpMatch(request, resp_data_all, self.execute_options['interactsh'])
-                            resp_data_all = {}
-                            if match_res:
-                                output = {}
-                                output.update(extractor_res['external'])
-                                output.update(payload)
-                                output['extraInfo'] = extractor_res['extraInfo']
-                                results.append(output)
-                                if request.stop_at_first_match:
-                                    return results
-                    else:
-                        resp_data.update(self.dynamic_values)
-                        match_res = HttpMatch(request, resp_data, self.execute_options['interactsh'])
-                        if match_res:
-                            output = {}
-                            output.update(extractor_res['external'])
-                            output.update(payload)
-                            output['extraInfo'] = extractor_res['extraInfo']
-                            results.append(output)
-                            if request.stop_at_first_match:
-                                return results
-            except Exception:
-                import traceback
-                traceback.print_exc()
-            if results and any(results):
-                return results
-            else:
-                return False
-
     def execute_template(self):
-        '''
-        Dynamic variables can be placed in the path to modify its behavior on runtime.
-        Variables start with {{ and end with }} and are case-sensitive.
-        '''
+        # Dynamic variables can be placed in the path to modify its behavior on runtime.
+        # Variables start with {{ and end with }} and are case-sensitive.
 
         u = urlparse(self.target)
         self.dynamic_values['BaseURL'] = self.target
@@ -178,44 +92,48 @@ class Nuclei():
         self.dynamic_values['Path'] = '/'.join(u.path.split('/')[0:-1])
         self.dynamic_values['File'] = u.path.split('/')[-1]
 
-        """
-        Variables can be used to declare some values which remain constant throughout the template.
-        The value of the variable once calculated does not change.
-        Variables can be either simple strings or DSL helper functions. If the variable is a helper function,
-        it is enclosed in double-curly brackets {{<expression>}}. Variables are declared at template level.
+        # Variables can be used to declare some values which remain constant throughout the template.
+        # The value of the variable once calculated does not change.
+        # Variables can be either simple strings or DSL helper functions. If the variable is a helper function,
+        # it is enclosed in double-curly brackets {{<expression>}}. Variables are declared at template level.
 
-        Example variables:
+        # Example variables:
 
-        variables:
-            a1: "test" # A string variable
-            a2: "{{to_lower(rand_base(5))}}" # A DSL function variable
-        """
-        for k, v in self.execute_options['variables'].items():
-            self.dynamic_values[k] = Evaluate(v)
+        # variables:
+        #     a1: "test" # A string variable
+        #     a2: "{{to_lower(rand_base(5))}}" # A DSL function variable
 
-        """
-        Since release of Nuclei v2.3.6, Nuclei supports using the interact.sh API to achieve OOB based vulnerability scanning
-        with automatic Request correlation built in. It's as easy as writing {{interactsh-url}} anywhere in the request.
-        """
-        if '{{interactsh-url}}' in self.yaml_template or '§interactsh-url§' in self.yaml_template:
-            from pocsuite3.lib.yaml.nuclei.protocols.common.interactsh import \
-                InteractshClient
-            self.execute_options['interactsh'] = InteractshClient()
-            self.dynamic_values['interactsh-url'] = self.execute_options['interactsh'].client.domain
+        for k, v in self.template.variables.items():
+            self.dynamic_values[k] = evaluate(v)
 
-        for request in self.requests:
-            res = self.execute_request(request)
+        # Since release of Nuclei v2.3.6, Nuclei supports using the interact.sh API to achieve OOB based
+        # vulnerability scanning with automatic Request correlation built in. It's as easy as writing
+        # {{interactsh-url}} anywhere in the request.
+
+        if (f'{Marker.ParenthesisOpen}interactsh-url{Marker.ParenthesisClose}' in self.yaml_template or
+                f'{Marker.General}interactsh-url{Marker.General}' in self.yaml_template):
+            from pocsuite3.lib.yaml.nuclei.protocols.common.interactsh import InteractshClient
+            self.interactsh = InteractshClient()
+            self.dynamic_values['interactsh-url'] = self.interactsh.client.domain
+
+        for request in self.template.requests:
+            res = execute_http_request(request, self.dynamic_values, self.interactsh)
             if res:
                 return res
+        for request in self.template.network:
+            res = execute_network_request(request, self.dynamic_values, self.interactsh)
+            if res:
+                return res
+
         return False
 
     def run(self):
         return self.execute_template()
 
     def __str__(self):
-        '''
-        Convert nuclei template to pocsuite3
-        '''
+        """
+        Convert nuclei template to Pocsuite3
+        """
         info = []
         key_convert = {
             'description': 'desc',
@@ -238,7 +156,7 @@ class Nuclei():
             '\n',
             '    def _verify(self):\n',
             '        result = {}\n',
-            '        if not self._check():\n',
+            '        if not self._check(is_http=%s):\n' % (len(self.template.requests) > 0),
             '            return self.parse_output(result)\n',
             "        template = '%s'\n" % binascii.hexlify(self.yaml_template.encode()).decode(),
             '        res = Nuclei(template, self.url).run()\n',

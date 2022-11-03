@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
-from pocsuite3.modules.interactsh import Interactsh
+
 from pocsuite3.lib.core.log import LOGGER as logger
+from pocsuite3.modules.interactsh import Interactsh
 
 
 @dataclass

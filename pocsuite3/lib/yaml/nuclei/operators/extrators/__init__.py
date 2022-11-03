@@ -1,12 +1,13 @@
+import json
 import re
 from dataclasses import dataclass, field
 from enum import Enum
 
 import jq
-import lxml
+from lxml import etree
 from requests.structures import CaseInsensitiveDict
 
-from pocsuite3.lib.yaml.nuclei.protocols.common.expressions import Evaluate
+from pocsuite3.lib.yaml.nuclei.protocols.common.expressions import evaluate, UNRESOLVED_VARIABLE, Marker
 
 
 class ExtractorType(Enum):
@@ -17,9 +18,10 @@ class ExtractorType(Enum):
     DSLExtractor = "dsl"
 
 
-# Extractor is used to extract part of response using a regex.
 @dataclass
 class Extractor:
+    """Extractor is used to extract part of response using a regex.
+    """
     # Name of the extractor. Name should be lowercase and must not contain spaces or underscores (_).
     name: str = ''
 
@@ -44,20 +46,28 @@ class Extractor:
     # Attribute is an optional attribute to extract from response XPath.
     attribute: str = ''
 
+    # Extracts using DSL expressions
+    dsl: list[str] = field(default_factory=list)
+
     # Part is the part of the request response to extract data from.
     part: str = ''
 
-    # Internal, when set to true will allow using the value extracted in the next request for some protocols (like HTTP).
+    # Internal, when set to true will allow using the value extracted in the next request for some protocols (like
+    # HTTP).
     internal: bool = False
 
     # CaseInsensitive enables case-insensitive extractions. Default is false.
     case_insensitive: bool = False
 
 
-def ExtractRegex(e: Extractor, corpus: str) -> dict:
+def extract_regex(e: Extractor, corpus: str) -> dict:
     """Extract data from response based on a Regular Expression.
     """
-    results = {'internal': {}, 'external': {}, 'extraInfo': []}
+    results = {'internal': {}, 'external': {}, 'extra_info': []}
+
+    if e.internal and e.name:
+        results['internal'][e.name] = UNRESOLVED_VARIABLE
+
     for regex in e.regex:
         matches = re.search(regex, corpus)
         if not matches:
@@ -77,17 +87,21 @@ def ExtractRegex(e: Extractor, corpus: str) -> dict:
                 results['external'][e.name] = res
             return results
         else:
-            results['extraInfo'].append(res)
+            results['extra_info'].append(res)
     return results
 
 
-def ExtractKval(e: Extractor, headers: CaseInsensitiveDict) -> dict:
+def extract_kval(e: Extractor, headers: CaseInsensitiveDict) -> dict:
     """Extract key: value/key=value formatted data from Response Header/Cookie
     """
     if not isinstance(headers, CaseInsensitiveDict):
         headers = CaseInsensitiveDict(headers)
 
-    results = {'internal': {}, 'external': {}, 'extraInfo': []}
+    results = {'internal': {}, 'external': {}, 'extra_info': []}
+
+    if e.internal and e.name:
+        results['internal'][e.name] = UNRESOLVED_VARIABLE
+
     for k in e.kval:
         res = ''
         if k in headers:
@@ -105,18 +119,25 @@ def ExtractKval(e: Extractor, headers: CaseInsensitiveDict) -> dict:
                 results['external'][e.name] = res
             return results
         else:
-            results['extraInfo'].append(res)
+            results['extra_info'].append(res)
     return results
 
 
-def ExtractXPath(e: Extractor, corpus: str) -> dict:
+def extract_xpath(e: Extractor, corpus: str) -> dict:
     """A xpath extractor example to extract value of href attribute from HTML response
     """
-    results = {'internal': {}, 'external': {}, 'extraInfo': []}
+    results = {'internal': {}, 'external': {}, 'extra_info': []}
+
+    if e.internal and e.name:
+        results['internal'][e.name] = UNRESOLVED_VARIABLE
+
     if corpus.startswith('<?xml'):
-        doc = lxml.etree.XML(corpus)
+        doc = etree.XML(corpus)
     else:
-        doc = lxml.etree.HTML(corpus)
+        doc = etree.HTML(corpus)
+
+    if not doc:
+        return results
 
     for x in e.xpath:
         nodes = doc.xpath(x)
@@ -136,16 +157,28 @@ def ExtractXPath(e: Extractor, corpus: str) -> dict:
                     results['external'][e.name] = res
                 return results
             else:
-                results['extraInfo'].append(res)
+                results['extra_info'].append(res)
     return results
 
 
-def ExtractJSON(e: Extractor, corpus: str) -> dict:
+def extract_json(e: Extractor, corpus: str) -> dict:
     """Extract data from JSON based response in JQ like syntax
     """
-    results = {'internal': {}, 'external': {}, 'extraInfo': []}
+    results = {'internal': {}, 'external': {}, 'extra_info': []}
+
+    if e.internal and e.name:
+        results['internal'][e.name] = UNRESOLVED_VARIABLE
+
+    try:
+        corpus = json.loads(corpus)
+    except json.JSONDecodeError:
+        return results
+
     for j in e.json:
-        res = jq.compile(j).input(corpus).all()
+        try:
+            res = jq.compile(j).input(corpus).all()
+        except ValueError:
+            continue
         if not res:
             continue
 
@@ -156,16 +189,20 @@ def ExtractJSON(e: Extractor, corpus: str) -> dict:
                 results['external'][e.name] = res
             return results
         else:
-            results['extraInfo'].append(res)
+            results['extra_info'].append(res)
     return results
 
 
-def ExtractDSL(e: Extractor, data: dict) -> dict:
+def extract_dsl(e: Extractor, data: dict) -> dict:
     """Extract data from the response based on a DSL expressions
     """
-    results = {'internal': {}, 'external': {}, 'extraInfo': []}
+    results = {'internal': {}, 'external': {}, 'extra_info': []}
+
+    if e.internal and e.name:
+        results['internal'][e.name] = UNRESOLVED_VARIABLE
+
     for expression in e.dsl:
-        res = Evaluate('{{%s}}' % expression, data)
+        res = evaluate(f'{Marker.ParenthesisOpen}{expression}{Marker.ParenthesisClose}', data)
         if res == expression:
             continue
         if e.name:
@@ -175,5 +212,5 @@ def ExtractDSL(e: Extractor, data: dict) -> dict:
                 results['external'][e.name] = res
             return results
         else:
-            results['extraInfo'].append(res)
+            results['extra_info'].append(res)
     return results

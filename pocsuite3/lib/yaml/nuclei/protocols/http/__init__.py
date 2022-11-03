@@ -1,27 +1,23 @@
-import itertools
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Union
 
-import requests
+from requests_toolbelt.utils import dump
 
-from pocsuite3.lib.core.common import check_file, get_file_items
 from pocsuite3.lib.core.log import LOGGER as logger
-from pocsuite3.lib.yaml.nuclei.operators import (ExtractDSL, ExtractJSON,
-                                                 ExtractKval, Extractor,
-                                                 ExtractorType, ExtractRegex,
-                                                 ExtractXPath, MatchBinary,
-                                                 MatchDSL, Matcher,
-                                                 MatcherType, MatchRegex,
-                                                 MatchSize, MatchStatusCode,
-                                                 MatchWords)
-from pocsuite3.lib.yaml.nuclei.protocols.common.replacer import marker_replace
-
-
-class AttackType(Enum):
-    BatteringRamAttack = "batteringram"
-    PitchForkAttack = "pitchfork"
-    ClusterBombAttack = "clusterbomb"
+from pocsuite3.lib.request import requests
+from pocsuite3.lib.yaml.nuclei.operators import (Extractor, ExtractorType,
+                                                 Matcher, MatcherType,
+                                                 extract_dsl, extract_json,
+                                                 extract_kval, extract_regex,
+                                                 extract_xpath, match_binary,
+                                                 match_dsl, match_regex,
+                                                 match_size, match_status_code,
+                                                 match_words)
+from pocsuite3.lib.yaml.nuclei.protocols.common.generators import AttackType, payload_generator
+from pocsuite3.lib.yaml.nuclei.protocols.common.replacer import (
+    UnresolvedVariableException, UNRESOLVED_VARIABLE, marker_replace, Marker)
 
 
 class HTTPMethod(Enum):
@@ -38,9 +34,11 @@ class HTTPMethod(Enum):
     HTTPDebug = "DEBUG"
 
 
-# HttpRequest contains a http request to be made from a template
 @dataclass
 class HttpRequest:
+    """HttpRequest contains a http request to be made from a template
+    """
+
     # Operators for the current request go here.
     matchers: list[Matcher] = field(default_factory=list)
     extractors: list[Extractor] = field(default_factory=list)
@@ -109,8 +107,8 @@ class HttpRequest:
     digest_password: str = ''
 
 
-def responseToDSLMap(resp: requests.Response):
-    """responseToDSLMap converts an HTTP response to a map for use in DSL matching
+def http_response_to_dsl_map(resp: requests.Response):
+    """Converts an HTTP response to a map for use in DSL matching
     """
     data = {}
     if not isinstance(resp, requests.Response):
@@ -143,7 +141,7 @@ def responseToDSLMap(resp: requests.Response):
     return data
 
 
-def getMatchPart(part: str, resp_data: dict, interactsh=None, return_bytes: bool = False) -> str:
+def http_get_match_part(part: str, resp_data: dict, interactsh=None, return_bytes: bool = False) -> str:
     if part == '':
         part = 'body'
 
@@ -164,40 +162,43 @@ def getMatchPart(part: str, resp_data: dict, interactsh=None, return_bytes: bool
     if return_bytes and not isinstance(result, bytes):
         result = result.encode()
     elif not return_bytes and isinstance(result, bytes):
-        result = result.decode()
+        try:
+            result = result.decode()
+        except UnicodeDecodeError:
+            result = str(result)
     return result
 
 
-def HttpMatch(request: HttpRequest, resp_data: dict, interactsh=None):
+def http_match(request: HttpRequest, resp_data: dict, interactsh=None):
     matchers = request.matchers
     matchers_result = []
 
     for i, matcher in enumerate(matchers):
         matcher_res = False
-        item = getMatchPart(matcher.part, resp_data, interactsh, matcher.type == MatcherType.BinaryMatcher)
+        item = http_get_match_part(matcher.part, resp_data, interactsh, matcher.type == MatcherType.BinaryMatcher)
 
         if matcher.type == MatcherType.StatusMatcher:
-            matcher_res = MatchStatusCode(matcher, resp_data['status_code'])
+            matcher_res = match_status_code(matcher, resp_data['status_code'])
             logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.SizeMatcher:
-            matcher_res = MatchSize(matcher, len(item))
+            matcher_res = match_size(matcher, len(item))
             logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.WordsMatcher:
-            matcher_res, _ = MatchWords(matcher, item, {})
+            matcher_res, _ = match_words(matcher, item, {})
             logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.RegexMatcher:
-            matcher_res, _ = MatchRegex(matcher, item)
+            matcher_res, _ = match_regex(matcher, item)
             logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.BinaryMatcher:
-            matcher_res, _ = MatchBinary(matcher, item)
+            matcher_res, _ = match_binary(matcher, item)
             logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.DSLMatcher:
-            matcher_res = MatchDSL(matcher, resp_data)
+            matcher_res = match_dsl(matcher, resp_data)
             logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         if not matcher_res:
@@ -217,33 +218,33 @@ def HttpMatch(request: HttpRequest, resp_data: dict, interactsh=None):
     return False
 
 
-def HttpExtract(request: HttpRequest, resp_data: dict):
+def http_extract(request: HttpRequest, resp_data: dict):
     extractors = request.extractors
-    extractors_result = {'internal': {}, 'external': {}, 'extraInfo': []}
+    extractors_result = {'internal': {}, 'external': {}, 'extra_info': []}
 
     for extractor in extractors:
-        item = getMatchPart(extractor.part, resp_data)
+        item = http_get_match_part(extractor.part, resp_data)
 
         res = None
         if extractor.type == ExtractorType.RegexExtractor:
-            res = ExtractRegex(extractor, item)
+            res = extract_regex(extractor, item)
             logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.KValExtractor:
-            res = ExtractKval(extractor, resp_data['kval_extractor_dict'])
+            res = extract_kval(extractor, resp_data['kval_extractor_dict'])
             logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.XPathExtractor:
-            res = ExtractXPath(extractor, item)
+            res = extract_xpath(extractor, item)
             logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.JSONExtractor:
-            res = ExtractJSON(extractor, item)
+            res = extract_json(extractor, item)
             logger.debug(f'[+] {extractor} -> {res}')
-        elif ExtractorType.type == ExtractorType.DSLExtractor:
-            res = ExtractDSL(extractor, {})
+        elif extractor.type == ExtractorType.DSLExtractor:
+            res = extract_dsl(extractor, resp_data)
             logger.debug(f'[+] {extractor} -> {res}')
 
         extractors_result['internal'].update(res['internal'])
         extractors_result['external'].update(res['external'])
-        extractors_result['extraInfo'] += res['extraInfo']
+        extractors_result['extra_info'] += res['extra_info']
     return extractors_result
 
 
@@ -254,35 +255,16 @@ def extract_dict(text, line_sep='\n', kv_sep='='):
     return _dict
 
 
-def payloadGenerator(request: HttpRequest) -> OrderedDict:
-    payloads = OrderedDict()
-    payloads.update(request.payloads)
-
-    for k, v in payloads.items():
-        if isinstance(v, str) and check_file(v):
-            payloads[k] = get_file_items(v)
-
-    payload_keys, payload_vals = payloads.keys(), payloads.values()
-    payload_vals = [i if isinstance(i, list) else [i] for i in payload_vals]
-
-    if request.attack == AttackType.PitchForkAttack:
-        for instance in zip(*payload_vals):
-            yield dict(zip(payload_keys, instance))
-    else:
-        for instance in itertools.product(*payload_vals):
-            yield dict(zip(payload_keys, instance))
-
-
-def httpRequestGenerator(request: HttpRequest, dynamic_values: OrderedDict):
+def http_request_generator(request: HttpRequest, dynamic_values: OrderedDict):
     request_count = len(request.path + request.raw)
-    for payload_instance in payloadGenerator(request):
+    for payload_instance in payload_generator(request.payloads, request.attack):
         current_index = 0
         dynamic_values.update(payload_instance)
         for path in request.path + request.raw:
             current_index += 1
             method, url, headers, data, kwargs = '', '', '', '', OrderedDict()
             # base request
-            if path.startswith('{{'):
+            if path.startswith(Marker.ParenthesisOpen):
                 method = request.method.value
                 headers = request.headers
                 data = request.body
@@ -293,7 +275,7 @@ def httpRequestGenerator(request: HttpRequest, dynamic_values: OrderedDict):
                 raw = path.strip()
                 raws = list(map(lambda x: x.strip(), raw.splitlines()))
                 method, path, _ = raws[0].split(' ')
-                url = f'{{{{BaseURL}}}}{path}'
+                url = f'{Marker.ParenthesisOpen}BaseURL{Marker.ParenthesisClose}{path}'
 
                 if method == "POST":
                     index = 0
@@ -314,5 +296,87 @@ def httpRequestGenerator(request: HttpRequest, dynamic_values: OrderedDict):
             kwargs.setdefault('data', data)
             kwargs.setdefault('headers', headers)
 
-            yield (method, marker_replace(url, dynamic_values), marker_replace(kwargs, dynamic_values),
-                   payload_instance, request_count, current_index)
+            try:
+                url = marker_replace(url, dynamic_values)
+                kwargs = marker_replace(kwargs, dynamic_values)
+            except UnresolvedVariableException:
+                continue
+
+            yield method, url, kwargs, payload_instance, request_count, current_index
+
+
+def execute_http_request(request: HttpRequest, dynamic_values, interactsh) -> Union[bool, list]:
+    results = []
+    resp_data_all = {}
+    with requests.Session() as session:
+        try:
+            for (method, url, kwargs, payload, request_count, current_index) in http_request_generator(
+                    request, dynamic_values):
+                try:
+                    # Redirection conditions can be specified per each template. By default, redirects are not
+                    # followed. However, if desired, they can be enabled with redirects: true in request details. 10
+                    # redirects are followed at maximum by default which should be good enough for most use cases.
+                    # More fine grained control can be exercised over number of redirects followed by using
+                    # max-redirects field.
+
+                    if request.max_redirects:
+                        session.max_redirects = request.max_redirects
+                    else:
+                        session.max_redirects = 10
+                    response = session.request(method=method, url=url, **kwargs)
+                    # for debug purpose
+                    try:
+                        logger.debug(dump.dump_all(response).decode('utf-8'))
+                    except UnicodeDecodeError:
+                        logger.debug(dump.dump_all(response))
+
+                except Exception:
+                    import traceback
+                    traceback.print_exc()
+                    response = None
+
+                resp_data = http_response_to_dsl_map(response)
+                if response:
+                    response.close()
+
+                extractor_res = http_extract(request, resp_data)
+                for k, v in extractor_res['internal'].items():
+                    if v == UNRESOLVED_VARIABLE and k in dynamic_values:
+                        continue
+                    else:
+                        dynamic_values[k] = v
+
+                if request.req_condition:
+                    resp_data_all.update(resp_data)
+                    for k, v in resp_data.items():
+                        resp_data_all[f'{k}_{current_index}'] = v
+                    if current_index == request_count:
+                        resp_data_all.update(dynamic_values)
+                        match_res = http_match(request, resp_data_all, interactsh)
+                        resp_data_all = {}
+                        if match_res:
+                            output = {}
+                            output.update(extractor_res['external'])
+                            output.update(payload)
+                            output['extra_info'] = extractor_res['extra_info']
+                            results.append(output)
+                            if request.stop_at_first_match:
+                                return results
+                else:
+                    resp_data.update(dynamic_values)
+                    match_res = http_match(request, resp_data, interactsh)
+                    if match_res:
+                        output = {}
+                        output.update(extractor_res['external'])
+                        output.update(payload)
+                        output['extra_info'] = extractor_res['extra_info']
+                        results.append(output)
+                        if request.stop_at_first_match:
+                            return results
+        except Exception:
+            import traceback
+            traceback.print_exc()
+        if results and any(results):
+            return results
+        else:
+            return False
