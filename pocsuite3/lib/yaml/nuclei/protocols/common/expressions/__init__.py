@@ -337,7 +337,7 @@ def print_debug(*args) -> None:
     raise NotImplementedError
 
 
-def rand_base(length: int, optional_charset: str = string.ascii_letters+string.digits) -> str:
+def rand_base(length: int, optional_charset: str = string.ascii_letters + string.digits) -> str:
     """
     Generates a random sequence of given length string from an optional charset (defaults to letters and numbers)
 

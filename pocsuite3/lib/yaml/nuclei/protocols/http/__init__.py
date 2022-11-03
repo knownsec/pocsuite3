@@ -42,7 +42,7 @@ class HttpRequest:
     # Operators for the current request go here.
     matchers: list[Matcher] = field(default_factory=list)
     extractors: list[Extractor] = field(default_factory=list)
-    matchers_condition:  str = 'or'
+    matchers_condition: str = 'or'
 
     # Path contains the path/s for the HTTP requests. It supports variables as placeholders.
     path: list[str] = field(default_factory=list)
