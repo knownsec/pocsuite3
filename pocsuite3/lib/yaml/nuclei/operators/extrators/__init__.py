@@ -4,10 +4,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import List
 
-import jq
 from lxml import etree
 from requests.structures import CaseInsensitiveDict
 
+from pocsuite3.lib.core.log import LOGGER as logger
 from pocsuite3.lib.yaml.nuclei.protocols.common.expressions import evaluate, UNRESOLVED_VARIABLE, Marker
 
 
@@ -173,6 +173,12 @@ def extract_json(e: Extractor, corpus: str) -> dict:
     try:
         corpus = json.loads(corpus)
     except json.JSONDecodeError:
+        return results
+
+    try:
+        import jq
+    except ImportError:
+        logger.error('Python bindings for jq not installed, it only supports linux and macos, https://pypi.org/project/jq/')
         return results
 
     for j in e.json:

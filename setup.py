@@ -56,13 +56,13 @@ setup(
         "pycryptodomex",
         "dacite",
         "PyYAML",
-        "jq",
         "lxml",
         "mmh3"
     ],
     extras_require={
         'complete': [
-            'pyOpenSSL'
+            'pyOpenSSL',
+            'jq'
         ],
     }
 )
