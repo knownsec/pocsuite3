@@ -2,6 +2,7 @@ import binascii
 import re
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import List
 
 from pocsuite3.lib.yaml.nuclei.protocols.common.expressions import evaluate, Marker
 
@@ -37,22 +38,22 @@ class Matcher:
     name: str = ''
 
     # Status are the acceptable status codes for the response.
-    status: list[int] = field(default_factory=list)
+    status: List[int] = field(default_factory=list)
 
     # Size is the acceptable size for the response
-    size: list[int] = field(default_factory=list)
+    size: List[int] = field(default_factory=list)
 
     # Words contains word patterns required to be present in the response part.
-    words: list[str] = field(default_factory=list)
+    words: List[str] = field(default_factory=list)
 
     # Regex contains Regular Expression patterns required to be present in the response part.
-    regex: list[str] = field(default_factory=list)
+    regex: List[str] = field(default_factory=list)
 
     # Binary are the binary patterns required to be present in the response part.
-    binary: list[str] = field(default_factory=list)
+    binary: List[str] = field(default_factory=list)
 
     # DSL are the dsl expressions that will be evaluated as part of nuclei matching rules.
-    dsl: list[str] = field(default_factory=list)
+    dsl: List[str] = field(default_factory=list)
 
     # Encoding specifies the encoding for the words field if any.
     encoding: str = ''

@@ -6,7 +6,7 @@ import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Union
+from typing import Union, List
 
 from pocsuite3.lib.core.common import urlparse
 from pocsuite3.lib.core.log import LOGGER as logger
@@ -59,14 +59,14 @@ class NetworkRequest:
     """
 
     # Operators for the current request go here.
-    matchers: list[Matcher] = field(default_factory=list)
-    extractors: list[Extractor] = field(default_factory=list)
+    matchers: List[Matcher] = field(default_factory=list)
+    extractors: List[Extractor] = field(default_factory=list)
     matchers_condition: str = 'or'
 
     # Host to send network requests to.
-    host: list[str] = field(default_factory=list)
+    host: List[str] = field(default_factory=list)
 
-    addresses: list[AddressKV] = field(default_factory=list)
+    addresses: List[AddressKV] = field(default_factory=list)
 
     # ID is the optional id of the request
     id: str = ''
@@ -78,7 +78,7 @@ class NetworkRequest:
     payloads: dict = field(default_factory=dict)
 
     # Inputs contains inputs for the network socket
-    inputs: list[Input] = field(default_factory=list)
+    inputs: List[Input] = field(default_factory=list)
 
     # ReadSize is the size of response to read at the end, Default value for read-size is 1024.
     read_size: int = 1024

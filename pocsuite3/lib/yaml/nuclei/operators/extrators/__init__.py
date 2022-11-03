@@ -2,6 +2,7 @@ import json
 import re
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import List
 
 import jq
 from lxml import etree
@@ -29,25 +30,25 @@ class Extractor:
     type: ExtractorType = 'regex'
 
     # Regex contains the regular expression patterns to extract from a part.
-    regex: list[str] = field(default_factory=list)
+    regex: List[str] = field(default_factory=list)
 
     # Group specifies a numbered group to extract from the regex.
     group: int = 0
 
     # kval contains the key-value pairs present in the HTTP response header.
-    kval: list[str] = field(default_factory=list)
+    kval: List[str] = field(default_factory=list)
 
     # JSON allows using jq-style syntax to extract items from json response
-    json: list[str] = field(default_factory=list)
+    json: List[str] = field(default_factory=list)
 
     # XPath allows using xpath expressions to extract items from html response
-    xpath: list[str] = field(default_factory=list)
+    xpath: List[str] = field(default_factory=list)
 
     # Attribute is an optional attribute to extract from response XPath.
     attribute: str = ''
 
     # Extracts using DSL expressions
-    dsl: list[str] = field(default_factory=list)
+    dsl: List[str] = field(default_factory=list)
 
     # Part is the part of the request response to extract data from.
     part: str = ''

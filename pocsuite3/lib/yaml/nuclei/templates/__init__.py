@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import List
 
 from pocsuite3.lib.yaml.nuclei.model import Info
 from pocsuite3.lib.yaml.nuclei.protocols.http import HttpRequest
@@ -25,7 +26,7 @@ class Template:
     """
     id: str = ''
     info: Info = field(default_factory=Info)
-    requests: list[HttpRequest] = field(default_factory=list)
-    network: list[NetworkRequest] = field(default_factory=list)
+    requests: List[HttpRequest] = field(default_factory=list)
+    network: List[NetworkRequest] = field(default_factory=list)
     stop_at_first_match: bool = True
     variables: dict = field(default_factory=dict)

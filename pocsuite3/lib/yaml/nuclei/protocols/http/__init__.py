@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Union
+from typing import Union, List
 
 from requests_toolbelt.utils import dump
 
@@ -40,15 +40,15 @@ class HttpRequest:
     """
 
     # Operators for the current request go here.
-    matchers: list[Matcher] = field(default_factory=list)
-    extractors: list[Extractor] = field(default_factory=list)
+    matchers: List[Matcher] = field(default_factory=list)
+    extractors: List[Extractor] = field(default_factory=list)
     matchers_condition: str = 'or'
 
     # Path contains the path/s for the HTTP requests. It supports variables as placeholders.
-    path: list[str] = field(default_factory=list)
+    path: List[str] = field(default_factory=list)
 
     # Raw contains HTTP Requests in Raw format.
-    raw: list[str] = field(default_factory=list)
+    raw: List[str] = field(default_factory=list)
 
     # ID is the optional id of the request
     id: str = ''

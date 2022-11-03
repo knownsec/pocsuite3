@@ -1,3 +1,4 @@
+# pylint: disable=E0202
 import os
 import re
 import chardet
