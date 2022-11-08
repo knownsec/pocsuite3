@@ -156,7 +156,7 @@ def network_match(request: NetworkRequest, resp_data: dict, interactsh=None):
             logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.WordsMatcher:
-            matcher_res, _ = match_words(matcher, item, {})
+            matcher_res, _ = match_words(matcher, item, resp_data)
             logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.RegexMatcher:
