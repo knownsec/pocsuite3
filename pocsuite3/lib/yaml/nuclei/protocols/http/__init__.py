@@ -268,6 +268,7 @@ def http_request_generator(request: HttpRequest, dynamic_values: OrderedDict):
             current_index += 1
             method, url, headers, data, kwargs = '', '', '', '', OrderedDict()
             # base request
+            username, password = request.digest_username, request.digest_password
             if path.startswith(Marker.ParenthesisOpen):
                 method = request.method.value
                 headers = request.headers
@@ -299,13 +300,16 @@ def http_request_generator(request: HttpRequest, dynamic_values: OrderedDict):
             kwargs.setdefault('allow_redirects', request.redirects)
             kwargs.setdefault('data', data)
             kwargs.setdefault('headers', headers)
-
+            if username or password:
+                kwargs.setdefault('auth', (username, password))
             try:
                 url = marker_replace(url, dynamic_values)
                 kwargs = marker_replace(kwargs, dynamic_values)
             except UnresolvedVariableException:
                 continue
 
+            if 'auth' in kwargs:
+                kwargs['auth'] = tuple(kwargs['auth'])
             yield method, url, kwargs, payload_instance, request_count, current_index
 
 
