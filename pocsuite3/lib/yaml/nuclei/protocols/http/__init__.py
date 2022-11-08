@@ -4,6 +4,7 @@ from typing import Union, List, Optional
 
 from requests_toolbelt.utils import dump
 
+from pocsuite3.lib.core.data import AttribDict
 from pocsuite3.lib.core.log import LOGGER as logger
 from pocsuite3.lib.request import requests
 from pocsuite3.lib.yaml.nuclei.model import CaseInsensitiveEnum
@@ -16,6 +17,7 @@ from pocsuite3.lib.yaml.nuclei.operators import (Extractor, ExtractorType,
                                                  match_size, match_status_code,
                                                  match_words)
 from pocsuite3.lib.yaml.nuclei.protocols.common.generators import AttackType, payload_generator
+from pocsuite3.lib.yaml.nuclei.protocols.common.interactsh import InteractshClient
 from pocsuite3.lib.yaml.nuclei.protocols.common.replacer import (
     UnresolvedVariableException, UNRESOLVED_VARIABLE, marker_replace, Marker)
 
@@ -110,7 +112,7 @@ class HttpRequest:
 def http_response_to_dsl_map(resp: requests.Response):
     """Converts an HTTP response to a map for use in DSL matching
     """
-    data = {}
+    data = AttribDict()
     if not isinstance(resp, requests.Response):
         return data
 
@@ -142,25 +144,27 @@ def http_response_to_dsl_map(resp: requests.Response):
 
 
 def http_get_match_part(part: str, resp_data: dict, interactsh=None, return_bytes: bool = False) -> str:
+    result = ''
     if part == '':
         part = 'body'
 
     if part in resp_data:
         result = resp_data[part]
-    elif part == 'interactsh_protocol':
-        interactsh.poll()
-        result = '\n'.join(interactsh.interactsh_protocol)
-    elif part == 'interactsh_request':
-        interactsh.poll()
-        result = '\n'.join(interactsh.interactsh_request)
-    elif part == 'interactsh_response':
-        interactsh.poll()
-        result = '\n'.join(interactsh.interactsh_response)
-    else:
-        result = ''
+    elif part.startswith('interactsh'):
+        if not isinstance(interactsh, InteractshClient):
+            result = ''
+        # poll oob data
+        else:
+            interactsh.poll()
+            if part == 'interactsh_protocol':
+                result = '\n'.join(interactsh.interactsh_protocol)
+            elif part == 'interactsh_request':
+                result = '\n'.join(interactsh.interactsh_request)
+            elif part == 'interactsh_response':
+                result = '\n'.join(interactsh.interactsh_response)
 
     if return_bytes and not isinstance(result, bytes):
-        result = result.encode()
+        result = str(result).encode()
     elif not return_bytes and isinstance(result, bytes):
         try:
             result = result.decode()
@@ -178,7 +182,7 @@ def http_match(request: HttpRequest, resp_data: dict, interactsh=None):
         item = http_get_match_part(matcher.part, resp_data, interactsh, matcher.type == MatcherType.BinaryMatcher)
 
         if matcher.type == MatcherType.StatusMatcher:
-            matcher_res = match_status_code(matcher, resp_data['status_code'])
+            matcher_res = match_status_code(matcher, resp_data.get('status_code', 0))
             logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.SizeMatcher:
@@ -230,7 +234,7 @@ def http_extract(request: HttpRequest, resp_data: dict):
             res = extract_regex(extractor, item)
             logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.KValExtractor:
-            res = extract_kval(extractor, resp_data['kval_extractor_dict'])
+            res = extract_kval(extractor, resp_data.get('kval_extractor_dict', {}))
             logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.XPathExtractor:
             res = extract_xpath(extractor, item)

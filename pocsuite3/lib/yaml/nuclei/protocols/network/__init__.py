@@ -17,6 +17,7 @@ from pocsuite3.lib.yaml.nuclei.operators import (Extractor, ExtractorType,
                                                  match_dsl, match_regex,
                                                  match_size, match_words)
 from pocsuite3.lib.yaml.nuclei.protocols.common.generators import AttackType, payload_generator
+from pocsuite3.lib.yaml.nuclei.protocols.common.interactsh import InteractshClient
 from pocsuite3.lib.yaml.nuclei.protocols.common.replacer import (
     UNRESOLVED_VARIABLE, marker_replace)
 
@@ -88,25 +89,27 @@ class NetworkRequest:
 
 
 def network_get_match_part(part: str, resp_data: dict, interactsh=None, return_bytes: bool = False) -> str:
+    result = ''
     if part in ['', 'all', 'body']:
         part = 'data'
 
     if part in resp_data:
         result = resp_data[part]
-    elif part == 'interactsh_protocol':
-        interactsh.poll()
-        result = '\n'.join(interactsh.interactsh_protocol)
-    elif part == 'interactsh_request':
-        interactsh.poll()
-        result = '\n'.join(interactsh.interactsh_request)
-    elif part == 'interactsh_response':
-        interactsh.poll()
-        result = '\n'.join(interactsh.interactsh_response)
-    else:
-        result = ''
+    elif part.startswith('interactsh'):
+        if not isinstance(interactsh, InteractshClient):
+            result = ''
+        # poll oob data
+        else:
+            interactsh.poll()
+            if part == 'interactsh_protocol':
+                result = '\n'.join(interactsh.interactsh_protocol)
+            elif part == 'interactsh_request':
+                result = '\n'.join(interactsh.interactsh_request)
+            elif part == 'interactsh_response':
+                result = '\n'.join(interactsh.interactsh_response)
 
     if return_bytes and not isinstance(result, bytes):
-        result = result.encode()
+        result = str(result).encode()
     elif not return_bytes and isinstance(result, bytes):
         try:
             result = result.decode()
