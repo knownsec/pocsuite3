@@ -67,7 +67,7 @@ class Nuclei:
         self.yaml_template = template
         try:
             self.yaml_template = binascii.unhexlify(self.yaml_template).decode()
-        except binascii.Error:
+        except ValueError:
             pass
         self.json_template = yaml.safe_load(expand_preprocessors(self.yaml_template))
         self.template = dacite.from_dict(
