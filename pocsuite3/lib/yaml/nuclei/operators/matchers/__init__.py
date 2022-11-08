@@ -1,13 +1,13 @@
 import binascii
 import re
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import List
 
+from pocsuite3.lib.yaml.nuclei.model import CaseInsensitiveEnum
 from pocsuite3.lib.yaml.nuclei.protocols.common.expressions import evaluate, Marker
 
 
-class MatcherType(Enum):
+class MatcherType(CaseInsensitiveEnum):
     StatusMatcher = "status"
     SizeMatcher = "size"
     WordsMatcher = "word"
@@ -22,7 +22,7 @@ class Matcher:
     """
 
     # Type is the type of the matcher.
-    type: MatcherType = 'word'
+    type: MatcherType = MatcherType.WordsMatcher
 
     # Condition is the optional condition between two matcher variables. By default, the condition is assumed to be OR.
     condition: str = 'or'

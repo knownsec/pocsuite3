@@ -1,4 +1,5 @@
 import binascii
+import json
 import re
 from collections import OrderedDict
 
@@ -143,7 +144,7 @@ class Nuclei:
             if k in key_convert:
                 k = key_convert.get(k)
             if type(v) in [str]:
-                v = f'\'\'\'{v.strip()}\'\'\''
+                v = json.dumps(v.strip())
 
             info.append(f'    {k} = {v}')
 

@@ -1,11 +1,11 @@
 import itertools
 from collections import OrderedDict
-from enum import Enum
 
 from pocsuite3.lib.core.common import check_file, get_file_items
+from pocsuite3.lib.yaml.nuclei.model import CaseInsensitiveEnum
 
 
-class AttackType(Enum):
+class AttackType(CaseInsensitiveEnum):
     BatteringRamAttack = "batteringram"
     PitchForkAttack = "pitchfork"
     ClusterBombAttack = "clusterbomb"

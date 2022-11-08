@@ -5,7 +5,15 @@ from typing import NewType, Union
 StrSlice = NewType('StrSlice', Union[str, list])
 
 
-class Severify(Enum):
+class CaseInsensitiveEnum(Enum):
+    @classmethod
+    def _missing_(cls, value: str):
+        for member in cls:
+            if member.value == value.lower():
+                return member
+
+
+class Severify(CaseInsensitiveEnum):
     Info = 'info'
     Low = 'low'
     Medium = 'medium'
@@ -26,14 +34,14 @@ class Classification:
 
 @dataclass
 class Info:
-    """Info contains metadata information abount a template
+    """Info contains metadata information about a template
     """
     name: str = ''
     author: StrSlice = field(default_factory=list)
     tags: StrSlice = field(default_factory=list)
     description: str = ''
     reference: StrSlice = field(default_factory=list)
-    severity: Severify = 'unknown'
+    severity: Severify = Severify.Unknown
     metadata: dict = field(default_factory=dict)
     classification: Classification = field(default_factory=Classification)
     remediation: str = ''

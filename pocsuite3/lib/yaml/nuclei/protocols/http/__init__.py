@@ -1,12 +1,12 @@
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Union, List
+from typing import Union, List, Optional
 
 from requests_toolbelt.utils import dump
 
 from pocsuite3.lib.core.log import LOGGER as logger
 from pocsuite3.lib.request import requests
+from pocsuite3.lib.yaml.nuclei.model import CaseInsensitiveEnum
 from pocsuite3.lib.yaml.nuclei.operators import (Extractor, ExtractorType,
                                                  Matcher, MatcherType,
                                                  extract_dsl, extract_json,
@@ -20,7 +20,7 @@ from pocsuite3.lib.yaml.nuclei.protocols.common.replacer import (
     UnresolvedVariableException, UNRESOLVED_VARIABLE, marker_replace, Marker)
 
 
-class HTTPMethod(Enum):
+class HTTPMethod(CaseInsensitiveEnum):
     HTTPGet = "GET"
     HTTPHead = "HEAD"
     HTTPPost = "POST"
@@ -55,10 +55,10 @@ class HttpRequest:
 
     name: str = ''
     # Attack is the type of payload combinations to perform.
-    attack: AttackType = 'batteringram'
+    attack: AttackType = AttackType.BatteringRamAttack
 
     # Method is the HTTP Request Method.
-    method: HTTPMethod = 'GET'
+    method: Optional[HTTPMethod] = HTTPMethod.HTTPGet
 
     # Body is an optional parameter which contains HTTP Request body.
     body: str = ''
@@ -76,10 +76,10 @@ class HttpRequest:
     max_redirects: int = 0
 
     # PipelineConcurrentConnections is number of connections to create during pipelining.
-    pipeline_concurrent_connections = 0
+    pipeline_concurrent_connections: int = 0
 
     # PipelineRequestsPerConnection is number of requests to send per connection when pipelining.
-    pipeline_requests_per_connection = 0
+    pipeline_requests_per_connection: int = 0
 
     # Threads specifies number of threads to use sending requests. This enables Connection Pooling.
     threads: int = 0

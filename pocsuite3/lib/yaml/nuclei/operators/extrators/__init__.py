@@ -1,17 +1,17 @@
 import json
 import re
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import List
 
 from lxml import etree
 from requests.structures import CaseInsensitiveDict
 
 from pocsuite3.lib.core.log import LOGGER as logger
+from pocsuite3.lib.yaml.nuclei.model import CaseInsensitiveEnum
 from pocsuite3.lib.yaml.nuclei.protocols.common.expressions import evaluate, UNRESOLVED_VARIABLE, Marker
 
 
-class ExtractorType(Enum):
+class ExtractorType(CaseInsensitiveEnum):
     RegexExtractor = "regex"
     KValExtractor = "kval"
     XPathExtractor = "xpath"
@@ -27,7 +27,7 @@ class Extractor:
     name: str = ''
 
     # Type is the type of the extractor.
-    type: ExtractorType = 'regex'
+    type: ExtractorType = ExtractorType.RegexExtractor
 
     # Regex contains the regular expression patterns to extract from a part.
     regex: List[str] = field(default_factory=list)

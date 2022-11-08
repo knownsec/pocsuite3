@@ -5,11 +5,11 @@ import ssl
 import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import Union, List
 
 from pocsuite3.lib.core.common import urlparse
 from pocsuite3.lib.core.log import LOGGER as logger
+from pocsuite3.lib.yaml.nuclei.model import CaseInsensitiveEnum
 from pocsuite3.lib.yaml.nuclei.operators import (Extractor, ExtractorType,
                                                  Matcher, MatcherType,
                                                  extract_dsl, extract_kval, extract_regex,
@@ -21,7 +21,7 @@ from pocsuite3.lib.yaml.nuclei.protocols.common.replacer import (
     UNRESOLVED_VARIABLE, marker_replace)
 
 
-class NetworkInputType(Enum):
+class NetworkInputType(CaseInsensitiveEnum):
     HexType = 'hex'
     TextType = 'text'
 
@@ -41,10 +41,10 @@ class Input:
 
     # Data is the data to send as the input.
     # It supports DSL Helper Functions as well as normal expressions.
-    data: str = ''
+    data: Union[str, int] = ''
 
     # Type is the type of input specified in `data` field.
-    type: NetworkInputType = 'text'
+    type: NetworkInputType = NetworkInputType.TextType
 
     # Read is the number of bytes to read from socket.
     read: int = 0
@@ -72,7 +72,7 @@ class NetworkRequest:
     id: str = ''
 
     # Attack is the type of payload combinations to perform.
-    attack: AttackType = 'batteringram'
+    attack: AttackType = AttackType.BatteringRamAttack
 
     # Payloads contains any payloads for the current request.
     payloads: dict = field(default_factory=dict)
@@ -220,6 +220,8 @@ def execute_network_request(request: NetworkRequest, dynamic_values, interactsh)
                 ssl.wrap_socket(s)
             for inp in inputs:
                 data = marker_replace(inp.data, dynamic_values)
+                if isinstance(data, int):
+                    data = str(data)
                 if inp.type == NetworkInputType.HexType:
                     data = binascii.unhexlify(data)
                 elif not isinstance(data, bytes):
