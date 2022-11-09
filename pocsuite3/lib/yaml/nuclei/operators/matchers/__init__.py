@@ -86,6 +86,13 @@ def match_words(matcher: Matcher, corpus: str, data: dict) -> (bool, list):
     matched_words = []
     for i, word in enumerate(matcher.words):
         word = evaluate(word, data)
+        if matcher.encoding == 'hex':
+            try:
+                word = binascii.unhexlify(word).decode()
+            except (ValueError, UnicodeDecodeError):
+                pass
+        if matcher.case_insensitive:
+            word = word.lower()
 
         if word not in corpus:
             if matcher.condition == 'and':

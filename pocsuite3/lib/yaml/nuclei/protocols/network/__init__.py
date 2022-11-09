@@ -128,18 +128,16 @@ def network_extract(request: NetworkRequest, resp_data: dict):
         res = None
         if extractor.type == ExtractorType.RegexExtractor:
             res = extract_regex(extractor, item)
-            logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.KValExtractor:
             try:
                 item = json.loads(item)
             except json.JSONDecodeError:
                 continue
             res = extract_kval(extractor, item)
-            logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.DSLExtractor:
             res = extract_dsl(extractor, resp_data)
-            logger.debug(f'[+] {extractor} -> {res}')
 
+        logger.debug(f'[+] {extractor} -> {res}')
         extractors_result['internal'].update(res['internal'])
         extractors_result['external'].update(res['external'])
         extractors_result['extra_info'] += res['extra_info']
@@ -156,23 +154,23 @@ def network_match(request: NetworkRequest, resp_data: dict, interactsh=None):
 
         if matcher.type == MatcherType.SizeMatcher:
             matcher_res = match_size(matcher, len(item))
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.WordsMatcher:
             matcher_res, _ = match_words(matcher, item, resp_data)
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.RegexMatcher:
             matcher_res, _ = match_regex(matcher, item)
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.BinaryMatcher:
             matcher_res, _ = match_binary(matcher, item)
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.DSLMatcher:
             matcher_res = match_dsl(matcher, resp_data)
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
+
+        if matcher.negative:
+            matcher_res = not matcher_res
+
+        logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         if not matcher_res:
             if request.matchers_condition == 'and':
