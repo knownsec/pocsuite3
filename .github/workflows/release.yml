@@ -28,7 +28,7 @@ jobs:
         twine upload dist/*
 
   homebrew:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     needs:
       - pypi
     steps:
