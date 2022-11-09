@@ -1,13 +1,12 @@
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import List
 
-from pocsuite3.lib.yaml.nuclei.model import Info
+from pocsuite3.lib.yaml.nuclei.model import Info, CaseInsensitiveEnum
 from pocsuite3.lib.yaml.nuclei.protocols.http import HttpRequest
 from pocsuite3.lib.yaml.nuclei.protocols.network import NetworkRequest
 
 
-class ProtocolType(Enum):
+class ProtocolType(CaseInsensitiveEnum):
     InvalidProtocol = "invalid"
     DNSProtocol = "dns"
     FileProtocol = "file"

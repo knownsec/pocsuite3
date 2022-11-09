@@ -1,12 +1,13 @@
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Union, List
+from typing import Union, List, Optional
 
 from requests_toolbelt.utils import dump
 
+from pocsuite3.lib.core.data import AttribDict
 from pocsuite3.lib.core.log import LOGGER as logger
 from pocsuite3.lib.request import requests
+from pocsuite3.lib.yaml.nuclei.model import CaseInsensitiveEnum
 from pocsuite3.lib.yaml.nuclei.operators import (Extractor, ExtractorType,
                                                  Matcher, MatcherType,
                                                  extract_dsl, extract_json,
@@ -16,11 +17,12 @@ from pocsuite3.lib.yaml.nuclei.operators import (Extractor, ExtractorType,
                                                  match_size, match_status_code,
                                                  match_words)
 from pocsuite3.lib.yaml.nuclei.protocols.common.generators import AttackType, payload_generator
+from pocsuite3.lib.yaml.nuclei.protocols.common.interactsh import InteractshClient
 from pocsuite3.lib.yaml.nuclei.protocols.common.replacer import (
     UnresolvedVariableException, UNRESOLVED_VARIABLE, marker_replace, Marker)
 
 
-class HTTPMethod(Enum):
+class HTTPMethod(CaseInsensitiveEnum):
     HTTPGet = "GET"
     HTTPHead = "HEAD"
     HTTPPost = "POST"
@@ -55,10 +57,10 @@ class HttpRequest:
 
     name: str = ''
     # Attack is the type of payload combinations to perform.
-    attack: AttackType = 'batteringram'
+    attack: AttackType = AttackType.BatteringRamAttack
 
     # Method is the HTTP Request Method.
-    method: HTTPMethod = 'GET'
+    method: Optional[HTTPMethod] = HTTPMethod.HTTPGet
 
     # Body is an optional parameter which contains HTTP Request body.
     body: str = ''
@@ -76,10 +78,10 @@ class HttpRequest:
     max_redirects: int = 0
 
     # PipelineConcurrentConnections is number of connections to create during pipelining.
-    pipeline_concurrent_connections = 0
+    pipeline_concurrent_connections: int = 0
 
     # PipelineRequestsPerConnection is number of requests to send per connection when pipelining.
-    pipeline_requests_per_connection = 0
+    pipeline_requests_per_connection: int = 0
 
     # Threads specifies number of threads to use sending requests. This enables Connection Pooling.
     threads: int = 0
@@ -110,7 +112,7 @@ class HttpRequest:
 def http_response_to_dsl_map(resp: requests.Response):
     """Converts an HTTP response to a map for use in DSL matching
     """
-    data = {}
+    data = AttribDict()
     if not isinstance(resp, requests.Response):
         return data
 
@@ -142,25 +144,27 @@ def http_response_to_dsl_map(resp: requests.Response):
 
 
 def http_get_match_part(part: str, resp_data: dict, interactsh=None, return_bytes: bool = False) -> str:
+    result = ''
     if part == '':
         part = 'body'
 
     if part in resp_data:
         result = resp_data[part]
-    elif part == 'interactsh_protocol':
-        interactsh.poll()
-        result = '\n'.join(interactsh.interactsh_protocol)
-    elif part == 'interactsh_request':
-        interactsh.poll()
-        result = '\n'.join(interactsh.interactsh_request)
-    elif part == 'interactsh_response':
-        interactsh.poll()
-        result = '\n'.join(interactsh.interactsh_response)
-    else:
-        result = ''
+    elif part.startswith('interactsh'):
+        if not isinstance(interactsh, InteractshClient):
+            result = ''
+        # poll oob data
+        else:
+            interactsh.poll()
+            if part == 'interactsh_protocol':
+                result = '\n'.join(interactsh.interactsh_protocol)
+            elif part == 'interactsh_request':
+                result = '\n'.join(interactsh.interactsh_request)
+            elif part == 'interactsh_response':
+                result = '\n'.join(interactsh.interactsh_response)
 
     if return_bytes and not isinstance(result, bytes):
-        result = result.encode()
+        result = str(result).encode()
     elif not return_bytes and isinstance(result, bytes):
         try:
             result = result.decode()
@@ -178,28 +182,27 @@ def http_match(request: HttpRequest, resp_data: dict, interactsh=None):
         item = http_get_match_part(matcher.part, resp_data, interactsh, matcher.type == MatcherType.BinaryMatcher)
 
         if matcher.type == MatcherType.StatusMatcher:
-            matcher_res = match_status_code(matcher, resp_data['status_code'])
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
+            matcher_res = match_status_code(matcher, resp_data.get('status_code', 0))
 
         elif matcher.type == MatcherType.SizeMatcher:
             matcher_res = match_size(matcher, len(item))
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.WordsMatcher:
-            matcher_res, _ = match_words(matcher, item, {})
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
+            matcher_res, _ = match_words(matcher, item, resp_data)
 
         elif matcher.type == MatcherType.RegexMatcher:
             matcher_res, _ = match_regex(matcher, item)
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.BinaryMatcher:
             matcher_res, _ = match_binary(matcher, item)
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.DSLMatcher:
             matcher_res = match_dsl(matcher, resp_data)
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
+
+        if matcher.negative:
+            matcher_res = not matcher_res
+
+        logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         if not matcher_res:
             if request.matchers_condition == 'and':
@@ -228,20 +231,16 @@ def http_extract(request: HttpRequest, resp_data: dict):
         res = None
         if extractor.type == ExtractorType.RegexExtractor:
             res = extract_regex(extractor, item)
-            logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.KValExtractor:
-            res = extract_kval(extractor, resp_data['kval_extractor_dict'])
-            logger.debug(f'[+] {extractor} -> {res}')
+            res = extract_kval(extractor, resp_data.get('kval_extractor_dict', {}))
         elif extractor.type == ExtractorType.XPathExtractor:
             res = extract_xpath(extractor, item)
-            logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.JSONExtractor:
             res = extract_json(extractor, item)
-            logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.DSLExtractor:
             res = extract_dsl(extractor, resp_data)
-            logger.debug(f'[+] {extractor} -> {res}')
 
+        logger.debug(f'[+] {extractor} -> {res}')
         extractors_result['internal'].update(res['internal'])
         extractors_result['external'].update(res['external'])
         extractors_result['extra_info'] += res['extra_info']
@@ -264,6 +263,7 @@ def http_request_generator(request: HttpRequest, dynamic_values: OrderedDict):
             current_index += 1
             method, url, headers, data, kwargs = '', '', '', '', OrderedDict()
             # base request
+            username, password = request.digest_username, request.digest_password
             if path.startswith(Marker.ParenthesisOpen):
                 method = request.method.value
                 headers = request.headers
@@ -295,13 +295,16 @@ def http_request_generator(request: HttpRequest, dynamic_values: OrderedDict):
             kwargs.setdefault('allow_redirects', request.redirects)
             kwargs.setdefault('data', data)
             kwargs.setdefault('headers', headers)
-
+            if username or password:
+                kwargs.setdefault('auth', (username, password))
             try:
                 url = marker_replace(url, dynamic_values)
                 kwargs = marker_replace(kwargs, dynamic_values)
             except UnresolvedVariableException:
                 continue
 
+            if 'auth' in kwargs:
+                kwargs['auth'] = tuple(kwargs['auth'])
             yield method, url, kwargs, payload_instance, request_count, current_index
 
 

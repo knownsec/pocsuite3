@@ -5,11 +5,11 @@ import ssl
 import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import Union, List
 
 from pocsuite3.lib.core.common import urlparse
 from pocsuite3.lib.core.log import LOGGER as logger
+from pocsuite3.lib.yaml.nuclei.model import CaseInsensitiveEnum
 from pocsuite3.lib.yaml.nuclei.operators import (Extractor, ExtractorType,
                                                  Matcher, MatcherType,
                                                  extract_dsl, extract_kval, extract_regex,
@@ -17,11 +17,12 @@ from pocsuite3.lib.yaml.nuclei.operators import (Extractor, ExtractorType,
                                                  match_dsl, match_regex,
                                                  match_size, match_words)
 from pocsuite3.lib.yaml.nuclei.protocols.common.generators import AttackType, payload_generator
+from pocsuite3.lib.yaml.nuclei.protocols.common.interactsh import InteractshClient
 from pocsuite3.lib.yaml.nuclei.protocols.common.replacer import (
     UNRESOLVED_VARIABLE, marker_replace)
 
 
-class NetworkInputType(Enum):
+class NetworkInputType(CaseInsensitiveEnum):
     HexType = 'hex'
     TextType = 'text'
 
@@ -41,10 +42,10 @@ class Input:
 
     # Data is the data to send as the input.
     # It supports DSL Helper Functions as well as normal expressions.
-    data: str = ''
+    data: Union[str, int] = ''
 
     # Type is the type of input specified in `data` field.
-    type: NetworkInputType = 'text'
+    type: NetworkInputType = NetworkInputType.TextType
 
     # Read is the number of bytes to read from socket.
     read: int = 0
@@ -72,7 +73,7 @@ class NetworkRequest:
     id: str = ''
 
     # Attack is the type of payload combinations to perform.
-    attack: AttackType = 'batteringram'
+    attack: AttackType = AttackType.BatteringRamAttack
 
     # Payloads contains any payloads for the current request.
     payloads: dict = field(default_factory=dict)
@@ -88,25 +89,27 @@ class NetworkRequest:
 
 
 def network_get_match_part(part: str, resp_data: dict, interactsh=None, return_bytes: bool = False) -> str:
+    result = ''
     if part in ['', 'all', 'body']:
         part = 'data'
 
     if part in resp_data:
         result = resp_data[part]
-    elif part == 'interactsh_protocol':
-        interactsh.poll()
-        result = '\n'.join(interactsh.interactsh_protocol)
-    elif part == 'interactsh_request':
-        interactsh.poll()
-        result = '\n'.join(interactsh.interactsh_request)
-    elif part == 'interactsh_response':
-        interactsh.poll()
-        result = '\n'.join(interactsh.interactsh_response)
-    else:
-        result = ''
+    elif part.startswith('interactsh'):
+        if not isinstance(interactsh, InteractshClient):
+            result = ''
+        # poll oob data
+        else:
+            interactsh.poll()
+            if part == 'interactsh_protocol':
+                result = '\n'.join(interactsh.interactsh_protocol)
+            elif part == 'interactsh_request':
+                result = '\n'.join(interactsh.interactsh_request)
+            elif part == 'interactsh_response':
+                result = '\n'.join(interactsh.interactsh_response)
 
     if return_bytes and not isinstance(result, bytes):
-        result = result.encode()
+        result = str(result).encode()
     elif not return_bytes and isinstance(result, bytes):
         try:
             result = result.decode()
@@ -125,18 +128,16 @@ def network_extract(request: NetworkRequest, resp_data: dict):
         res = None
         if extractor.type == ExtractorType.RegexExtractor:
             res = extract_regex(extractor, item)
-            logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.KValExtractor:
             try:
                 item = json.loads(item)
             except json.JSONDecodeError:
                 continue
             res = extract_kval(extractor, item)
-            logger.debug(f'[+] {extractor} -> {res}')
         elif extractor.type == ExtractorType.DSLExtractor:
             res = extract_dsl(extractor, resp_data)
-            logger.debug(f'[+] {extractor} -> {res}')
 
+        logger.debug(f'[+] {extractor} -> {res}')
         extractors_result['internal'].update(res['internal'])
         extractors_result['external'].update(res['external'])
         extractors_result['extra_info'] += res['extra_info']
@@ -153,23 +154,23 @@ def network_match(request: NetworkRequest, resp_data: dict, interactsh=None):
 
         if matcher.type == MatcherType.SizeMatcher:
             matcher_res = match_size(matcher, len(item))
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.WordsMatcher:
-            matcher_res, _ = match_words(matcher, item, {})
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
+            matcher_res, _ = match_words(matcher, item, resp_data)
 
         elif matcher.type == MatcherType.RegexMatcher:
             matcher_res, _ = match_regex(matcher, item)
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.BinaryMatcher:
             matcher_res, _ = match_binary(matcher, item)
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         elif matcher.type == MatcherType.DSLMatcher:
             matcher_res = match_dsl(matcher, resp_data)
-            logger.debug(f'[+] {matcher} -> {matcher_res}')
+
+        if matcher.negative:
+            matcher_res = not matcher_res
+
+        logger.debug(f'[+] {matcher} -> {matcher_res}')
 
         if not matcher_res:
             if request.matchers_condition == 'and':
@@ -220,6 +221,8 @@ def execute_network_request(request: NetworkRequest, dynamic_values, interactsh)
                 ssl.wrap_socket(s)
             for inp in inputs:
                 data = marker_replace(inp.data, dynamic_values)
+                if isinstance(data, int):
+                    data = str(data)
                 if inp.type == NetworkInputType.HexType:
                     data = binascii.unhexlify(data)
                 elif not isinstance(data, bytes):
