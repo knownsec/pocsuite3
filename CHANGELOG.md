@@ -1,3 +1,11 @@
+# version 2.0.1
+----------------
+* fix words matcher expression execution #333, thanks @soapffz
+* fix catch binascii ValueError Exception #334, thanks @izj007
+* improve template robustness
+* support digest_username and digest_password
+* support negative matchers
+
 # version 2.0.0
 ----------------
 * yaml poc support, compatible with nuclei
