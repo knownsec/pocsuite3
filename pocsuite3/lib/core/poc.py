@@ -360,6 +360,8 @@ class POCBase(object):
             return False
 
         self.url = res.request.url.rstrip('/')
+        if res.history:
+            self.url = res.history[0].request.url.rstrip('/')
 
         if self.url.split('://')[0] != self.scheme:
             logger.warn(f'auto correct url: {mosaic(origin_url)} -> {mosaic(self.url)}')
