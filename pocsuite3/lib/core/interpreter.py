@@ -324,9 +324,10 @@ class PocsuiteInterpreter(BaseInterpreter):
 
         module_ext = ''
         module_path_found = False
-        for module_ext in ['.py', '.yaml']:
+        for module_ext in ['', '.py', '.yaml']:
             if os.path.exists(module_path + module_ext):
                 module_path_found = True
+                module_path = module_path + module_ext
                 break
             elif os.path.exists(os.path.join(self.module_parent_directory, module_path + module_ext)):
                 module_path_found = True
@@ -334,14 +335,20 @@ class PocsuiteInterpreter(BaseInterpreter):
                 break
 
         if not module_path_found:
-            errMsg = "No such file: '{0}'".format(module_path)
-            logger.error(errMsg)
+            err_msg = "No such file: '{0}'".format(module_path)
+            logger.error(err_msg)
             return
 
+        if module_ext == '':
+            if module_path.endswith('.py'):
+                module_ext = '.py'
+            elif module_path.endswith('.yaml'):
+                module_ext = '.yaml'
         try:
             load_file_to_module(module_path)
             self.current_module = kb.current_poc
-            self.current_module.pocsuite3_module_path = ltrim(rtrim(module_path, module_ext), self.module_parent_directory)
+            self.current_module.pocsuite3_module_path = ltrim(rtrim(module_path, module_ext),
+                                                              self.module_parent_directory)
         except Exception as err:
             logger.error(str(err))
 
