@@ -209,7 +209,7 @@ class POCBase(object):
                 # adjust port
                 if not self.rport:
                     self.rport = protocol_default_port_map[self.current_protocol]
-            self.netloc = f'{self.rhost}:{self.rport}'
+            self.netloc = f'{self.rhost}:{self.rport}' if not conf.ipv6 else f'[{self.rhost}]:{self.rport}'
             pr = pr._replace(scheme=self.scheme)
             pr = pr._replace(netloc=self.netloc)
             target = pr.geturl()
