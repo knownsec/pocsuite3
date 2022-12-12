@@ -56,3 +56,6 @@ Rook1e <https://github.com/0x2E>
 
 ekszz <https://github.com/ekszz>
 * contributing to customize poc protocol and default port #321
+
+HomerQing <https://github.com/HomerQing>
+* contributing to fix ipv6 compatibility issue in build_url
