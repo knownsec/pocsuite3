@@ -133,6 +133,23 @@ class TestCase(unittest.TestCase):
             self.assertEqual(res[0]["result"]["VerifyInfo"]["rport"], 8443)
             self.assertEqual(res[0]["result"]["VerifyInfo"]["netloc"], "127.0.0.1:8443")
 
+            # [fd12:3456:789a:1::2]:8443
+            f.seek(0)
+            config = {
+                "url": "[fd12:3456:789a:1::2]:8443",
+                "poc": f.name,
+            }
+            init_pocsuite(config)
+            start_pocsuite()
+            res = get_results()
+            self.assertEqual(
+                res[0]["result"]["VerifyInfo"]["url"], "https://[fd12:3456:789a:1::2]:8443"
+            )
+            self.assertEqual(res[0]["result"]["VerifyInfo"]["scheme"], "https")
+            self.assertEqual(res[0]["result"]["VerifyInfo"]["rhost"], "fd12:3456:789a:1::2")
+            self.assertEqual(res[0]["result"]["VerifyInfo"]["rport"], 8443)
+            self.assertEqual(res[0]["result"]["VerifyInfo"]["netloc"], "[fd12:3456:789a:1::2]:8443")
+
     def test_url_protocol_correct(self):
         with CustomNamedTemporaryFile("w+t") as f:
             poc_content = textwrap.dedent(

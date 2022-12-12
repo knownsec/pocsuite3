@@ -192,6 +192,7 @@ class POCBase(object):
 
         try:
             pr = urlparse(target)
+            is_ipv6 = pr.netloc.startswith('[')
             self.scheme = pr.scheme
             self.rhost = pr.hostname
             self.rport = pr.port or self.current_protocol_port
@@ -209,7 +210,7 @@ class POCBase(object):
                 # adjust port
                 if not self.rport:
                     self.rport = protocol_default_port_map[self.current_protocol]
-            self.netloc = f'{self.rhost}:{self.rport}'
+            self.netloc = f'[{self.rhost}]:{self.rport}' if is_ipv6 else f'{self.rhost}:{self.rport}'
             pr = pr._replace(scheme=self.scheme)
             pr = pr._replace(netloc=self.netloc)
             target = pr.geturl()
@@ -366,9 +367,6 @@ class POCBase(object):
         if self.url.split('://')[0] != self.scheme:
             logger.warn(f'auto correct url: {mosaic(origin_url)} -> {mosaic(self.url)}')
             self.scheme = 'https' if self.url.startswith('https') else 'http'
-            port = urlparse(self.url).port
-            self.rport = port if port else 443 if self.scheme.startswith('https') else 80
-            self.netloc = f'{self.rhost}:{self.rport}'
 
         if return_obj:
             return res
