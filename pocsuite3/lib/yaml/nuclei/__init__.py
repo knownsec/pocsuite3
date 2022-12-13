@@ -1,11 +1,11 @@
 import binascii
 import json
 import re
+import socket
 from collections import OrderedDict
 
 import dacite
 import yaml
-
 from pocsuite3.lib.core.common import urlparse
 from pocsuite3.lib.utils import random_str
 from pocsuite3.lib.yaml.nuclei.model import Severify
@@ -92,6 +92,14 @@ class Nuclei:
         self.dynamic_values['Port'] = u.port
         self.dynamic_values['Path'] = '/'.join(u.path.split('/')[0:-1])
         self.dynamic_values['File'] = u.path.split('/')[-1]
+        # DSL: Host != ip
+        self.dynamic_values['IP'] = ''
+        try:
+            self.dynamic_values['IP'] = socket.gethostbyname(u.hostname)
+        except socket.error:
+            pass
+        for k, v in self.dynamic_values.copy().items():
+            self.dynamic_values[k.lower()] = v
 
         # Variables can be used to declare some values which remain constant throughout the template.
         # The value of the variable once calculated does not change.

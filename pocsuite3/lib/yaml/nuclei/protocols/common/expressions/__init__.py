@@ -406,7 +406,7 @@ def rand_text_numeric(length: int, optional_bad_numbers: str = '') -> str:
     return ''.join(random.choice(charset) for _ in range(length))
 
 
-def regex(pattern, inp):
+def regex(pattern, inp) -> bool:
     """
     Tests the given regular expression against the input string
 
