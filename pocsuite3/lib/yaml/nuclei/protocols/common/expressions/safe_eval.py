@@ -1,91 +1,22 @@
-# https://raw.githubusercontent.com/galaxyproject/galaxy/a981724c22f5bc6b3696c25faa896b3e96db88db/lib/galaxy/jobs/runners/state_handlers/_safe_eval.py
-
+import re
 from ast import (
     Module,
     parse,
     walk,
 )
 
+from pocsuite3.lib.core.log import LOGGER as logger
 
 AST_NODE_TYPE_ALLOWLIST = [
-    "Expr",
-    "Load",
-    "Str",
-    "Num",
-    "BoolOp",
-    "Compare",
-    "And",
-    "Eq",
-    "NotEq",
-    "Or",
-    "GtE",
-    "LtE",
-    "Lt",
-    "Gt",
-    "BinOp",
-    "Add",
-    "Div",
-    "Sub",
-    "Mult",
-    "Mod",
-    "Pow",
-    "LShift",
-    "GShift",
-    "BitAnd",
-    "BitOr",
-    "BitXor",
-    "UnaryOp",
-    "Invert",
-    "Not",
-    "NotIn",
-    "In",
-    "Is",
-    "IsNot",
-    "List",
-    "Index",
-    "Subscript",
-    "Constant",
-    # Further checks
-    "Name",
-    "Call",
-    "Attribute",
-]
-
+    'Expr', 'Load', 'Str', 'Num', 'BoolOp', 'Compare', 'And', 'Eq', 'NotEq', 'Or', 'GtE', 'LtE', 'Lt',
+    'Gt', 'BinOp', 'Add', 'Div', 'Sub', 'Mult', 'Mod', 'Pow', 'LShift', 'GShift', 'BitAnd', 'BitOr',
+    'BitXor', 'UnaryOp', 'Invert', 'Not', 'NotIn', 'In', 'Is', 'IsNot', 'List', 'Index', 'Subscript',
+    'Constant', 'Name', 'Call', 'Attribute']
 
 BUILTIN_AND_MATH_FUNCTIONS = [
-    'abs',
-    'all',
-    'any',
-    'bin',
-    'chr',
-    'cmp',
-    'complex',
-    'divmod',
-    'float',
-    'hex',
-    'int',
-    'len',
-    'long',
-    'max',
-    'min',
-    'oct',
-    'ord',
-    'pow',
-    'range',
-    'reversed',
-    'round',
-    'sorted',
-    'str',
-    'sum',
-    'type',
-    'unichr',
-    'unicode',
-    'log',
-    'exp',
-    'sqrt',
-    'ceil',
-    'floor'
-]
+    'abs', 'all', 'any', 'bin', 'chr', 'cmp', 'complex', 'divmod', 'float', 'hex', 'int', 'len',
+    'long', 'max', 'min', 'oct', 'ord', 'pow', 'range', 'reversed', 'round', 'sorted', 'str', 'sum',
+    'type', 'unichr', 'unicode', 'log', 'exp', 'sqrt', 'ceil', 'floor']
 
 STRING_AND_LIST_METHODS = [name for name in dir("") + dir([]) if not name.startswith("_")]
 VALID_FUNCTIONS = BUILTIN_AND_MATH_FUNCTIONS + STRING_AND_LIST_METHODS
@@ -199,6 +130,22 @@ def _check_expression(text, allowed_variables=None):
     return True
 
 
+def convert_logical_operators(expression: str) -> str:
+    """
+    TODO, needs to be optimized in the future
+    https://www.dabeaz.com/ply/ply.html#ply_nn26
+    """
+    return_bool_func = [
+        'compare_versions', 'contains', 'contains_all', 'contains_any', 'regex',
+        'starts_with', 'line_starts_with', 'ends_with', 'line_ends_with'
+    ]
+    expression = re.sub(r'\s+&&\s+', ' and ', expression)
+    expression = re.sub(r'\s+\|\|\s+', ' or ', expression)
+    for f in return_bool_func:
+        expression = re.sub(fr'!\s*{f}\(', f'not {f}(', expression)
+    return expression
+
+
 def safe_eval(expression, variables):
     """
 
@@ -211,7 +158,10 @@ def safe_eval(expression, variables):
     True
     """
     if not _check_expression(expression, allowed_variables=list(variables.keys())):
-        expression = expression.replace(' && ', ' and ').replace(' || ', ' or ')
+        new_expression = convert_logical_operators(expression)
+        if expression != new_expression:
+            logger.debug(f'[+] Expressions convert: {expression} -> {new_expression}')
+        expression = new_expression
         if not _check_expression(expression, allowed_variables=list(variables.keys())):
             raise Exception(f"Invalid expression [{expression}], only a very simple subset of Python is allowed.")
     return eval(expression, globals(), variables)
