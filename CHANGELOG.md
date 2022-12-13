@@ -1,3 +1,10 @@
+# version 2.0.2
+----------------
+* fix url redirect problem in _check method #337
+* fix use command in console mode can't use absolute path #341, thanks @S2eTo
+* fix ipv6 compatibility issue in build_url #347, thanks @HomerQing
+* optimize dsl expression execution #348
+
 # version 2.0.1
 ----------------
 * fix words matcher expression execution #333, thanks @soapffz
