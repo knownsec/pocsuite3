@@ -1,3 +1,8 @@
+# version 2.0.3
+----------------
+* optimized URL protocol correction #356, thanks @chenjiewei123
+* support disable protocol correction and honeypot checks through --no-check option
+
 # version 2.0.2
 ----------------
 * fix url redirect problem in _check method #337
