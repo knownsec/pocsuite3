@@ -163,8 +163,9 @@ class POCBase(object):
                         "'{key}' must be set, please using command 'set {key}'".format(key=k))
         return True
 
-    def build_url(self):
-        target = self.target
+    def build_url(self, target=''):
+        if not target:
+            target = self.target
         # https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
         protocol_default_port_map = {
             POC_CATEGORY.PROTOCOL.FTP: 21,
@@ -313,7 +314,6 @@ class POCBase(object):
             return True
 
         res = None
-        https_res = None
         # this only covers most cases
         redirect_https_keyword = [
             # https://www.zoomeye.org/searchResult?q=%22request%20was%20sent%20to%20HTTPS%20port%22
@@ -327,29 +327,44 @@ class POCBase(object):
         urls = OrderedSet()
         urls.add(self.url)
         urls.add(f'http://{netloc}')
-        urls.add(f'https://{netloc}')
+
+        # The user has not provided a port in URL, dynamically switching to HTTPS's default port 443
+        pr = urlparse(self.url)
+        is_ipv6 = pr.netloc.startswith('[')
+        if ':' not in self.target.split('://')[-1] and pr.port == 80:
+            pr = pr._replace(scheme='https')
+            pr = pr._replace(netloc=f'[{pr.hostname}]:443' if is_ipv6 else f'{pr.hostname}:443')
+            urls.add(pr.geturl())
+        else:
+            urls.add(f'https://{netloc}')
+
         for url in urls:
             try:
-                time.sleep(0.5)
+                time.sleep(0.1)
                 res = requests.get(url, allow_redirects=allow_redirects)
-                if url.startswith('https'):
-                    https_res = res
+                """
+                https://github.com/knownsec/pocsuite3/issues/330
+                https://github.com/knownsec/pocsuite3/issues/356
+                status_code:
+                    - 20x
+                    - 30x
+                    - 40x
+                    - 50x
+                """
 
-                # redirect to https keyword found, continue to next loop
+                # if HTTPS handshake is successful, return directly
+                if url.startswith('https://'):
+                    break
+
+                # if we send an HTTP request to an HTTPS service, but the server may return 20x
                 for k in redirect_https_keyword:
                     if k.lower() in res.text.lower():
                         redirect_https_keyword_found = True
-                        res = https_res
                         break
                 if redirect_https_keyword_found:
                     continue
 
-                """
-                https://github.com/knownsec/pocsuite3/issues/330
-                status_code:
-                    - 30x
-                    - 50x
-                """
+                # if we send an HTTP request to an HTTPS service, the server may return 30x, 40x, or 50x...
                 if not str(res.status_code).startswith('20'):
                     continue
 
@@ -365,8 +380,8 @@ class POCBase(object):
             self.url = res.history[0].request.url.rstrip('/')
 
         if self.url.split('://')[0] != self.scheme:
+            self.url = self.build_url(self.url)
             logger.warn(f'auto correct url: {mosaic(origin_url)} -> {mosaic(self.url)}')
-            self.scheme = 'https' if self.url.startswith('https') else 'http'
 
         if return_obj:
             return res
