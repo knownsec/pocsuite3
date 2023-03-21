@@ -153,6 +153,8 @@ class TestCase(unittest.TestCase):
                                     help="only export request rule")
             optimization.add_option("--rule-filename", dest="rule_filename", action="store", default=False,
                                     help="Specify the name of the export rule file")
+            optimization.add_option("--no-check", dest="no_check", action="store_true", default=False,
+                                    help="Disable URL protocol correction and honeypot check")
 
             # Diy options
             diy_options = OptionGroup(parser, "Poc options", "definition options for PoC")

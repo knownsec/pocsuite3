@@ -71,7 +71,8 @@ optDict = {
         'pcap': 'boolean',
         'rule': 'boolean',
         'rule_req': 'boolean',
-        'rule_filename': 'string'
+        'rule_filename': 'string',
+        'no_check': 'boolean'
     },
     'Poc options': {
         'show_options': 'boolean'
