@@ -171,6 +171,7 @@ CMD_PARSE_WHITELIST = [
     "rule",
     "rule-req",
     "rule-filename",
+    "no-check",
     "options",
 
     # other

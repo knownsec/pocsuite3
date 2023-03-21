@@ -304,6 +304,9 @@ class POCBase(object):
         return output
 
     def _check(self, dork='', allow_redirects=False, return_obj=False, is_http=True, honeypot_check=True):
+        if conf.get('no_check', False):
+            return True
+
         u = urlparse(self.url)
         # the port closed
         if u.port and not check_port(u.hostname, u.port):
