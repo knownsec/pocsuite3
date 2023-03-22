@@ -1,4 +1,4 @@
-import{_ as s,j as n,g as a,H as l}from"./chunks/framework.8815fd6f.js";const A=JSON.parse('{"title":"pocsuite.ini Configuration","description":"","frontmatter":{},"headers":[],"relativePath":"en/guide/parameter-posuite-ini.md","lastUpdated":1663185605000}'),p={name:"en/guide/parameter-posuite-ini.md"},o=l(`<h1 id="pocsuite-ini-configuration" tabindex="-1">pocsuite.ini Configuration <a class="header-anchor" href="#pocsuite-ini-configuration" aria-hidden="true">#</a></h1><p>Configuration file example:</p><div class="language-ini"><span class="copy"></span><pre><code><span class="line"><span style="color:#89DDFF;">[Target]</span></span>
+import{_ as s,j as n,g as a,H as l}from"./chunks/framework.8815fd6f.js";const C=JSON.parse('{"title":"pocsuite.ini \u914D\u7F6E\u6587\u4EF6\u53C2\u6570\u8BF4\u660E","description":"","frontmatter":{},"headers":[],"relativePath":"guide/parameter-posuite-ini.md","lastUpdated":1679524720000}'),p={name:"guide/parameter-posuite-ini.md"},o=l(`<h1 id="pocsuite-ini-\u914D\u7F6E\u6587\u4EF6\u53C2\u6570\u8BF4\u660E" tabindex="-1">pocsuite.ini \u914D\u7F6E\u6587\u4EF6\u53C2\u6570\u8BF4\u660E <a class="header-anchor" href="#pocsuite-ini-\u914D\u7F6E\u6587\u4EF6\u53C2\u6570\u8BF4\u660E" aria-hidden="true">#</a></h1><p>\u914D\u7F6E\u6587\u4EF6\u793A\u4F8B\uFF1A</p><div class="language-ini"><span class="copy"></span><pre><code><span class="line"><span style="color:#89DDFF;">[Target]</span></span>
 <span class="line"><span style="color:#676E95;font-style:italic;">; target url/cidr (e.g. &quot;http://www.site.com/vuln.php?id=1&quot;)</span></span>
 <span class="line"><span style="color:#F07178;">url</span><span style="color:#A6ACCD;"> </span><span style="color:#89DDFF;">=</span><span style="color:#A6ACCD;"> https://www.google.com</span></span>
 <span class="line"><span style="color:#676E95;font-style:italic;">; scan multiple targets given in a textual file (one per line)</span></span>
@@ -125,9 +125,10 @@ import{_ as s,j as n,g as a,H as l}from"./chunks/framework.8815fd6f.js";const A=
 <span class="line"><span style="color:#F07178;">rule_req</span><span style="color:#A6ACCD;"> </span><span style="color:#89DDFF;">=</span><span style="color:#A6ACCD;"> False</span></span>
 <span class="line"><span style="color:#676E95;font-style:italic;">; specify the name of the export rule file</span></span>
 <span class="line"><span style="color:#F07178;">rule_filename</span><span style="color:#A6ACCD;"> </span><span style="color:#89DDFF;">=</span></span>
+<span class="line"><span style="color:#676E95;font-style:italic;">; Disable URL protocol correction and honeypot check</span></span>
+<span class="line"><span style="color:#F07178;">no_check</span><span style="color:#A6ACCD;"> </span><span style="color:#89DDFF;">=</span></span>
 <span class="line"></span>
 <span class="line"><span style="color:#89DDFF;">[Poc options]</span></span>
 <span class="line"><span style="color:#676E95;font-style:italic;">; show all definition options</span></span>
 <span class="line"><span style="color:#F07178;">show_options</span><span style="color:#A6ACCD;"> </span><span style="color:#89DDFF;">=</span></span>
-<span class="line"></span>
-<span class="line"></span></code></pre></div>`,3),e=[o];function t(c,r,i,y,D,F){return a(),n("div",null,e)}var f=s(p,[["render",t]]);export{A as __pageData,f as default};
+<span class="line"></span></code></pre></div>`,3),e=[o];function t(c,r,i,y,D,F){return a(),n("div",null,e)}var f=s(p,[["render",t]]);export{C as __pageData,f as default};
