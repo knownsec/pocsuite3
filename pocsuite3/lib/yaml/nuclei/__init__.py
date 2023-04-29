@@ -71,6 +71,16 @@ class Nuclei:
         except ValueError:
             pass
         self.json_template = yaml.safe_load(expand_preprocessors(self.yaml_template))
+
+        # Breaking Changes in nuclei v2.9.1, Updated protocol attribute name (requests=> http & network => tcp)
+        # in templates, Templates with the use of requests and network will still work but will be deprecated
+        # completely in the future.
+
+        if 'http' in self.json_template:
+            self.json_template['requests'] = self.json_template['http']
+        if 'tcp' in self.json_template:
+            self.json_template['network'] = self.json_template['tcp']
+
         self.template = dacite.from_dict(
             Template, hyphen_to_underscore(self.json_template),
             config=dacite.Config(cast=[Severify, ExtractorType, MatcherType, HTTPMethod, AttackType, NetworkInputType]))
