@@ -1,3 +1,7 @@
+# version 2.0.4
+----------------
+* Updated protocol names that are compatible with Nuclei v2.9.1
+
 # version 2.0.3
 ----------------
 * optimized URL protocol correction #356, thanks @chenjiewei123
