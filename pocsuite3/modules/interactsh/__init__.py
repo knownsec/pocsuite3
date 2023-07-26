@@ -26,7 +26,7 @@ class Interactsh:
         self.server = server.lstrip('.')
         if 'oob_server' in conf:
             self.server = self.server or conf.oob_server
-        self.server = self.server or 'interact.sh'
+        self.server = self.server or 'oast.me'
 
         self.token = token
         if 'oob_token' in conf:
@@ -78,8 +78,7 @@ class Interactsh:
                     decrypt_data = self.decrypt_data(aes_key, i)
                     result.append(decrypt_data)
                 return result
-            except Exception as e:
-                logger.debug("[PLUGIN] Interactsh: {}".format(e))
+            except Exception:
                 count -= 1
                 time.sleep(1)
                 continue

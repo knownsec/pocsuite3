@@ -115,39 +115,6 @@ class Url(namedtuple('Url', url_attrs)):
         return self.url
 
 
-def split_first(s, delims):
-    """
-    Given a string and an iterable of delimiters, split on the first found
-    delimiter. Return two split parts and the matched delimiter.
-
-    If not found, then the first part is the full input string.
-
-    Example::
-
-        >>> split_first('foo/bar?baz', '?/=')
-        ('foo', 'bar?baz', '/')
-        >>> split_first('foo/bar?baz', '123')
-        ('foo/bar?baz', '', None)
-
-    Scales linearly with number of delims. Not ideal for large number of delims.
-    """
-    min_idx = None
-    min_delim = None
-    for d in delims:
-        idx = s.find(d)
-        if idx < 0:
-            continue
-
-        if min_idx is None or idx < min_idx:
-            min_idx = idx
-            min_delim = d
-
-    if min_idx is None or min_idx < 0:
-        return s, '', None
-
-    return s[:min_idx], s[min_idx + 1:], min_delim
-
-
 def patched_parse_url(url):
     """
     Given a url, return a parsed :class:`.Url` namedtuple. Best-effort is
@@ -169,6 +136,38 @@ def patched_parse_url(url):
     # simplified for our needs and less annoying.
     # Additionally, this implementations does silly things to be optimal
     # on CPython.
+
+    def split_first(s, delims):
+        """
+        Given a string and an iterable of delimiters, split on the first found
+        delimiter. Return two split parts and the matched delimiter.
+
+        If not found, then the first part is the full input string.
+
+        Example::
+
+            >>> split_first('foo/bar?baz', '?/=')
+            ('foo', 'bar?baz', '/')
+            >>> split_first('foo/bar?baz', '123')
+            ('foo/bar?baz', '', None)
+
+        Scales linearly with number of delims. Not ideal for large number of delims.
+        """
+        min_idx = None
+        min_delim = None
+        for d in delims:
+            idx = s.find(d)
+            if idx < 0:
+                continue
+
+            if min_idx is None or idx < min_idx:
+                min_idx = idx
+                min_delim = d
+
+        if min_idx is None or min_idx < 0:
+            return s, '', None
+
+        return s[:min_idx], s[min_idx + 1:], min_delim
 
     if not url:
         # Empty

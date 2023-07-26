@@ -163,7 +163,9 @@ def safe_eval(expression, variables):
             logger.debug(f'[+] Expressions convert: {expression} -> {new_expression}')
         expression = new_expression
         if not _check_expression(expression, allowed_variables=list(variables.keys())):
-            raise Exception(f"Invalid expression [{expression}], only a very simple subset of Python is allowed.")
+            raise Exception(
+                f"Invalid expression {expression}, possibly due to unsupported functions in the template or "
+                "unresolved variables. If you suspect this is a Pocsuite3 issue, please submit an issue on GitHub.")
     return eval(expression, globals(), variables)
 
 

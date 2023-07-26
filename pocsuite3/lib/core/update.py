@@ -1,4 +1,3 @@
-import sys
 from pocsuite3.lib.core.data import logger, conf
 from six.moves.xmlrpc_client import ServerProxy
 from pkg_resources import parse_version
@@ -47,5 +46,5 @@ def update():
                     '    $ unzip master.zip\n'
                     '    $ cd pocsuite3-master\n'
                     '    $ pip3 install -r requirements.txt\n'
-                    '    $ python3 setup.py install\n')
-    sys.exit(-1)
+                    '    $ python3 setup.py install\n'
+                    )

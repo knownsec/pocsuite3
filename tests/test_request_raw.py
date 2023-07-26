@@ -9,6 +9,7 @@ class TestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @unittest.skip(reason='significant latency')
     def test_get(self):
         raw = '''
         GET /get?a=1&b=2 HTTP/1.1
@@ -24,6 +25,7 @@ class TestCase(unittest.TestCase):
         r = requests.httpraw(raw)
         self.assertTrue(r.json()['args'] == {'a': '1', 'b': '2'})
 
+    @unittest.skip(reason='significant latency')
     def test_post(self):
         raw = '''
         POST /post HTTP/1.1
@@ -35,12 +37,13 @@ class TestCase(unittest.TestCase):
         Accept-Encoding: gzip, deflate
         Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
         Cookie: _gauges_unique_hour=1; _gauges_unique_day=1; _gauges_unique_month=1; _gauges_unique_year=1; _gauges_unique=1
-            
+
         a=1&b=2
         '''
         r = requests.httpraw(raw)
         self.assertTrue(r.json()['data'] == 'a=1&b=2')
 
+    @unittest.skip(reason='significant latency')
     def test_json(self):
         raw = '''
         POST /post HTTP/1.1
@@ -52,7 +55,7 @@ class TestCase(unittest.TestCase):
         Accept-Encoding: gzip, deflate
         Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
         Cookie: _gauges_unique_hour=1; _gauges_unique_day=1; _gauges_unique_month=1; _gauges_unique_year=1; _gauges_unique=1
-        
+
         {"pocsuite":"v3.0"}
         '''
         r = requests.httpraw(raw)
