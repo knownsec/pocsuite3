@@ -57,12 +57,12 @@ setup(
         "dacite",
         "PyYAML",
         "lxml",
-        "mmh3"
     ],
     extras_require={
         'complete': [
             'pyOpenSSL',
-            'jq'
+            'jq',
+            'mmh3'
         ],
     }
 )

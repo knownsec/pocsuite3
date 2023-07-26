@@ -16,7 +16,6 @@ from functools import wraps
 from typing import get_type_hints, Union
 
 import chardet
-import mmh3 as py_mmh3
 from pkg_resources import parse_version
 from pocsuite3.lib.core.log import LOGGER as logger
 from pocsuite3.lib.yaml.nuclei.protocols.common.expressions.safe_eval import safe_eval
@@ -120,9 +119,11 @@ def base64_py(src: Union[bytes, str]) -> str:
 
     Example:
         Input: base64_py("Hello")
-        Output: SGVsbG8=
+        Output: "SGVsbG8=\n"
     """
-    return base64(src)
+    if not isinstance(src, bytes):
+        src = src.encode('utf-8')
+    return py_built_in_base64.encodebytes(src).decode('utf-8')
 
 
 @auto_convert_types
@@ -373,15 +374,24 @@ def md5(inp: Union[str, bytes]) -> str:
 
 
 @auto_convert_types
-def mmh3(inp: str) -> int:
+def mmh3(inp: str) -> str:
     """
     Calculates the MMH3 (MurmurHash3) hash of an input
 
     Example:
         Input: mmh3("Hello")
-        Output: 316307400
+        Output: "316307400"
     """
-    return py_mmh3.hash(inp)
+
+    try:
+        import mmh3 as py_mmh3
+    except ImportError:
+        logger.error('Python extension for MurmurHash (MurmurHash3) is not installed. '
+                     'Reason: https://github.com/knownsec/pocsuite3/issues/359, '
+                     'You can locate the packages here: https://pypi.org/project/mmh3/')
+        return "0"
+
+    return str(py_mmh3.hash(inp))
 
 
 def print_debug(*args) -> None:
