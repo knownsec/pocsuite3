@@ -1,3 +1,10 @@
+# version 2.0.5
+----------------
+* fix hook failure due to urllib3 update #368 #373
+* optimize DSL expression execution #372
+* making mmh3 an optional dependency #359
+* disable mandatory updates
+
 # version 2.0.4
 ----------------
 * Updated protocol names that are compatible with Nuclei v2.9.1
