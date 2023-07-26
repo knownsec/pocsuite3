@@ -69,7 +69,7 @@ jobs:
         run: |
           export VERSION=$(echo $GH_REF | sed 's:refs/tags/v::')
           git config --global user.email "abcnsxyz@gmail.com"
-          git config --global user.name 'Tian Qiao'
+          git config --global user.name '13ph03nix'
           git commit -a -m "Version ${VERSION} (automated version bump)"
           git push origin master
         env:
