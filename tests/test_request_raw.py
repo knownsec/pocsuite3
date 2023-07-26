@@ -37,7 +37,7 @@ class TestCase(unittest.TestCase):
         Accept-Encoding: gzip, deflate
         Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
         Cookie: _gauges_unique_hour=1; _gauges_unique_day=1; _gauges_unique_month=1; _gauges_unique_year=1; _gauges_unique=1
-            
+
         a=1&b=2
         '''
         r = requests.httpraw(raw)
@@ -55,7 +55,7 @@ class TestCase(unittest.TestCase):
         Accept-Encoding: gzip, deflate
         Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
         Cookie: _gauges_unique_hour=1; _gauges_unique_day=1; _gauges_unique_month=1; _gauges_unique_year=1; _gauges_unique=1
-        
+
         {"pocsuite":"v3.0"}
         '''
         r = requests.httpraw(raw)
