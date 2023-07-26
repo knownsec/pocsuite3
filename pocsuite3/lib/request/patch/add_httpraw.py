@@ -49,7 +49,7 @@ def httpraw(raw: str, ssl: bool = False, **kwargs):
             raise Exception
         tmp_headers = raws[1:index - 1]
         tmp_headers = extract_dict('\n'.join(tmp_headers), '\n', ": ")
-        postData = raws[index]
+        postData = '\n'.join(raws[index:])
         try:
             json.loads(postData)
             _json = postData

@@ -143,25 +143,13 @@ def http_response_to_dsl_map(resp: requests.Response):
     return data
 
 
-def http_get_match_part(part: str, resp_data: dict, interactsh=None, return_bytes: bool = False) -> str:
+def http_get_match_part(part: str, resp_data: dict, return_bytes: bool = False) -> str:
     result = ''
     if part == '':
         part = 'body'
 
     if part in resp_data:
         result = resp_data[part]
-    elif part.startswith('interactsh'):
-        if not isinstance(interactsh, InteractshClient):
-            result = ''
-        # poll oob data
-        else:
-            interactsh.poll()
-            if part == 'interactsh_protocol':
-                result = '\n'.join(interactsh.interactsh_protocol)
-            elif part == 'interactsh_request':
-                result = '\n'.join(interactsh.interactsh_request)
-            elif part == 'interactsh_response':
-                result = '\n'.join(interactsh.interactsh_response)
 
     if return_bytes and not isinstance(result, bytes):
         result = str(result).encode()
@@ -177,9 +165,19 @@ def http_match(request: HttpRequest, resp_data: dict, interactsh=None):
     matchers = request.matchers
     matchers_result = []
 
+    if 'interactsh_' in str(matchers) and isinstance(interactsh, InteractshClient):
+        interactsh.poll()
+        resp_data['interactsh_protocol'] = '\n'.join(interactsh.interactsh_protocol)
+        resp_data['interactsh_request'] = '\n'.join(interactsh.interactsh_request)
+        resp_data['interactsh_response'] = '\n'.join(interactsh.interactsh_response)
+    else:
+        resp_data['interactsh_protocol'] = ''
+        resp_data['interactsh_request'] = ''
+        resp_data['interactsh_response'] = ''
+
     for i, matcher in enumerate(matchers):
         matcher_res = False
-        item = http_get_match_part(matcher.part, resp_data, interactsh, matcher.type == MatcherType.BinaryMatcher)
+        item = http_get_match_part(matcher.part, resp_data, matcher.type == MatcherType.BinaryMatcher)
 
         if matcher.type == MatcherType.StatusMatcher:
             matcher_res = match_status_code(matcher, resp_data.get('status_code', 0))
@@ -288,7 +286,7 @@ def http_request_generator(request: HttpRequest, dynamic_values: OrderedDict):
 
                     headers = raws[1:index - 1]
                     headers = extract_dict('\n'.join(headers), '\n', ": ")
-                    data = raws[index]
+                    data = '\n'.join(raws[index:])
                 else:
                     headers = extract_dict('\n'.join(raws[1:]), '\n', ": ")
 

@@ -5,17 +5,19 @@ import gzip as py_built_in_gzip
 import hashlib
 import hmac as py_hmac
 import html
+import inspect
 import random
 import re
 import string
 import time
 import urllib.parse
 import zlib as py_built_in_zlib
-from typing import Union
+from functools import wraps
+from typing import get_type_hints, Union
 
+import chardet
 import mmh3 as py_mmh3
 from pkg_resources import parse_version
-
 from pocsuite3.lib.core.log import LOGGER as logger
 from pocsuite3.lib.yaml.nuclei.protocols.common.expressions.safe_eval import safe_eval
 
@@ -29,6 +31,52 @@ class Marker:
     ParenthesisOpen = "{{"
     # ParenthesisClose marker - end of a placeholder
     ParenthesisClose = "}}"
+
+
+def auto_convert_types(func):
+    @wraps(func)
+    def check_and_convert_args(*args, **kwargs):
+        # Get the function's parameter names and types
+        signature = inspect.signature(func)
+        parameter_types = get_type_hints(func)
+
+        # Convert args to a list so we can modify its elements
+        args_list = list(args)
+
+        # Check and convert positional arguments
+        for i, (arg_name, arg_value) in enumerate(zip(signature.parameters.keys(), args)):
+            arg_type = parameter_types.get(arg_name)
+            if arg_type and not isinstance(arg_value, arg_type):
+                try:
+                    if arg_type is str and isinstance(arg_value, bytes):
+                        try:
+                            encoding = chardet.detect(arg_value)['encoding'] or 'utf-8'
+                            args_list[i] = arg_value.decode(encoding)
+                        except Exception:
+                            args_list[i] = str(arg_value)
+                    elif arg_type is bytes and isinstance(arg_value, str):
+                        args_list[i] = arg_value.encode('utf-8')
+                except ValueError:
+                    pass
+        # Check and convert keyword arguments
+        for arg_name, arg_value in kwargs.items():
+            arg_type = parameter_types.get(arg_name)
+            if arg_type and not isinstance(arg_value, arg_type):
+                try:
+                    if arg_type is str and isinstance(arg_value, bytes):
+                        try:
+                            encoding = chardet.detect(arg_value)['encoding'] or 'utf-8'
+                            kwargs[arg_name] = arg_value.decode(encoding)
+                        except Exception:
+                            kwargs[arg_name] = str(arg_value)
+                    elif arg_type is bytes and isinstance(arg_value, str):
+                        kwargs[arg_name] = arg_value.encode('utf-8')
+                except ValueError:
+                    pass
+        # Call the original function with the potentially converted arguments
+        return func(*args_list, **kwargs)
+
+    return check_and_convert_args
 
 
 def aes_gcm(key: Union[bytes, str], plaintext: Union[bytes, str]) -> bytes:
@@ -77,7 +125,8 @@ def base64_py(src: Union[bytes, str]) -> str:
     return base64(src)
 
 
-def concat(*arguments) -> str:
+@auto_convert_types
+def concat(*arguments: str) -> str:
     """
     Concatenates the given number of arguments to form a string
 
@@ -88,6 +137,7 @@ def concat(*arguments) -> str:
     return ''.join(map(str, arguments))
 
 
+@auto_convert_types
 def compare_versions(version_to_check: str, *constraints: str) -> bool:
     """
     Compares the first version argument with the provided constraints
@@ -112,6 +162,7 @@ def compare_versions(version_to_check: str, *constraints: str) -> bool:
     return True
 
 
+@auto_convert_types
 def contains(inp: str, substring: str) -> bool:
     """
     Verifies if a string contains a substring
@@ -123,6 +174,7 @@ def contains(inp: str, substring: str) -> bool:
     return substring in inp
 
 
+@auto_convert_types
 def contains_all(inp: str, *substrings: str) -> bool:
     """
     Verify if any input contains all the substrings
@@ -134,6 +186,7 @@ def contains_all(inp: str, *substrings: str) -> bool:
     return all(map(lambda s: s in inp, substrings))
 
 
+@auto_convert_types
 def contains_any(inp: str, *substrings: str) -> bool:
     """
     Verifies if an input contains any of substrings
@@ -218,6 +271,7 @@ def gzip(inp: Union[str, bytes]) -> bytes:
     return py_built_in_gzip.compress(inp)
 
 
+@auto_convert_types
 def gzip_decode(inp: bytes) -> bytes:
     """
     Decompresses the input using GZip
@@ -242,6 +296,7 @@ def zlib(inp: Union[str, bytes]) -> bytes:
     return py_built_in_zlib.compress(inp)
 
 
+@auto_convert_types
 def zlib_decode(inp: bytes) -> bytes:
     """
     Decompresses the input using Zlib
@@ -253,6 +308,7 @@ def zlib_decode(inp: bytes) -> bytes:
     return py_built_in_zlib.decompress(inp)
 
 
+@auto_convert_types
 def hex_decode(inp: str) -> bytes:
     """
     Hex decodes the given input
@@ -277,6 +333,7 @@ def hex_encode(inp: Union[str, bytes]) -> str:
     return binascii.hexlify(inp).decode('utf-8')
 
 
+@auto_convert_types
 def html_escape(inp: str) -> str:
     """
     HTML escapes the given input
@@ -288,6 +345,7 @@ def html_escape(inp: str) -> str:
     return html.escape(inp)
 
 
+@auto_convert_types
 def html_unescape(inp: str) -> str:
     """
     HTML un-escapes the given input
@@ -314,7 +372,8 @@ def md5(inp: Union[str, bytes]) -> str:
     return m.hexdigest()
 
 
-def mmh3(inp: Union[str, bytes]) -> int:
+@auto_convert_types
+def mmh3(inp: str) -> int:
     """
     Calculates the MMH3 (MurmurHash3) hash of an input
 
@@ -406,7 +465,8 @@ def rand_text_numeric(length: int, optional_bad_numbers: str = '') -> str:
     return ''.join(random.choice(charset) for _ in range(length))
 
 
-def regex(pattern, inp) -> bool:
+@auto_convert_types
+def regex(pattern: str, inp: str) -> bool:
     """
     Tests the given regular expression against the input string
 
@@ -414,9 +474,10 @@ def regex(pattern, inp) -> bool:
         Input: regex("H([a-z]+)o", "Hello")
         Output: True
     """
-    return re.findall(pattern, inp) != []
+    return list(filter(lambda item: item.strip() != "", re.findall(pattern, inp, re.IGNORECASE))) != []
 
 
+@auto_convert_types
 def remove_bad_chars(inp: str, cutset: str) -> str:
     """
     Removes the desired characters from the input
@@ -428,6 +489,7 @@ def remove_bad_chars(inp: str, cutset: str) -> str:
     return ''.join(i if i not in cutset else '' for i in inp)
 
 
+@auto_convert_types
 def repeat(inp: str, count: int) -> str:
     """
     Repeats the input string the given amount of times
@@ -439,6 +501,7 @@ def repeat(inp: str, count: int) -> str:
     return inp * count
 
 
+@auto_convert_types
 def replace(inp: str, old: str, new: str) -> str:
     """
     Replaces a given substring in the given input
@@ -450,6 +513,7 @@ def replace(inp: str, old: str, new: str) -> str:
     return inp.replace(old, new)
 
 
+@auto_convert_types
 def replace_regex(source: str, pattern: str, replacement: str) -> str:
     """
     Replaces substrings matching the given regular expression in the input
@@ -461,6 +525,7 @@ def replace_regex(source: str, pattern: str, replacement: str) -> str:
     return re.sub(pattern, replacement, source)
 
 
+@auto_convert_types
 def reverse(inp: str) -> str:
     """
     Reverses the given input
@@ -504,6 +569,7 @@ def sha256(inp: Union[bytes, str]) -> str:
     return s.hexdigest()
 
 
+@auto_convert_types
 def to_lower(inp: str) -> str:
     """
     Transforms the input into lowercase characters
@@ -515,6 +581,7 @@ def to_lower(inp: str) -> str:
     return inp.lower()
 
 
+@auto_convert_types
 def to_upper(inp: str) -> str:
     """
     Transforms the input into uppercase characters
@@ -526,6 +593,7 @@ def to_upper(inp: str) -> str:
     return inp.upper()
 
 
+@auto_convert_types
 def trim(inp: str, cutset: str) -> str:
     """
     Returns a slice of the input with all leading and trailing Unicode code points contained in cutset removed
@@ -537,6 +605,7 @@ def trim(inp: str, cutset: str) -> str:
     return inp.strip(cutset)
 
 
+@auto_convert_types
 def trim_left(inp: str, cutset: str) -> str:
     """
     Returns a slice of the input with all leading Unicode code points contained in cutset removed
@@ -548,6 +617,7 @@ def trim_left(inp: str, cutset: str) -> str:
     return inp.lstrip(cutset)
 
 
+@auto_convert_types
 def trim_prefix(inp: str, prefix: str) -> str:
     """
     Returns the input without the provided leading prefix string
@@ -561,6 +631,7 @@ def trim_prefix(inp: str, prefix: str) -> str:
     return inp
 
 
+@auto_convert_types
 def trim_right(inp: str, cutset: str) -> str:
     """
     Returns a string, with all trailing Unicode code points contained in cutset removed
@@ -572,6 +643,7 @@ def trim_right(inp: str, cutset: str) -> str:
     return inp.rstrip(cutset)
 
 
+@auto_convert_types
 def trim_space(inp: str) -> str:
     """
     Returns a string, with all leading and trailing white space removed, as defined by Unicode
@@ -583,6 +655,7 @@ def trim_space(inp: str) -> str:
     return inp.strip()
 
 
+@auto_convert_types
 def trim_suffix(inp: str, suffix: str) -> str:
     """
     Returns input without the provided trailing suffix string
@@ -607,6 +680,7 @@ def unix_time(optional_seconds: int = 0) -> int:
     return int(time.time()) + optional_seconds
 
 
+@auto_convert_types
 def url_decode(inp: str) -> str:
     """
     URL decodes the input string
@@ -617,6 +691,7 @@ def url_decode(inp: str) -> str:
     return urllib.parse.unquote_plus(inp)
 
 
+@auto_convert_types
 def url_encode(inp: str) -> str:
     """
     URL encodes the input string
@@ -640,6 +715,7 @@ def wait_for(seconds: int) -> bool:
     return True
 
 
+@auto_convert_types
 def join(separator: str, *elements: str) -> str:
     """
     Joins the given elements using the specified separator
@@ -679,6 +755,7 @@ def date_time(date_time_format: str, optional_unix_time: int = int(time.time()))
     return datetime.datetime.utcfromtimestamp(optional_unix_time).strftime(date_time_format)
 
 
+@auto_convert_types
 def to_unix_time(inp: str, layout: str = "%Y-%m-%d %H:%M:%S") -> int:
     """
     Parses a string date time using default or user given layouts, then returns its Unix timestamp
@@ -690,6 +767,7 @@ def to_unix_time(inp: str, layout: str = "%Y-%m-%d %H:%M:%S") -> int:
     return int(time.mktime(datetime.datetime.strptime(inp, layout).timetuple()))
 
 
+@auto_convert_types
 def starts_with(inp: str, *prefix: str) -> bool:
     """
     Checks if the string starts with any of the provided substrings
@@ -701,6 +779,7 @@ def starts_with(inp: str, *prefix: str) -> bool:
     return any(inp.startswith(p) for p in prefix)
 
 
+@auto_convert_types
 def line_starts_with(inp: str, *prefix: str) -> bool:
     """
     Checks if any line of the string starts with any of the provided substrings
@@ -716,6 +795,7 @@ def line_starts_with(inp: str, *prefix: str) -> bool:
     return False
 
 
+@auto_convert_types
 def ends_with(inp: str, *suffix: str) -> bool:
     """
     Checks if the string ends with any of the provided substrings
@@ -727,6 +807,7 @@ def ends_with(inp: str, *suffix: str) -> bool:
     return any(inp.endswith(s) for s in suffix)
 
 
+@auto_convert_types
 def line_ends_with(inp: str, *suffix: str) -> bool:
     """
     Checks if any line of the string ends with any of the provided substrings

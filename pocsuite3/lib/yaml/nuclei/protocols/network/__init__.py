@@ -88,25 +88,13 @@ class NetworkRequest:
     read_all: bool = False
 
 
-def network_get_match_part(part: str, resp_data: dict, interactsh=None, return_bytes: bool = False) -> str:
+def network_get_match_part(part: str, resp_data: dict, return_bytes: bool = False) -> str:
     result = ''
     if part in ['', 'all', 'body']:
         part = 'data'
 
     if part in resp_data:
         result = resp_data[part]
-    elif part.startswith('interactsh'):
-        if not isinstance(interactsh, InteractshClient):
-            result = ''
-        # poll oob data
-        else:
-            interactsh.poll()
-            if part == 'interactsh_protocol':
-                result = '\n'.join(interactsh.interactsh_protocol)
-            elif part == 'interactsh_request':
-                result = '\n'.join(interactsh.interactsh_request)
-            elif part == 'interactsh_response':
-                result = '\n'.join(interactsh.interactsh_response)
 
     if return_bytes and not isinstance(result, bytes):
         result = str(result).encode()
@@ -148,9 +136,19 @@ def network_match(request: NetworkRequest, resp_data: dict, interactsh=None):
     matchers = request.matchers
     matchers_result = []
 
+    if 'interactsh_' in str(matchers) and isinstance(interactsh, InteractshClient):
+        interactsh.poll()
+        resp_data['interactsh_protocol'] = '\n'.join(interactsh.interactsh_protocol)
+        resp_data['interactsh_request'] = '\n'.join(interactsh.interactsh_request)
+        resp_data['interactsh_response'] = '\n'.join(interactsh.interactsh_response)
+    else:
+        resp_data['interactsh_protocol'] = ''
+        resp_data['interactsh_request'] = ''
+        resp_data['interactsh_response'] = ''
+
     for i, matcher in enumerate(matchers):
         matcher_res = False
-        item = network_get_match_part(matcher.part, resp_data, interactsh, matcher.type == MatcherType.BinaryMatcher)
+        item = network_get_match_part(matcher.part, resp_data, matcher.type == MatcherType.BinaryMatcher)
 
         if matcher.type == MatcherType.SizeMatcher:
             matcher_res = match_size(matcher, len(item))
