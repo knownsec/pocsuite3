@@ -27,6 +27,7 @@ class TestCase(unittest.TestCase):
         result = get_results().pop()
         self.assertTrue(result.status == 'success')
 
+    @unittest.skip(reason='significant latency')
     def test_cookie(self):
         config = {
             'url': ['http://httpbin.org/post'],
@@ -42,6 +43,7 @@ class TestCase(unittest.TestCase):
         result = get_results().pop()
         self.assertTrue(result.status == 'success')
 
+    @unittest.skip(reason='significant latency')
     def test_cookie_dict_params(self):
         config = {
             'url': ['http://httpbin.org/post'],
