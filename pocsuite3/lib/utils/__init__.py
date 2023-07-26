@@ -287,7 +287,7 @@ def minimum_version_required(ver):
     v1, v2 = parse_version(ver), parse_version(__version__)
     if v1 > v2:
         logger.warning(f'The minimum version required for this PoC plugin is {ver}, '
-                     f'you installed {__version__}, please consider upgrading pocsuite3.')
+                       f'you installed {__version__}, please consider upgrading pocsuite3.')
         from pocsuite3.lib.core.data import conf
         from pocsuite3.lib.core.update import update
         conf.update_all = True
