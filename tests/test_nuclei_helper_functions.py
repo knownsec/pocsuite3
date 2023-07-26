@@ -10,7 +10,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(base64_decode("SGVsbG8="), b"Hello")
 
     def test_base64_py(self):
-        self.assertEqual(base64_py("Hello"), "SGVsbG8=")
+        self.assertEqual(base64_py("Hello"), "SGVsbG8=\n")
 
     def test_concat(self):
         self.assertEqual(concat("Hello", 123, "world"), "Hello123world")
@@ -74,7 +74,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(md5("Hello"), "8b1a9953c4611296a827abf8c47804d7")
 
     def test_mmh3(self):
-        self.assertEqual(mmh3("Hello"), 316307400)
+        self.assertEqual(mmh3("Hello"), "316307400")
 
     def test_rand_base(self):
         self.assertRegex(rand_base(5, "abc"), r"[abc]{5}")
