@@ -46,6 +46,7 @@ def cmd_line_parser(argv=None):
         target.add_argument("-r", dest="poc", nargs='+', help="Load PoC file from local or remote from seebug website")
         target.add_argument("-k", dest="poc_keyword", help="Filter PoC by keyword, e.g. ecshop")
         target.add_argument("-c", dest="configFile", help="Load options from a configuration INI file")
+        target.add_argument("-l", dest="poc_list", action="store_true", help="Show all PoC file from local")
 
         # Mode options
         mode = parser.add_argument_group("Mode", "Pocsuite running mode options")
