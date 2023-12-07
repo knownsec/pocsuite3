@@ -17,7 +17,8 @@ from pocsuite3.lib.core.common import boldify_message, check_file, get_file_item
 from pocsuite3.lib.core.common import check_path, extract_cookies
 from pocsuite3.lib.core.common import get_local_ip, mosaic, get_host_ip
 from pocsuite3.lib.core.common import single_time_warn_message
-from pocsuite3.lib.core.common import OrderedSet, get_file_text
+from pocsuite3.lib.core.common import OrderedSet, get_file_text, get_poc_name
+from pocsuite3.lib.core.common import index_modules, ltrim
 from pocsuite3.lib.core.convert import stdout_encode
 from pocsuite3.lib.core.data import conf, cmd_line_options
 from pocsuite3.lib.core.data import kb
@@ -523,6 +524,7 @@ def _set_conf_attributes():
     conf.mode = 'verify'
     conf.poc = None
     conf.poc_keyword = None
+    conf.poc_list = None
     conf.cookie = None
     conf.host = None
     conf.referer = None
@@ -754,6 +756,49 @@ def _show_pocs_modules_options():
     exit()
 
 
+def _show_pocs_form_local():
+    if not conf.poc_list:
+        return
+    _pocs = []
+    tb = prettytable.PrettyTable(["Index", "Path", "Name"])
+    if conf.pocs_path:
+        # parse user defined poc scripts path
+        if check_path(conf.pocs_path):
+            for root, dirs, files in os.walk(conf.pocs_path):
+                files = list(filter(lambda x: not x.startswith("__") and x.endswith(".py") or x.endswith(".yaml"), files))
+                conf.poc = [os.path.join(conf.pocs_path, f) for f in files]
+        moduels = index_modules(conf.pocs_path)
+        poc_parent_directory = os.sep.join(
+            conf.pocs_path.rstrip(os.sep).split(os.sep)) + os.sep
+        for poc in moduels:
+            _pocs.append(ltrim(poc, conf.pocs_path).lstrip(os.sep))
+
+    else:
+        # default poc path
+        conf.poc = [paths.POCSUITE_POCS_PATH]
+        moduels = index_modules(paths.POCSUITE_POCS_PATH)
+        poc_parent_directory = os.sep.join(
+            paths.POCSUITE_POCS_PATH.rstrip(os.sep).split(os.sep)[0:-1]) + os.sep
+        for poc in moduels:
+            _pocs.append(ltrim(poc, poc_parent_directory).lstrip(os.sep))
+    # show result table
+    try:
+        index = 0
+        for poc in _pocs:
+            file = os.path.join(poc_parent_directory, poc + ".py")
+            if not os.path.exists(file):
+                file = os.path.join(poc_parent_directory, poc + ".yaml")
+            code = get_file_text(file)
+            name = get_poc_name(code)
+            tb.add_row([str(index), poc, name])
+            index += 1
+        data_to_stdout("\n" + tb.get_string() + "\n")
+    except PocsuiteSystemException as ex:
+        logger.error(str(ex))
+    finally:
+        exit(0)
+
+
 def init():
     """
     Set attributes into both configuration and knowledge base singletons
@@ -770,6 +815,7 @@ def init():
     update()
     _set_multiple_targets()
     _set_user_pocs_path()
+    _show_pocs_form_local()
     # The poc module module must be in front of the plug-in module,
     # and some parameters in the poc option call the plug-in
     _set_pocs_modules()

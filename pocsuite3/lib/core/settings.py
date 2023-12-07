@@ -118,6 +118,7 @@ CMD_PARSE_WHITELIST = [
     "skip_target_port",
     "file",
     "poc_keyword",
+    "poc_list",
     "verify",
     "attack",
     "shell",
