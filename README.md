@@ -139,10 +139,12 @@ Docker Environment:
 
 ```
  - `--docker-start` Start environment parameters. If specified, docker images will be obtained from poc.
- - `--docker-port`  publish a container's port(s) to the host, like: `--docker-port [host port]:[container port]`
- - `--docker-volume` bind mount a volume,like `--docker-volume /host/path/:/container/path`
- - `--docker-env`  set environment variables `--docker-env VARIBLES=value`
+ - `--docker-port`  publish a container's port(s) to the host, like: `--docker-port [host port]:[container port]`,you can specify multiple
+ - `--docker-volume` bind mount a volume,like `--docker-volume /host/path/:/container/path`,you can specify multiple
+ - `--docker-env`  set environment variables `--docker-env VARIBLES=value`,you can specify multiple
  - `--docker-only` only start the docker environment
+
+The usage is roughly the same as docker’s command line parameters.
 
 ## Requirements
 
