@@ -1,11 +1,11 @@
 import random
+import re
 from collections import OrderedDict
 from urllib.parse import quote
-import re
+
 from pocsuite3.api import Output, POCBase, POC_CATEGORY, register_poc, requests
 from pocsuite3.lib.core.enums import VUL_TYPE
 from pocsuite3.lib.core.interpreter_option import OptString
-from pocsuite3.lib.utils import get_middle_text
 
 
 class DemoPOC(POCBase):
@@ -30,7 +30,6 @@ class DemoPOC(POCBase):
         o["command"] = OptString('', description="可执行的shell命令")
         return o
 
-
     def _check(self):
         result = {}
         check_poc = "%25%7B{num1}%2B{num2}%7D"
@@ -50,7 +49,6 @@ class DemoPOC(POCBase):
             }
             return result
         return False
-
 
     def _verify(self):
         p = self._check()
