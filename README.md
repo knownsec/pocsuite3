@@ -87,7 +87,7 @@ pocsuite -r pocs/Apache_Struts2/20170129_WEB_Apache_Struts2_045_RCE_CVE-2017-563
 `--'     `---' `---`----' `----'`--' `--'  `----`----'   https://pocsuite.org
 [*] starting at 15:34:12
 
-[15:34:12] [INFO] loading PoC script 'pocsuite3/pocs/Apache_Struts2/20170129_WEB_Apache_Struts2_045_RCE_CVE-2017-5638.py'
+[15:34:12] [INFO] loading PoC script 'pocs/Apache_Struts2/20170129_WEB_Apache_Struts2_045_RCE_CVE-2017-5638.py'
 [15:34:12] [INFO] Image struts2_045_rce_cve-2017:pocsuite exists
 [15:34:12] [INFO] Run container fa5b3b7bb2ea successful!
 [15:34:12] [INFO] pocsusite got a total of 0 tasks
@@ -96,7 +96,7 @@ pocsuite -r pocs/Apache_Struts2/20170129_WEB_Apache_Struts2_045_RCE_CVE-2017-563
 
 #### run vulnerable environments and run poc 
 ```python
- python pocsuite3/cli.py -r pocsuite3/pocs/Apache_Struts2/20170129_WEB_Apache_Struts2_045_RCE_CVE-2017-5638.py  -u http://127.0.0.1:8080/S2-032-showcase/fileupload/doUpload.action --docker-start  --docker-port 127.0.0.1:8080:8080 
+ pocsuite -r pocs/Apache_Struts2/20170129_WEB_Apache_Struts2_045_RCE_CVE-2017-5638.py -u http://127.0.0.1:8080/S2-032-showcase/fileupload/doUpload.action --docker-start  --docker-port 127.0.0.1:8080:8080 
 
 ,------.                        ,--. ,--.       ,----.   {2.0.6-cc19ae5}
 |  .--. ',---. ,---.,---.,--.,--`--,-'  '-.,---.'.-.  |
@@ -105,7 +105,7 @@ pocsuite -r pocs/Apache_Struts2/20170129_WEB_Apache_Struts2_045_RCE_CVE-2017-563
 `--'     `---' `---`----' `----'`--' `--'  `----`----'   https://pocsuite.org
 [*] starting at 15:38:46
 
-[15:38:46] [INFO] loading PoC script 'pocsuite3/pocs/Apache_Struts2/20170129_WEB_Apache_Struts2_045_RCE_CVE-2017-5638.py'
+[15:38:46] [INFO] loading PoC script 'pocs/Apache_Struts2/20170129_WEB_Apache_Struts2_045_RCE_CVE-2017-5638.py'
 [15:38:46] [INFO] Image struts2_045_rce_cve-2017:pocsuite exists
 [15:38:47] [INFO] Run container 1a6eae1e8953 successful!
 [15:38:47] [INFO] pocsusite got a total of 1 tasks
