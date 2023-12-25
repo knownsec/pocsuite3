@@ -458,6 +458,10 @@ def parse_target(address, additional_ports=[], skip_target_port=False):
     return targets
 
 
+def parse_poc_docker_name(name):
+    return name.lower().replace(' ', '_')
+
+
 def single_time_log_message(message, level=logging.INFO, flag=None):
     if flag is None:
         flag = hash(message)
