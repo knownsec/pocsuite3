@@ -118,6 +118,7 @@ CMD_PARSE_WHITELIST = [
     "skip_target_port",
     "file",
     "poc_keyword",
+    "poc_list",
     "verify",
     "attack",
     "shell",
@@ -173,6 +174,13 @@ CMD_PARSE_WHITELIST = [
     "rule-filename",
     "no-check",
     "options",
+
+    # docker
+    "docker-start",
+    "docker-port",
+    "docker-env",
+    "docker-volume",
+    "docker-only",
 
     # other
     "poc",

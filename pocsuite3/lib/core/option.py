@@ -8,16 +8,20 @@ import importlib
 from queue import Queue
 from urllib.parse import urlsplit
 
+import docker.errors
 import socks
 import prettytable
 from termcolor import colored
+from dockerfile import parse_string
 from pocsuite3.lib.core.clear import remove_extra_log_message
 from pocsuite3.lib.core.common import boldify_message, check_file, get_file_items, parse_target, \
     get_public_type_members, data_to_stdout
 from pocsuite3.lib.core.common import check_path, extract_cookies
 from pocsuite3.lib.core.common import get_local_ip, mosaic, get_host_ip
 from pocsuite3.lib.core.common import single_time_warn_message
-from pocsuite3.lib.core.common import OrderedSet, get_file_text
+from pocsuite3.lib.core.common import OrderedSet, get_file_text, get_poc_name
+from pocsuite3.lib.core.common import index_modules, ltrim
+from pocsuite3.lib.core.common import parse_poc_docker_name
 from pocsuite3.lib.core.convert import stdout_encode
 from pocsuite3.lib.core.data import conf, cmd_line_options
 from pocsuite3.lib.core.data import kb
@@ -30,12 +34,14 @@ from pocsuite3.lib.core.exception import PocsuiteSyntaxException, PocsuiteSystem
 from pocsuite3.lib.core.log import FORMATTER
 from pocsuite3.lib.core.register import load_file_to_module
 from pocsuite3.lib.core.settings import DEFAULT_LISTENER_PORT, CMD_PARSE_WHITELIST
+from pocsuite3.lib.core.docker_env import DockerEnv
 from pocsuite3.lib.core.statistics_comparison import StatisticsComparison
 from pocsuite3.lib.core.update import update
 from pocsuite3.lib.core.template import create_poc_plugin_template
 from pocsuite3.lib.parse.cmd import DIY_OPTIONS
 from pocsuite3.lib.parse.configfile import config_file_parser
 from pocsuite3.lib.parse.rules import regex_rule
+from pocsuite3.lib.parse.dockerfile import parse_dockerfile
 from pocsuite3.lib.request.patch import patch_all
 from pocsuite3.modules.listener import start_listener
 
@@ -523,6 +529,7 @@ def _set_conf_attributes():
     conf.mode = 'verify'
     conf.poc = None
     conf.poc_keyword = None
+    conf.poc_list = None
     conf.cookie = None
     conf.host = None
     conf.referer = None
@@ -588,6 +595,13 @@ def _set_conf_attributes():
     conf.no_check = False
     conf.show_options = False
     conf.enable_tls_listener = False
+
+    # docker args
+    conf.docker_start = False
+    conf.docker_port = list()
+    conf.docker_env = list()
+    conf.docker_volume = list()
+    conf.docker_only = False
 
 
 def _set_kb_attributes(flush_all=True):
@@ -659,6 +673,46 @@ def _set_poc_options(input_options):
     for line in input_options.keys():
         if line not in CMD_PARSE_WHITELIST:
             DIY_OPTIONS.append(line)
+
+
+def _set_docker_options():
+    port_dict = {}
+    if conf.poc and conf.docker_start:
+        # parse port string
+        # in docker package ports need {"2222/tcp": 3333}
+        # will expose port 2222 inside the container as port 3333 on the host.
+        if len(conf.docker_port) > 0:
+            for item in conf.docker_port:
+                item_split = item.rsplit(':', 1)
+                key = '{}/tcp'.format(item_split[1])
+                # if user input 127.0.0.1:8080:8080
+                # need change to {'8080/tcp': ('127.0.0.1', 8080)}
+                if item_split[0].find(":") > 0:
+                    temp_port = item_split[0].split(':')
+                    host_port = (temp_port[0], int(temp_port[1]))
+                else:
+                    host_port = int(item_split[0])
+                port_dict[key] = host_port
+
+        for poc in conf.poc:
+            res = parse_dockerfile(poc)
+            poc_name = parse_poc_docker_name(res.get('name'))
+            tag_name = "{}:{}".format(poc_name, "pocsuite")
+            docker_file = res.get("dockerfile")
+            try:
+                dk = DockerEnv()
+                dk_info = dk.run(
+                    tag_name,
+                    docker_file,
+                    ports=port_dict,
+                    envs=conf.docker_env,
+                    volumes=conf.docker_volume,
+                )
+                logger.info("Run container {} successful!".format(dk_info.short_id))
+            except docker.errors.APIError as e:
+                logger.error(e)
+        if conf.docker_only:
+            exit(0)
 
 
 def init_options(input_options=AttribDict(), override_options=False):
@@ -754,6 +808,49 @@ def _show_pocs_modules_options():
     exit()
 
 
+def _show_pocs_form_local():
+    if not conf.poc_list:
+        return
+    _pocs = []
+    tb = prettytable.PrettyTable(["Index", "Path", "Name"])
+    if conf.pocs_path:
+        # parse user defined poc scripts path
+        if check_path(conf.pocs_path):
+            for root, dirs, files in os.walk(conf.pocs_path):
+                files = list(filter(lambda x: not x.startswith("__") and x.endswith(".py") or x.endswith(".yaml"), files))
+                conf.poc = [os.path.join(conf.pocs_path, f) for f in files]
+        moduels = index_modules(conf.pocs_path)
+        poc_parent_directory = os.sep.join(
+            conf.pocs_path.rstrip(os.sep).split(os.sep)) + os.sep
+        for poc in moduels:
+            _pocs.append(ltrim(poc, conf.pocs_path).lstrip(os.sep))
+
+    else:
+        # default poc path
+        conf.poc = [paths.POCSUITE_POCS_PATH]
+        moduels = index_modules(paths.POCSUITE_POCS_PATH)
+        poc_parent_directory = os.sep.join(
+            paths.POCSUITE_POCS_PATH.rstrip(os.sep).split(os.sep)[0:-1]) + os.sep
+        for poc in moduels:
+            _pocs.append(ltrim(poc, poc_parent_directory).lstrip(os.sep))
+    # show result table
+    try:
+        index = 0
+        for poc in _pocs:
+            file = os.path.join(poc_parent_directory, poc + ".py")
+            if not os.path.exists(file):
+                file = os.path.join(poc_parent_directory, poc + ".yaml")
+            code = get_file_text(file)
+            name = get_poc_name(code)
+            tb.add_row([str(index), poc, name])
+            index += 1
+        data_to_stdout("\n" + tb.get_string() + "\n")
+    except PocsuiteSystemException as ex:
+        logger.error(str(ex))
+    finally:
+        exit(0)
+
+
 def init():
     """
     Set attributes into both configuration and knowledge base singletons
@@ -770,9 +867,13 @@ def init():
     update()
     _set_multiple_targets()
     _set_user_pocs_path()
+    # show poc form pac path
+    _show_pocs_form_local()
     # The poc module module must be in front of the plug-in module,
     # and some parameters in the poc option call the plug-in
     _set_pocs_modules()
+    # run docker from poc
+    _set_docker_options()
     _set_plugins()
     _init_targets_plugins()
     _init_pocs_plugins()
