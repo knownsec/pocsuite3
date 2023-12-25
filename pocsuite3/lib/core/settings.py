@@ -175,6 +175,13 @@ CMD_PARSE_WHITELIST = [
     "no-check",
     "options",
 
+    # docker
+    "docker-start",
+    "docker-port",
+    "docker-env",
+    "docker-volume",
+    "docker-only",
+
     # other
     "poc",
     "verbose",

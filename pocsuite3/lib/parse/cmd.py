@@ -153,6 +153,20 @@ def cmd_line_parser(argv=None):
                                   help="Specify the name of the export rule file")
         optimization.add_argument("--no-check", dest="no_check", action="store_true", default=False,
                                   help="Disable URL protocol correction and honeypot check")
+
+        # docker options
+        docker_environment = parser.add_argument_group("Docker Environment", "Docker Environment options")
+        docker_environment.add_argument("--docker-start", dest="docker_start", action="store_true",
+                                        default=False, help="Run the docker for PoC")
+        docker_environment.add_argument("--docker-port", dest="docker_port", action="append",
+                                        default=[], help="Publish a container's port(s) to the host")
+        docker_environment.add_argument("--docker-volume", dest="docker_volume", action="append",
+                                        default=[], help="Bind mount a volume")
+        docker_environment.add_argument("--docker-env", dest="docker_env", action="append", default=[],
+                                        help="Set environment variables")
+        docker_environment.add_argument("--docker-only", dest="docker_only", action="store_true",
+                                        default=False, help="Only run docker environment")
+
         # Diy options
         diy = parser.add_argument_group("Poc options", "definition options for PoC")
         diy.add_argument("--options", dest="show_options", action="store_true", default=False,
