@@ -15,3 +15,4 @@ dacite >= 1.6.0
 PyYAML >= 6.0
 lxml >= 4.6.0
 mmh3 >= 3.0.0
+docker >=  6.1.3
