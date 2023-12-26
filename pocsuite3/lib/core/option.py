@@ -12,7 +12,6 @@ import docker.errors
 import socks
 import prettytable
 from termcolor import colored
-from dockerfile import parse_string
 from pocsuite3.lib.core.clear import remove_extra_log_message
 from pocsuite3.lib.core.common import boldify_message, check_file, get_file_items, parse_target, \
     get_public_type_members, data_to_stdout
