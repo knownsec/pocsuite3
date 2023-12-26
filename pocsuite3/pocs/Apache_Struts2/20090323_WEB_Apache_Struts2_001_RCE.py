@@ -24,6 +24,7 @@ class DemoPOC(POCBase):
     desc = '''S2-001:影响版本Struts 2.0.0-2.0.8'''
     samples = []
     category = POC_CATEGORY.EXPLOITS.WEBAPP
+    dockerfile = '''FROM isxiangyang/struts2-all-vul-pocsuite:latest'''
 
     def _options(self):
         o = OrderedDict()
