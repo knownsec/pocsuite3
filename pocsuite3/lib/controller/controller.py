@@ -1,5 +1,7 @@
 import copy
 import time
+
+import requests
 from prettytable import PrettyTable
 from pocsuite3.lib.core.common import data_to_stdout, mosaic
 from pocsuite3.lib.core.data import conf, cmd_line_options
@@ -88,12 +90,27 @@ def show_task_result():
     data_to_stdout("\nsuccess : {} / {}\n".format(success_num, total_num))
 
 
+def check_docker_status(target):
+    if conf.docker_start:
+        info_msg = "wait for docker..."
+        logger.info(info_msg)
+        while True:
+            try:
+                resp = requests.get(target)
+                if resp.status_code:
+                    break
+            except Exception:
+                pass
+
+
 def task_run():
     while not kb.task_queue.empty() and kb.thread_continue:
         target, poc_module = kb.task_queue.get()
         if not conf.console_mode:
             poc_module = copy.deepcopy(kb.registered_pocs[poc_module])
         poc_name = poc_module.name
+        # check container status
+        check_docker_status(target)
 
         if conf.pcap:
             # start capture flow
