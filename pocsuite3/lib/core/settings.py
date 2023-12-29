@@ -132,6 +132,7 @@ CMD_PARSE_WHITELIST = [
     "retry",
     "delay",
     "headers",
+    "http-debug",
     "ceye-token",
     "oob-server",
     "oob-token",

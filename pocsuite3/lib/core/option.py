@@ -7,6 +7,7 @@ import socket
 import importlib
 from queue import Queue
 from urllib.parse import urlsplit
+from http.client import HTTPConnection
 
 import docker.errors
 import socks
@@ -55,6 +56,8 @@ def set_verbosity():
     """
     This function set the verbosity of pocsuite output messages.
     """
+
+    HTTPConnection.debuglevel = int(conf.http_debug)
 
     if conf.verbose is None:
         conf.verbose = 1
@@ -541,6 +544,7 @@ def _set_conf_attributes():
     conf.retry = 0
     conf.delay = 0
     conf.http_headers = {}
+    conf.http_debug = 0
     conf.ceye_token = None
     conf.oob_server = None
     conf.oob_token = None
