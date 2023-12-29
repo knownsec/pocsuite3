@@ -72,6 +72,7 @@ def cmd_line_parser(argv=None):
         request.add_argument("--retry", dest="retry", type=int, default=0, help="Time out retrials times (default 0)")
         request.add_argument("--delay", dest="delay", help="Delay between two request of one thread")
         request.add_argument("--headers", dest="headers", help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
+        request.add_argument("--http-debug", dest="http_debug", type=int, default=0, help="HTTP debug level (default 0)")
         # Account options
         group = parser.add_argument_group("Account", "Account options")
         group.add_argument("--ceye-token", dest="ceye_token", help="CEye token")
