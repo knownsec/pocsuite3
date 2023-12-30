@@ -189,5 +189,8 @@ CMD_PARSE_WHITELIST = [
     "mode",
     "api",
     "connect_back_host",
-    "connect_back_port"
+    "connect_back_port",
+
+    "requests-session-reuse",
+    "requests-session-reuse-num"
 ]
