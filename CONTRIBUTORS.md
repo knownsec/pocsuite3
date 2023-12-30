@@ -59,3 +59,6 @@ ekszz <https://github.com/ekszz>
 
 HomerQing <https://github.com/HomerQing>
 * contributing to fix ipv6 compatibility issue in build_url
+
+Xxcdd <https://github.com/xxcdd>
+* Add support for requests session reuse
