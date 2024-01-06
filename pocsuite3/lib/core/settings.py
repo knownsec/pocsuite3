@@ -191,8 +191,8 @@ CMD_PARSE_WHITELIST = [
     "connect_back_host",
     "connect_back_port",
 
-    "requests-session-reuse",
-    "requests-session-reuse-num",
+    "session-reuse",
+    "session-reuse-num",
 
     # web hook
     "dingtalk-token",

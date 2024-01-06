@@ -73,9 +73,9 @@ def cmd_line_parser(argv=None):
         request.add_argument("--delay", dest="delay", help="Delay between two request of one thread")
         request.add_argument("--headers", dest="headers", help="Extra headers (e.g. \"key1: value1\\nkey2: value2\")")
         request.add_argument("--http-debug", dest="http_debug", type=int, default=0, help="HTTP debug level (default 0)")
-        request.add_argument("--requests-session-reuse", dest="requests_session_reuse", action="store_true",
+        request.add_argument("--session-reuse", dest="requests_session_reuse", action="store_true",
                              help="Enable requests session reuse")
-        request.add_argument("--requests-session-reuse-num", type=int, dest="requests_session_reuse_num", default=10,
+        request.add_argument("--session-reuse-num", type=int, dest="requests_session_reuse_num", default=10,
                              help="Requests session reuse number")
 
         # Account options
