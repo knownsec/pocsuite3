@@ -173,6 +173,12 @@ def cmd_line_parser(argv=None):
         docker_environment.add_argument("--docker-only", dest="docker_only", action="store_true",
                                         default=False, help="Only run docker environment")
 
+        # web hook options
+        web_hook = parser.add_argument_group('Web Hook', "Web Hook Options")
+        web_hook.add_argument("--dingtalk-token", dest="dingtalk_token", help="Dingtalk access token")
+        web_hook.add_argument("--dingtalk-secret", dest="dingtalk_secret", help="Dingtalk secret")
+        web_hook.add_argument("--wx-work-key", dest="wx_work_key", help="Weixin Work key")
+
         # Diy options
         diy = parser.add_argument_group("Poc options", "definition options for PoC")
         diy.add_argument("--options", dest="show_options", action="store_true", default=False,
