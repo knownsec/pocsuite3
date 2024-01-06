@@ -10,6 +10,8 @@ from urllib.parse import urlsplit
 from http.client import HTTPConnection
 
 import docker.errors
+import requests
+from requests_toolbelt.adapters.socket_options import TCPKeepAliveAdapter
 import socks
 import prettytable
 from termcolor import colored
@@ -43,6 +45,7 @@ from pocsuite3.lib.parse.configfile import config_file_parser
 from pocsuite3.lib.parse.rules import regex_rule
 from pocsuite3.lib.parse.dockerfile import parse_dockerfile
 from pocsuite3.lib.request.patch import patch_all
+from pocsuite3.lib.request.patch.session_reuse import api_request
 from pocsuite3.modules.listener import start_listener
 
 
@@ -200,6 +203,18 @@ def _set_network_proxy():
             "http": proxy_string,
             "https": proxy_string
         }
+
+
+def _set_session_queue():
+    requests.api.request = api_request
+    for _ in range(0, conf.requests_session_reuse_num):
+        session = requests.Session()
+        session.headers.update({'Connection': 'keep-alive'})
+        # https://github.com/psf/requests/issues/6354
+        keep_alive = TCPKeepAliveAdapter()
+        session.mount("http://", keep_alive)
+        session.mount("https://", keep_alive)
+        kb.session_queue.put(session)
 
 
 def _set_multiple_targets():
@@ -608,6 +623,7 @@ def _set_conf_attributes():
     conf.docker_env = list()
     conf.docker_volume = list()
     conf.docker_only = False
+    conf.requests_session_reuse = False
 
     # web hook
     conf.dingtalk_token = ""
@@ -656,6 +672,7 @@ def _set_kb_attributes(flush_all=True):
     kb.current_poc = None
     kb.registered_pocs = AttribDict()
     kb.task_queue = Queue()
+    kb.session_queue = Queue()
     kb.cmd_line = DIY_OPTIONS or []
 
     kb.comparison = None
@@ -906,3 +923,5 @@ def init():
     _set_threads()
     _set_listener()
     remove_extra_log_message()
+    if conf.requests_session_reuse:
+        _set_session_queue()
