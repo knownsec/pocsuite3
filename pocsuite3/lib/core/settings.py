@@ -198,3 +198,4 @@ CMD_PARSE_WHITELIST = [
     "dingtalk-token",
     "dingtalk-secret",
     "wx-work-key"
+]
