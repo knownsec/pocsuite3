@@ -467,6 +467,9 @@ def _cleanup_options():
 
     if conf.output_path and 'file_record' not in conf.plugins:
         conf.plugins.append('file_record')
+    if (conf.dingtalk_token and conf.dingtalk_secret) or conf.wx_work_key:
+        if 'web_hook' not in conf.plugins:
+            conf.plugins.append('web_hook')
 
     if conf.connect_back_port:
         conf.connect_back_port = int(conf.connect_back_port)
@@ -605,6 +608,11 @@ def _set_conf_attributes():
     conf.docker_env = list()
     conf.docker_volume = list()
     conf.docker_only = False
+
+    # web hook
+    conf.dingtalk_token = ""
+    conf.dingtalk_secret = ""
+    conf.wx_work_key = ""
 
 
 def _set_kb_attributes(flush_all=True):

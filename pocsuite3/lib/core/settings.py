@@ -189,5 +189,10 @@ CMD_PARSE_WHITELIST = [
     "mode",
     "api",
     "connect_back_host",
-    "connect_back_port"
+    "connect_back_port",
+
+    # web hook
+    "dingtalk-token",
+    "dingtalk-secret",
+    "wx-work-key"
 ]
