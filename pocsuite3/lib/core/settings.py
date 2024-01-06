@@ -193,7 +193,7 @@ CMD_PARSE_WHITELIST = [
 
     "requests-session-reuse",
     "requests-session-reuse-num",
-  
+
     # web hook
     "dingtalk-token",
     "dingtalk-secret",
