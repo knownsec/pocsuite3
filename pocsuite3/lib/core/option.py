@@ -482,9 +482,8 @@ def _cleanup_options():
 
     if conf.output_path and 'file_record' not in conf.plugins:
         conf.plugins.append('file_record')
-    if (conf.dingtalk_token and conf.dingtalk_secret) or conf.wx_work_key:
-        if 'web_hook' not in conf.plugins:
-            conf.plugins.append('web_hook')
+    if 'web_hook' not in conf.plugins:
+        conf.plugins.append('web_hook')
 
     if conf.connect_back_port:
         conf.connect_back_port = int(conf.connect_back_port)

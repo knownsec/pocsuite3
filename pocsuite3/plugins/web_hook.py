@@ -10,6 +10,10 @@ from pocsuite3.api import PluginBase
 from pocsuite3.api import logger
 from pocsuite3.api import register_plugin, conf
 
+DINGTALK_TOKEN = ""
+DINGTALK_SECRET = ""
+WX_WORK_KEY = ""
+
 
 def dingding_send(msg, access_token, secret, msgtype="markdown", title="pocsuite3消息推送"):
     ding_url = "https://oapi.dingtalk.com/robot/send?access_token={}".format(access_token)
@@ -43,10 +47,13 @@ def wx_work_send(msg, key):
 
 
 def web_hook_send(msg):
-    if conf.dingtalk_token and conf.dingtalk_secret:
-        dingding_send(msg, conf.dingtalk_token, conf.dingtalk_secret)
-    if conf.wx_work_key:
-        wx_work_send(msg, conf.wx_work_key)
+    dingtalk_token = conf.dingtalk_token or DINGTALK_TOKEN
+    dingtalk_secret = conf.dingtalk_secret or DINGTALK_SECRET
+    wx_work_key = conf.wx_work_key or WX_WORK_KEY
+    if dingtalk_token and dingtalk_secret:
+        dingding_send(msg, dingtalk_token, dingtalk_secret)
+    if wx_work_key:
+        wx_work_send(msg, wx_work_key)
 
 
 class WebHook(PluginBase):
