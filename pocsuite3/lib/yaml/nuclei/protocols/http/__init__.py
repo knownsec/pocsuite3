@@ -100,7 +100,9 @@ class HttpRequest:
 
     # Request condition allows checking for condition between multiple requests for writing complex checks and
     # exploits involving multiple HTTP request to complete the exploit chain.
-    req_condition: bool = False
+    # https://github.com/projectdiscovery/nuclei-templates/pull/8702
+    # req-condition, it's enabled as default, not required to specify explicitly.
+    req_condition: bool = True
 
     stop_at_first_match: bool = True
     skip_variables_check: bool = False
@@ -139,6 +141,7 @@ def http_response_to_dsl_map(resp: requests.Response):
     data['kval_extractor_dict'] = {}
     data['kval_extractor_dict'].update(resp.cookies)
     data['kval_extractor_dict'].update(resp.headers)
+    data['duration'] = resp.elapsed.total_seconds()
 
     return data
 
