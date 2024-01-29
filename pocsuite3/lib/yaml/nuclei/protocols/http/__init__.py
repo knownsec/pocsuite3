@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from dataclasses import dataclass, field
+import time
 from typing import Union, List, Optional
 
 from requests_toolbelt.utils import dump
@@ -254,6 +255,10 @@ def extract_dict(text, line_sep='\n', kv_sep='='):
 
 def http_request_generator(request: HttpRequest, dynamic_values: OrderedDict):
     request_count = len(request.path + request.raw)
+    # Determine the number of requests and modify the req_condition attribute of the HttpRequest object
+    if request_count > 1:
+        request.req_condition = True
+
     for payload_instance in payload_generator(request.payloads, request.attack):
         current_index = 0
         dynamic_values.update(payload_instance)
@@ -272,9 +277,14 @@ def http_request_generator(request: HttpRequest, dynamic_values: OrderedDict):
             else:
                 raw = path.strip()
                 raws = list(map(lambda x: x.strip(), raw.splitlines()))
-                method, path, _ = raws[0].split(' ')
-                url = f'{Marker.ParenthesisOpen}BaseURL{Marker.ParenthesisClose}{path}'
-
+                # Extract timeout value
+                if raws[0].startswith('@timeout'):
+                    timeout = Marker.extract_timeout_value(raws[0])
+                    del raws[0]
+                    method, path, _ = raws[0].split(' ')
+                    kwargs.setdefault('timeout', timeout)
+                else:
+                    method, path, _ = raws[0].split(' ')
                 if method == "POST":
                     index = 0
                     for i in raws:
@@ -289,6 +299,8 @@ def http_request_generator(request: HttpRequest, dynamic_values: OrderedDict):
                     data = '\n'.join(raws[index:])
                 else:
                     headers = extract_dict('\n'.join(raws[1:]), '\n', ": ")
+
+                url = f'{Marker.ParenthesisOpen}BaseURL{Marker.ParenthesisClose}{path}'
 
             kwargs.setdefault('allow_redirects', request.redirects)
             kwargs.setdefault('data', data)
@@ -324,7 +336,13 @@ def execute_http_request(request: HttpRequest, dynamic_values, interactsh) -> Un
                         session.max_redirects = request.max_redirects
                     else:
                         session.max_redirects = 10
+
+                    # Calculate response time
+                    start_time = time.time()
                     response = session.request(method=method, url=url, **kwargs)
+                    end_time = time.time()
+                    resp_time = end_time - start_time
+
                     # for debug purpose
                     try:
                         logger.debug(dump.dump_all(response).decode('utf-8'))
@@ -335,8 +353,11 @@ def execute_http_request(request: HttpRequest, dynamic_values, interactsh) -> Un
                     import traceback
                     traceback.print_exc()
                     response = None
-
+                
                 resp_data = http_response_to_dsl_map(response)
+                if response is not None:
+                    resp_data['duration'] = resp_time
+
                 if response:
                     response.close()
 
