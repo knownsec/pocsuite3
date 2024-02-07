@@ -353,14 +353,14 @@ def execute_http_request(request: HttpRequest, dynamic_values, interactsh) -> Un
                     import traceback
                     traceback.print_exc()
                     response = None
-                  
+
                 resp_data = http_response_to_dsl_map(response)
                 if response is not None:
                     resp_data['duration'] = resp_time
-                  
+                
                 if response:
                     response.close()
-                  
+
                 extractor_res = http_extract(request, resp_data)
                 for k, v in extractor_res['internal'].items():
                     if v == UNRESOLVED_VARIABLE and k in dynamic_values:
