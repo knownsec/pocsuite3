@@ -973,3 +973,4 @@ if __name__ == '__main__':
     print(evaluate("{{to_lower(rand_base(5))}}"))
     print(evaluate("{{base64('World')}}"))
     print(evaluate("{{base64(Hello)}}", {'Hello': 'World'}))
+
