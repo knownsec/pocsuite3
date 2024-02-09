@@ -582,7 +582,7 @@ def get_poc_name(code):
     if re.search(r'register_poc', code):
         return extract_regex_result(r"""(?sm)POCBase\):.*?name\s*=\s*['"](?P<result>.*?)['"]""", code)
     elif re.search(r'matchers:\s*-', code):
-        return extract_regex_result(r"""(?sm)\s*name\s*:\s*(?P<result>[^\n]*).*matchers:""", code)
+        return extract_regex_result(r"""(?sm)\s*name\s*:\s*(?P<result>[^\r\n]*).*matchers:""", code)
     return ''
 
 
