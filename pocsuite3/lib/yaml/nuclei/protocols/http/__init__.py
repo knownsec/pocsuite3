@@ -402,4 +402,3 @@ def execute_http_request(request: HttpRequest, dynamic_values, interactsh) -> Un
             return results
         else:
             return False
-
