@@ -31,6 +31,12 @@ class Marker:
     # ParenthesisClose marker - end of a placeholder
     ParenthesisClose = "}}"
 
+    def extract_timeout_value(raw_timeout: str) -> int:
+        match = re.search(r'@timeout:?(\d+)s', raw_timeout, re.IGNORECASE)
+        if match:
+            return int(match.group(1))
+        return None
+
 
 def auto_convert_types(func):
     @wraps(func)
