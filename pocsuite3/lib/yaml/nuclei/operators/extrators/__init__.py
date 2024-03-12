@@ -137,7 +137,7 @@ def extract_xpath(e: Extractor, corpus: str) -> dict:
     else:
         doc = etree.HTML(corpus)
 
-    if not doc:
+    if doc is None:
         return results
 
     for x in e.xpath:

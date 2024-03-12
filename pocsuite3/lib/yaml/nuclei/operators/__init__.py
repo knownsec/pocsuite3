@@ -11,7 +11,8 @@ from pocsuite3.lib.yaml.nuclei.operators.matchers import (Matcher, MatcherType,
                                                           match_regex,
                                                           match_size,
                                                           match_status_code,
-                                                          match_words)
+                                                          match_words,
+                                                          match_xpath)
 
 __all__ = [
     "ExtractorType",
@@ -29,4 +30,5 @@ __all__ = [
     "match_regex",
     "match_binary",
     "match_dsl",
+    "match_xpath",
 ]
