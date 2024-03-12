@@ -1,6 +1,7 @@
 import binascii
 import re
 from dataclasses import dataclass, field
+from lxml import html
 from typing import List
 
 from pocsuite3.lib.yaml.nuclei.model import CaseInsensitiveEnum
@@ -14,6 +15,7 @@ class MatcherType(CaseInsensitiveEnum):
     RegexMatcher = "regex"
     BinaryMatcher = "binary"
     DSLMatcher = "dsl"
+    XpathMatcher = "xpath"
 
 
 @dataclass
@@ -48,6 +50,9 @@ class Matcher:
 
     # Regex contains Regular Expression patterns required to be present in the response part.
     regex: List[str] = field(default_factory=list)
+
+    # Xpath contains xpath patterns required to be present in the response part.
+    xpath: List[str] = field(default_factory=list)
 
     # Binary are the binary patterns required to be present in the response part.
     binary: List[str] = field(default_factory=list)
@@ -181,3 +186,39 @@ def match_dsl(matcher: Matcher, data: dict) -> bool:
         if len(matcher.dsl) - 1 == i:
             return True
     return False
+
+def match_xpath(matcher: Matcher, body: str) -> (bool, list):
+    """Matches xpath check against a body.
+    """
+    # Convert the body string to etree.HTML object for xpath manipulations
+    body_tree = html.fromstring(body)
+    matched_xpaths = []
+
+    for i, xpath_pattern in enumerate(matcher.xpath):
+        try:
+            # Applying xpath on the HTML and capturing the result
+            result = body_tree.xpath(xpath_pattern)
+            if not result:
+                # If result is empty, the xpath expression did not match anything in the HTML body
+                if matcher.condition == 'and':
+                    return False, []
+                elif matcher.condition == 'or':
+                    continue
+
+            if matcher.condition == 'or' and not matcher.match_all:
+                return True, [result]
+
+            matched_xpaths.append(result)
+
+            if len(matcher.xpath) - 1 == i and not matcher.match_all:
+                return True, matched_xpaths
+
+        except Exception as e:
+            print(f"Error while matching with XPath {xpath_pattern}. Error: {str(e)}")
+
+    if len(matched_xpaths) > 0 and matcher.match_all:
+        return True, matched_xpaths
+
+    return False, []
+
+
