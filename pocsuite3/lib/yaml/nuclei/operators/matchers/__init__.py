@@ -191,6 +191,8 @@ def match_xpath(matcher: Matcher, body: str) -> (bool, list):
     """Matches xpath check against a body.
     """
     # Convert the body string to etree.HTML object for xpath manipulations
+    if body is None:
+        return False
     body_tree = html.fromstring(body)
     matched_xpaths = []
 
