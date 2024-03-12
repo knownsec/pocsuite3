@@ -163,7 +163,7 @@ def network_match(request: NetworkRequest, resp_data: dict, interactsh=None):
             matcher_res, _ = match_binary(matcher, item)
 
         elif matcher.type == MatcherType.XpathMatcher:
-            matcher_res, = match_xpath(matcher, item)
+            matcher_res, _ = match_xpath(matcher, item)
 
         elif matcher.type == MatcherType.DSLMatcher:
             matcher_res = match_dsl(matcher, resp_data)

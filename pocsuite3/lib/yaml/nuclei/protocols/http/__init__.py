@@ -199,7 +199,7 @@ def http_match(request: HttpRequest, resp_data: dict, interactsh=None):
             matcher_res = match_dsl(matcher, resp_data)
 
         elif matcher.type == MatcherType.XpathMatcher:
-            matcher_res, = match_xpath(matcher, item)
+            matcher_res, _ = match_xpath(matcher, item)
 
         if matcher.negative:
             matcher_res = not matcher_res
