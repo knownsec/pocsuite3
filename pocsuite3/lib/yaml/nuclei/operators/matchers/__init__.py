@@ -187,6 +187,7 @@ def match_dsl(matcher: Matcher, data: dict) -> bool:
             return True
     return False
 
+
 def match_xpath(matcher: Matcher, body: str) -> (bool, list):
     """Matches xpath check against a body.
     """
@@ -222,5 +223,3 @@ def match_xpath(matcher: Matcher, body: str) -> (bool, list):
         return True, matched_xpaths
 
     return False, []
-
-
