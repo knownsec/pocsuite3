@@ -15,7 +15,7 @@ from pocsuite3.lib.yaml.nuclei.operators import (Extractor, ExtractorType,
                                                  extract_dsl, extract_kval, extract_regex,
                                                  match_binary,
                                                  match_dsl, match_regex,
-                                                 match_size, match_words)
+                                                 match_size, match_words, match_xpath)
 from pocsuite3.lib.yaml.nuclei.protocols.common.generators import AttackType, payload_generator
 from pocsuite3.lib.yaml.nuclei.protocols.common.interactsh import InteractshClient
 from pocsuite3.lib.yaml.nuclei.protocols.common.replacer import (
@@ -161,6 +161,9 @@ def network_match(request: NetworkRequest, resp_data: dict, interactsh=None):
 
         elif matcher.type == MatcherType.BinaryMatcher:
             matcher_res, _ = match_binary(matcher, item)
+
+        elif matcher.type == MatcherType.XpathMatcher:
+            matcher_res, _ = match_xpath(matcher, item)
 
         elif matcher.type == MatcherType.DSLMatcher:
             matcher_res = match_dsl(matcher, resp_data)

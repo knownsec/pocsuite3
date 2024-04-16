@@ -1,8 +1,8 @@
 FROM ubuntu:22.04
-MAINTAINER Knownsec 404 Team
+LABEL maintainer="Knownsec 404 Team"
 
 ARG version
-env DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get install -y \
