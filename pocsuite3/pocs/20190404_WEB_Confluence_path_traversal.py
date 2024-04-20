@@ -36,7 +36,7 @@ class DemoPOC(POCBase):
         r = requests.post(paylaod, data=data, headers=headers)
 
         if r.status_code == 200 and "</web-app>" in r.text:
-            m = re.search('<web-app[\s\S]+<\/web-app>', r.text)
+            m = re.search(r'<web-app[\s\S]+<\/web-app>', r.text)
             if m:
                 content = m.group()[:limitSize]
                 result['FileInfo'] = {}

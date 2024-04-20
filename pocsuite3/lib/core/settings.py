@@ -39,7 +39,7 @@ LEGAL_DISCLAIMER = (
     "Usage of pocsuite for attacking targets without prior mutual consent is illegal."
 )
 
-BANNER = """\033[01;33m
+BANNER = r"""\033[01;33m
 ,------.                        ,--. ,--.       ,----.   \033[01;37m{\033[01;%dm%s\033[01;37m}\033[01;33m
 |  .--. ',---. ,---.,---.,--.,--`--,-'  '-.,---.'.-.  |
 |  '--' | .-. | .--(  .-'|  ||  ,--'-.  .-| .-. : .' <
@@ -57,7 +57,7 @@ UNICODE_ENCODING = "utf-8"
 BOLD_PATTERNS = (
     "' is vulnerable",
     "success",
-    "\d    ",
+    r"\d    ",
 )
 
 OLD_VERSION_CHARACTER = ("from comm import cmdline", "from comm import generic")
