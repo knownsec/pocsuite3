@@ -283,7 +283,7 @@ def gen_cert(countryName='',
 
 def minimum_version_required(ver):
     from pocsuite3 import __version__
-    from pkg_resources import parse_version
+    from packaging.version import parse as parse_version
     v1, v2 = parse_version(ver), parse_version(__version__)
     if v1 > v2:
         logger.warning(f'The minimum version required for this PoC plugin is {ver}, '
