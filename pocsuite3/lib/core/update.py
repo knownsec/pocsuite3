@@ -1,6 +1,6 @@
 from pocsuite3.lib.core.data import logger, conf
 from six.moves.xmlrpc_client import ServerProxy
-from pkg_resources import parse_version
+from packaging.version import parse as parse_version
 from pocsuite3 import __version__
 
 

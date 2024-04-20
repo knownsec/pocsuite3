@@ -57,7 +57,8 @@ setup(
         "dacite",
         "PyYAML",
         "lxml",
-        "docker"
+        "docker",
+        "packaging"
     ],
     extras_require={
         'complete': [

@@ -16,7 +16,7 @@ from functools import wraps
 from typing import get_type_hints, Union
 
 import chardet
-from pkg_resources import parse_version
+from packaging.version import parse as parse_version
 from pocsuite3.lib.core.log import LOGGER as logger
 from pocsuite3.lib.yaml.nuclei.protocols.common.expressions.safe_eval import safe_eval
 
