@@ -148,7 +148,7 @@ The usage is roughly the same as docker’s command line parameters.
 
 ## Requirements
 
-- Python 3.7+
+- Python 3.8+
 - Works on Linux, Windows, Mac OSX, BSD, etc.
 
 ## Installation
