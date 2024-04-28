@@ -90,9 +90,9 @@ class HtmlExport:
                              'function copyAll() {'
                              'var targetValue = $("#all-target").val();'
                              'navigator.clipboard.writeText(targetValue).then(function() {'
-                             'alert("复制成功");'
+                             'alert("Copy Successful");'
                              '}, function(err) {'
-                             'alert("复制失败");'
+                             'alert("Copy failed");'
                              '});'
                              '}'
                              '</script>')
@@ -100,9 +100,9 @@ class HtmlExport:
                              'function copySuc() {'
                              'var targetValue = $("#suc-target").val();'
                              'navigator.clipboard.writeText(targetValue).then(function() {'
-                             'alert("复制成功");'
+                             'alert("Copy successful");'
                              '}, function(err) {'
-                             'alert("复制失败");'
+                             'alert("Copy failed");'
                              '});'
                              '}'
                              '</script>')
