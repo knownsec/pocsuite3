@@ -113,9 +113,9 @@ class HtmlExport:
     def write_results(self, results=None):
         if results:
             self.html.addcontent('<button onclick="copyAll()" class="btn btn-primary" '
-                                 'style="margin-bottom: 10px">复制所有目标</button>')
+                                 'style="margin-bottom: 10px">Copy all</button>')
             self.html.addcontent('<button onclick="copySuc()" class="btn btn-success"'
-                                 ' style="margin-bottom: 10px">复制成功目标</button>')
+                                 ' style="margin-bottom: 10px">Copy Successful</button>')
             self.html.addcontent('<table class="table table-striped table-bordered table-hover">'
                                  '<thead class="thead-dark"><tr>'
                                  '<th scope="col">Target</th>'
