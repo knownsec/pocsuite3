@@ -136,8 +136,13 @@ def task_run():
             else:
                 logger.warn("No libpcap is detected, and the poc will continue to execute without fetching the packet")
                 conf.pcap = False
+        info_msg = "running poc:'{0}' target '{1}'".format(
+            poc_name,
+            mosaic(target)
+        )
 
-        info_msg = "running poc:'{0}' target '{1}'".format(poc_name, mosaic(target))
+        if len(kb.targets) > 1:
+            info_msg += ", {0} tasks waiting to be executed.".format(kb.task_queue.qsize())
 
         logger.info(info_msg)
 

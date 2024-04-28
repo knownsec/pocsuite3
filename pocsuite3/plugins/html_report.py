@@ -86,11 +86,36 @@ class HtmlExport:
         self.html.addcontent('<span class="text-muted">{0}</span>'.format(text))
         self.html.div.close()
         self.html.footer.close()
+        self.html.addcontent('<script type="text/javascript">'
+                             'function copyAll() {'
+                             'var targetValue = $("#all-target").val();'
+                             'navigator.clipboard.writeText(targetValue).then(function() {'
+                             'alert("Copy Successful");'
+                             '}, function(err) {'
+                             'alert("Copy failed");'
+                             '});'
+                             '}'
+                             '</script>')
+        self.html.addcontent('<script type="text/javascript">'
+                             'function copySuc() {'
+                             'var targetValue = $("#suc-target").val();'
+                             'navigator.clipboard.writeText(targetValue).then(function() {'
+                             'alert("Copy successful");'
+                             '}, function(err) {'
+                             'alert("Copy failed");'
+                             '});'
+                             '}'
+                             '</script>')
+
         self.html.body.close()
         self.html.html.close()
 
     def write_results(self, results=None):
         if results:
+            self.html.addcontent('<button onclick="copyAll()" class="btn btn-primary" '
+                                 'style="margin-bottom: 10px">Copy all</button>')
+            self.html.addcontent('<button onclick="copySuc()" class="btn btn-success"'
+                                 ' style="margin-bottom: 10px">Copy Successful</button>')
             self.html.addcontent('<table class="table table-striped table-bordered table-hover">'
                                  '<thead class="thead-dark"><tr>'
                                  '<th scope="col">Target</th>'
@@ -99,29 +124,41 @@ class HtmlExport:
                                  '<th scope="col">Component</th>'
                                  '<th scope="col">Version</th>'
                                  '<th scope="col">Status</th>'
+                                 '<th scope="col">Extra</th>'
                                  '</tr></thead><tbody>'
                                  )
-            for result in results:
-                content = (
-                    '<tr>'
-                    '<td><a href="{0}" target="_blank">{1}</a></td>'
-                    '<td>{2}</td>'
-                    '<td><a href="https://www.seebug.org/vuldb/ssvid-{3}" target="_blank">{4}</a></td>'
-                    '<td>{5}</td>'
-                    '<td>{6}</td>'
-                    '<td><span class="badge badge-success">{7}</span></td>'
-                    '</tr>'
-                ) if result.status == 'success' else (
-                    '<tr>'
-                    '<td><a href="{0}" target="_blank">{1}</a></td>'
-                    '<td>{2}</td>'
-                    '<td><a href="https://www.seebug.org/vuldb/ssvid-{3}" target="_blank">{4}</a></td>'
-                    '<td>{5}</td>'
-                    '<td>{6}</td>'
-                    '<td><span class="badge badge-secondary">{7}</span></td>'
-                    '</tr>'
-                )
+            all_target = []
+            suc_target = []
 
+            for result in results:
+                all_target.append(result.target)
+                if result.status == 'success':
+                    suc_target.append(result.target)
+                    content = (
+                        '<tr>'
+                        '<td><a href="{0}" target="_blank">{1}</a></td>'
+                        '<td>{2}</td>'
+                        '<td><a href="https://www.seebug.org/vuldb/ssvid-{3}" target="_blank">{4}</a></td>'
+                        '<td>{5}</td>'
+                        '<td>{6}</td>'
+                        '<td><span class="badge badge-success">{7}</span></td>'
+                        '<td>{8}</td>'
+                        '</tr>'
+                    )
+                else:
+                    content = (
+                        '<tr>'
+                        '<td><a href="{0}" target="_blank">{1}</a></td>'
+                        '<td>{2}</td>'
+                        '<td><a href="https://www.seebug.org/vuldb/ssvid-{3}" target="_blank">{4}</a></td>'
+                        '<td>{5}</td>'
+                        '<td>{6}</td>'
+                        '<td><span class="badge badge-secondary">{7}</span></td>'
+                        '<td>{8}</td>'
+                        '</tr>'
+                    )
+                result.result.get('VerifyInfo').pop('URL')
+                extra_info = '/'.join([item for item in result.result.get('VerifyInfo').values()])
                 self.html.addcontent(content.format(result.target,
                                                     result.target,
                                                     result.poc_name,
@@ -129,10 +166,17 @@ class HtmlExport:
                                                     result.vul_id,
                                                     result.app_name,
                                                     result.app_version,
-                                                    result.status)
+                                                    result.status,
+                                                    extra_info)
                                      )
 
             self.html.addcontent('</tbody></table>')
+            self.html.addcontent('<textarea id="all-target" style="display:none">{}</textarea>'.format(
+                '\n'.join(all_target)
+            ))
+            self.html.addcontent('<textarea id="suc-target" style="display:none">{}</textarea>'.format(
+                '\n'.join(suc_target)
+            ))
 
     def write_html(self, results=None):
         menus = {

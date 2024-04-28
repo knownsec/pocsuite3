@@ -15,7 +15,7 @@ class TestCase(unittest.TestCase):
 
     def verify_result(self):
         config = {
-            'url': ['https://www.baidu.com/'],
+            'url': ['http://httpbin.org/post'],
             'poc': [os.path.join(paths.POCSUITE_ROOT_PATH, "../tests/login_demo.py")],
             'username': "asd",
             'password': 'asdss',
