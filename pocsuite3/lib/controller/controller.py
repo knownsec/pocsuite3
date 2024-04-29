@@ -86,7 +86,7 @@ def show_task_result():
         if row.status == 'success':
             success_num += 1
 
-    data_to_stdout('\n{0}'.format(results_table.get_string(sortby="status", reversesort=True)))
+    data_to_stdout('\n{0}'.format(results_table.get_string(sortby="status", reversesort=False)))
     data_to_stdout("\nsuccess : {} / {}\n".format(success_num, total_num))
 
 
