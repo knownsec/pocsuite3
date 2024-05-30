@@ -1,5 +1,5 @@
 import re
-import pkg_resources
+from importlib import metadata
 import importlib.machinery
 import importlib.util
 from importlib.abc import Loader
@@ -56,7 +56,7 @@ class PocLoader(Loader):
                         import_name = install_name
                     __import__(import_name)
                     try:
-                        ver = pkg_resources.get_distribution(install_name).version
+                        ver = metadata.version(install_name)
                     except Exception:
                         ver = 'unknown'
                     logger.info(f'{install_name}=={ver} has been installed')

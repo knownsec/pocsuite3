@@ -73,9 +73,9 @@ class LinkParser(HTMLParser):
 def get_redirect_url(url):
     # TODO:
     # regex need more test cases
-    meta_regex = '(?is)\<meta[^<>]*?url\s*=([\d\w://\\\\.?=&;%-]*)[^<>]*'
-    body_regex = '''(?is)\<body[^<>]*?location[\s\.\w]*=['"]?([\d\w://\\\\.?=&;%-]*)['"]?[^<>]*'''
-    js_regex = '''(?is)<script.*?>[^<>]*?location\.(?:replace|href|assign)[=\("']*([\d\w://\\\\.?=&;%-]*)[^<>]*?</script>'''
+    meta_regex = r'(?is)\<meta[^<>]*?url\s*=([\d\w://\\\\.?=&;%-]*)[^<>]*'
+    body_regex = r'''(?is)\<body[^<>]*?location[\s\.\w]*=['"]?([\d\w://\\\\.?=&;%-]*)['"]?[^<>]*'''
+    js_regex = r'''(?is)<script.*?>[^<>]*?location\.(?:replace|href|assign)[=\("']*([\d\w://\\\\.?=&;%-]*)[^<>]*?</script>'''
 
     resp = requests.get(url)
     true_url = resp.url

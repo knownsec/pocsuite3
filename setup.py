@@ -34,7 +34,7 @@ setup(
     zip_safe=False,
     packages=find_packages(),
     include_package_data=True,
-    python_requires='>=3.6',
+    python_requires='>=3.8',
     entry_points={
         "console_scripts": [
             "pocsuite = pocsuite3.cli:main",
@@ -57,7 +57,8 @@ setup(
         "dacite",
         "PyYAML",
         "lxml",
-        "docker"
+        "docker",
+        "packaging"
     ],
     extras_require={
         'complete': [
