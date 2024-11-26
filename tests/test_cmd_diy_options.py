@@ -5,11 +5,15 @@
 # @File    : test_cmd_diy_options.py
 import os
 import unittest
+import warnings
+
+from urllib3.exceptions import InsecureRequestWarning
 
 
 class TestCase(unittest.TestCase):
     def setUp(self):
-        pass
+        warnings.simplefilter("ignore", ResourceWarning)
+        warnings.simplefilter("ignore", InsecureRequestWarning)
 
     def tearDown(self):
         pass
@@ -23,7 +27,7 @@ class TestCase(unittest.TestCase):
         eval_path = os.path.join(path, "../pocsuite3/cli.py")
         poc_path = os.path.join(path, "login_demo.py")
         command = (
-            f'python3 {eval_path} -u https://example.com -r {poc_path} --verify -v 2  --password mypass123 '
+            f'python3 {eval_path} -u http://httpbin.org/post -r {poc_path} --verify -v 2  --password mypass123 '
             '--username "asd asd" --testt abctest'
         )
         pipeline = os.popen(command)
