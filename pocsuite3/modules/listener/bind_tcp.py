@@ -11,10 +11,6 @@ from pocsuite3.lib.utils import random_str
 from pocsuite3.lib.core.common import check_port
 from pocsuite3.lib.core.data import conf, logger
 
-print(sys.version_info)
-if sys.version_info <= (3, 12):
-    import telnetlib
-
 
 def read_inputs(s):
     buffer = []
