@@ -1,15 +1,19 @@
 import os
+import sys
 import socket
 import zlib
 import pickle
 import base64
 import select
-import telnetlib
 import threading
 from pocsuite3.lib.core.poc import POCBase
 from pocsuite3.lib.utils import random_str
 from pocsuite3.lib.core.common import check_port
 from pocsuite3.lib.core.data import conf, logger
+
+print(sys.version_info)
+if sys.version_info <= (3, 12):
+    import telnetlib
 
 
 def read_inputs(s):
@@ -26,7 +30,7 @@ def read_inputs(s):
 
 
 def read_results(conn, inputs):
-    if isinstance(conn, telnetlib.Telnet):
+    if sys.version_info <= (3, 12) and isinstance(conn, telnetlib.Telnet):
         flag = random_str(6).encode()
         inputs = inputs.strip() + b';' + flag + b'\n'
         results = b''
@@ -43,7 +47,7 @@ def read_results(conn, inputs):
                 results = os.linesep.encode().join(
                     results.split(flag)[0].splitlines()[0:-1])
                 return results.strip() + b'\n'
-    elif callable(conn):
+    if callable(conn):
         results = conn(inputs.decode())
         if not isinstance(results, bytes):
             results = results.encode()
@@ -116,20 +120,39 @@ def bind_tcp_shell(host, port, check=True):
 
 
 def bind_telnet_shell(host, port, user, pwd, check=True):
+    # see https://peps.python.org/pep-0594/#telnetlib
+    if sys.version_info <= (3, 12):
+        import telnetlib
+
     if not check_port(host, port):
         return False
     try:
-        tn = telnetlib.Telnet(host, port)
-        tn.expect([b'Login: ', b'login: '], 10)
-        tn.write(user.encode() + b'\n')
-        tn.expect([b'Password: ', b'password: '], 10)
-        tn.write(pwd.encode() + b'\n')
-        tn.write(b'\n')
-        if check:
-            flag = random_str(6).encode()
-            if flag not in read_results(tn, b'echo %s' % flag):
-                return False
+        if sys.version_info <= (3, 12):
+            tn = telnetlib.Telnet(host, port)
+            tn.expect([b'Login: ', b'login: '], 10)
+            tn.write(user.encode() + b'\n')
+            tn.expect([b'Password: ', b'password: '], 10)
+            tn.write(pwd.encode() + b'\n')
+            tn.write(b'\n')
+            if check:
+                flag = random_str(6).encode()
+                if flag not in read_results(tn, b'echo %s' % flag):
+                    return False
+
+        else:
+            tn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            tn.connect((host, port))
+            tn.recv(1024)
+            tn.sendall((user + "\n").encode('utf-8'))
+            tn.recv(1024)
+            tn.sendall((pwd + "\n").encode('utf-8'))
+            if check:
+                flag = random_str(6).encode()
+                if flag not in read_results(tn, b'echo %s' % flag):
+                    return False
+
         start_listener(tn)
+
     except Exception as e:
         logger.error(str(e))
 
