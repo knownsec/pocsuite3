@@ -74,7 +74,7 @@ class ZoomEye():
         except Exception as ex:
             logger.error(str(ex))
 
-    def search(self, dork, pages, pagesize, search_type):
+    def search(self, dork, pages=2, pagesize=20, search_type="v4"):
         search_result = set()
         if kb.comparison:
             kb.comparison.add_dork("Zoomeye", dork)
@@ -123,5 +123,5 @@ if __name__ == "__main__":
     ze = ZoomEye()
     res = ze.search(dork='"<title>Vigor 300B</title>"', pages=1)
     print(res)
-    res = ze.search(dork='site:google.com', pages=1, resource='web')
+    res = ze.search(dork='domain="google.com"', pages=1, pagesize=100, search_type='all')
     print(res)
