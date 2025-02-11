@@ -1,3 +1,20 @@
+# version 2.1.0
+----------------
+ * fix codes ignored in raw strings #432
+ * update zoomeye api to v2
+
+# verison 2.0.8
+ * Fix nucleic dsl syntax parsing #386 @xixixiba
+ * Fix the compatibility issue of -l command in windows #400 @geelph
+
+# version 2.0.7
+ * add http debug level command line parameter --http-debug
+ * fix some bug
+
+# version 2.0.6
+* add new command -l show local poc
+* build the corresponding vulnerability environment based on the PoC, For details, please refer to pocs/Apache_Struct2
+
 # version 2.0.5
 ----------------
 * fix hook failure due to urllib3 update #368 #373
