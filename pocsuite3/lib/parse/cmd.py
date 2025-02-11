@@ -113,8 +113,11 @@ def cmd_line_parser(argv=None):
                              help="Censys dork used for search")
         modules.add_argument("--max-page", dest="max_page", type=int, default=1,
                              help="Max page used in search API")
-        modules.add_argument("--search-type", dest="search_type", action="store", default='host',
-                             help="search type used in search API, web or host")
+        modules.add_argument("--page-size", dest="page_size", type=int, default=20,
+                             help="Page size used in search API"
+                             )
+        modules.add_argument("--search-type", dest="search_type", action="store", default='v4',
+                             help="search type used in search API, v4,v6 and web")
         modules.add_argument("--vul-keyword", dest="vul_keyword", action="store", default=None,
                              help="Seebug keyword used for search")
         modules.add_argument("--ssv-id", dest="ssvid", action="store", default=None,

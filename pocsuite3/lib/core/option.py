@@ -583,7 +583,8 @@ def _set_conf_attributes():
     conf.dork_censys = None
     conf.dork_b64 = False
     conf.max_page = 1
-    conf.search_type = 'host'
+    conf.page_size = 20
+    conf.search_type = 'v4'
     conf.comparison = False
     conf.vul_keyword = None
     conf.ssvid = None

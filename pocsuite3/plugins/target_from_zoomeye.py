@@ -12,7 +12,7 @@ class TargetFromZoomeye(PluginBase):
 
     def init_zoomeye_api(self):
         self.zoomeye = ZoomEye(token=conf.zoomeye_token)
-        info_msg = "[PLUGIN] ZoomEeye search limit {0}".format(self.zoomeye.resources)
+        info_msg = "[PLUGIN] ZoomEeye search limit {0}".format(self.zoomeye.points + self.zoomeye.zoomeye_points)
         logger.info(info_msg)
 
     def init(self):
@@ -26,12 +26,11 @@ class TargetFromZoomeye(PluginBase):
             msg = "Need to set up dork (please --dork or --dork-zoomeye)"
             raise PocsuitePluginDorkException(msg)
         if conf.dork_b64:
-            import base64
-            dork = str(base64.b64decode(dork), encoding="utf-8")
+            dork = dork
 
         info_msg = "[PLUGIN] try fetch targets from zoomeye with dork: {0}".format(dork)
         logger.info(info_msg)
-        targets = self.zoomeye.search(dork, conf.max_page, resource=conf.search_type)
+        targets = self.zoomeye.search(dork, conf.max_page, conf.page_size, search_type=conf.search_type)
         count = 0
         if targets:
             for target in targets:

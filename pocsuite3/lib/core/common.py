@@ -160,7 +160,6 @@ def clear_colors(message):
 
 def boldify_message(message):
     ret = message
-
     if any(_ in message for _ in BOLD_PATTERNS):
         ret = set_color(message, bold=True)
 
