@@ -50,6 +50,7 @@ optDict = {
         'dork_hunter': 'string',
         'dork_censys': 'string',
         'max_page': 'integer',
+        'page_size': 'string',
         'search_type': 'string',
         'vul_keyword': 'string',
         'ssvid': 'string',

@@ -39,11 +39,11 @@ LEGAL_DISCLAIMER = (
     "Usage of pocsuite for attacking targets without prior mutual consent is illegal."
 )
 
-BANNER = r"""\033[01;33m
+BANNER = """\033[01;33m
 ,------.                        ,--. ,--.       ,----.   \033[01;37m{\033[01;%dm%s\033[01;37m}\033[01;33m
 |  .--. ',---. ,---.,---.,--.,--`--,-'  '-.,---.'.-.  |
 |  '--' | .-. | .--(  .-'|  ||  ,--'-.  .-| .-. : .' <
-|  | --'' '-' \ `--.-'  `'  ''  |  | |  | \   --/'-'  |
+|  | --'' '-' \\ `--.-'  `'  ''  |  | |  | \\   --/'-'  |
 `--'     `---' `---`----' `----'`--' `--'  `----`----'   \033[0m\033[4;37m%s\033[0m
 """ % (
     (31 + hash(REVISION) % 6) if REVISION else 30,
@@ -153,6 +153,7 @@ CMD_PARSE_WHITELIST = [
     "dork-hunter",
     "dork-censys",
     "max-page",
+    "page-size",
     "search-type",
     "vul-keyword",
     "ssv-id",
