@@ -1,5 +1,4 @@
 import getpass
-import urllib
 import time
 from configparser import ConfigParser
 from pocsuite3.lib.core.data import logger, kb, paths
@@ -114,42 +113,6 @@ class ZoomEye():
                             if match['honeypot'] == 1:
                                 honeypot = True
                             kb.comparison.add_ip(match['ip'], "Zoomeye", honeypot)
-
-
-                    # if search_type == 'v4':
-                    #     for match in content["data"]:
-                    #         if match['domain']:
-                    #             ans = match["domain"]
-                    #         else:
-                    #             ans = f"{match['service']}://{match['ip']}:{match['port']}"
-                    #         search_result.add(ans)
-                    #
-                    #         if kb.comparison:
-                    #             honeypot = False
-                    #             if match['honeypot'] == 1:
-                    #                 honeypot = True
-                    #             kb.comparison.add_ip(ans, "Zoomeye", honeypot)
-                    # elif search_type == 'v6':
-                    #     for match in content['matches']:
-                    #         host = match['ip']
-                    #         port = str(match['portinfo']['port'])
-                    #         url = f'[{host}]:{port}' if is_ipv6_address_format(host) else f'{host}:{port}'
-                    #         scheme = ''
-                    #
-                    #         if 'service' in match['portinfo']:
-                    #             scheme = str(match['portinfo']['service'].split('/')[-1])
-                    #
-                    #         if scheme:
-                    #             url = f'{scheme}://{url}'
-                    #         search_result.add(url)
-                    #
-                    #         if kb.comparison:
-                    #             honeypot = False
-                    #             if "honeypot" in match or "honeypot_lastupdate" in match:
-                    #                 honeypot = True
-                    #             kb.comparison.add_ip(host, "Zoomeye", honeypot)
-                    # else:
-                    #     pass
         except Exception as ex:
             logger.error(str(ex))
         return search_result
