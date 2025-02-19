@@ -1,5 +1,6 @@
 import getpass
 import time
+from base64 import b64encode
 from configparser import ConfigParser
 from pocsuite3.lib.core.data import logger, kb, paths
 from pocsuite3.lib.core.common import is_ipv6_address_format
@@ -83,7 +84,7 @@ class ZoomEye():
                 time.sleep(1)
                 url = f'{self.url}/v2/search'
                 data = {
-                    "qbase64": dork,
+                    "qbase64": b64encode(dork.encode('utf-8')).decode('utf-8'),
                     "page": page,
                     "pagesize": pagesize,
                     "sub_type": search_type,
