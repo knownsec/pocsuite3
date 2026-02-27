@@ -288,7 +288,7 @@ def http_request_generator(request: HttpRequest, dynamic_values: OrderedDict):
                     kwargs.setdefault('timeout', timeout)
                 else:
                     method, path, _ = raws[0].split(' ')
-                if method == "POST":
+                if method in ("POST", "PUT", "PATCH"):
                     index = 0
                     for i in raws:
                         index += 1
@@ -305,6 +305,9 @@ def http_request_generator(request: HttpRequest, dynamic_values: OrderedDict):
 
                 url = f'{Marker.ParenthesisOpen}BaseURL{Marker.ParenthesisClose}{path}'
 
+            # Convert headers keys from underscore to hyphen format (e.g., Content_Type -> Content-Type)
+            if headers and isinstance(headers, dict):
+                headers = {k.replace('_', '-'): v for k, v in headers.items()}
             kwargs.setdefault('allow_redirects', request.redirects)
             kwargs.setdefault('data', data)
             kwargs.setdefault('headers', headers)
