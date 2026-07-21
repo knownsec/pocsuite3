@@ -155,7 +155,7 @@ def cmd_line_parser(argv=None):
         optimization.add_argument("--pcap", dest="pcap", action="store_true", default=False,
                                   help="use scapy capture flow")
         optimization.add_argument("--rule", dest="rule", action="store_true", default=False,
-                                  help="export suricata rules, default export reqeust and response")
+                                  help="export suricata rules, default export request and response")
         optimization.add_argument("--rule-req", dest="rule_req", action="store_true", default=False,
                                   help="only export request rule")
         optimization.add_argument("--rule-filename", dest="rule_filename", action="store", default=False,
